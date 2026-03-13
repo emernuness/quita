@@ -1,0 +1,14 @@
+{
+	"extends": "../../tooling/typescript/nestjs.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"declaration": true,
+		"sourceMap": true,
+		"paths": {
+			"@quita/shared": ["../../packages/shared/src"]
+		}
+	},
+	"include": ["src"],
+	"exclude": ["dist", "node_modules"]
+}

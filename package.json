@@ -15,6 +15,15 @@
 		"db:seed": "turbo run db:seed --filter=@quita/api",
 		"db:studio": "turbo run db:studio --filter=@quita/api"
 	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@biomejs/biome",
+			"@nestjs/core",
+			"@prisma/client",
+			"@prisma/engines",
+			"prisma"
+		]
+	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"turbo": "^2.4.4",

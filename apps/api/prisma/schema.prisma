@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanType {
+  free
+  premium
+}
+
+enum FinancialType {
+  fixed
+  one_time
+  recurring
+}
+
+enum ExpenseCategory {
+  housing
+  bills
+  food
+  transport
+  telecom
+  other
+}
+
+enum IncomeSource {
+  salary
+  extra
+  help
+  other
+}
+
+enum DebtStatus {
+  on_time
+  overdue
+  renegotiated
+  paid
+}
+
+enum PaymentType {
+  full
+  partial
+  renegotiated
+}
+
+enum PlanStrategy {
+  smallest_first
+  highest_interest
+  custom
+}
+
+enum InsightType {
+  tip
+  action
+  warning
+  negotiation
+  expense_cut
+}
+
+enum ExportFormat {
+  pdf
+  csv
+}
+
+enum ExportStatus {
+  processing
+  ready
+  expired
+}
+
+enum TimelineItemStatus {
+  pending
+  completed
+  skipped
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  name                 String    @db.VarChar(255)
+  email                String    @unique @db.VarChar(255)
+  phone                String    @db.VarChar(20)
+  passwordHash         String    @map("password_hash") @db.VarChar(255)
+  avatarInitials       String?   @map("avatar_initials") @db.VarChar(5)
+  googleId             String?   @map("google_id") @db.VarChar(255)
+  biometricFingerprint Boolean?  @default(false) @map("biometric_fingerprint")
+  biometricFace        Boolean?  @default(false) @map("biometric_face")
+  discreteMode         Boolean?  @default(false) @map("discrete_mode")
+  onboardingStep       Int?      @default(0) @map("onboarding_step") @db.SmallInt
+  onboardingCompleted  Boolean?  @default(false) @map("onboarding_completed")
+  planType             PlanType  @default(free) @map("plan_type")
+  planExpiresAt        DateTime? @map("plan_expires_at")
+  lastSyncAt           DateTime? @map("last_sync_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at")
+
+  incomes           Income[]
+  expenses          Expense[]
+  debts             Debt[]
+  payments          Payment[]
+  paymentPlans      PaymentPlan[]
+  insights          AiInsight[]
+  notificationPrefs NotificationPreference?
+  journeyStats      UserJourneyStats?
+  exports           DataExport[]
+
+  @@map("users")
+}
+
+model Income {
+  id                String        @id @default(uuid())
+  userId            String        @map("user_id")
+  name              String        @db.VarChar(255)
+  amount            Decimal       @db.Decimal(12, 2)
+  type              FinancialType
+  dueDate           DateTime?     @map("due_date") @db.Date
+  installments      Int?          @db.SmallInt
+  installmentAmount Decimal?      @map("installment_amount") @db.Decimal(12, 2)
+  sourceCategory    IncomeSource? @map("source_category")
+  isActive          Boolean       @default(true) @map("is_active")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("incomes")
+}
+
+model Expense {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  name              String          @db.VarChar(255)
+  amount            Decimal         @db.Decimal(12, 2)
+  type              FinancialType
+  category          ExpenseCategory
+  dueDate           DateTime?       @map("due_date") @db.Date
+  installments      Int?            @db.SmallInt
+  installmentAmount Decimal?        @map("installment_amount") @db.Decimal(12, 2)
+  isActive          Boolean         @default(true) @map("is_active")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("expenses")
+}
+
+model DebtCategory {
+  id        String   @id @default(uuid())
+  slug      String   @unique @db.VarChar(50)
+  name      String   @db.VarChar(100)
+  icon      String   @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  debts Debt[]
+
+  @@map("debt_categories")
+}
+
+model Debt {
+  id                 String     @id @default(uuid())
+  userId             String     @map("user_id")
+  categoryId         String     @map("category_id")
+  creditor           String     @db.VarChar(255)
+  totalAmount        Decimal    @map("total_amount") @db.Decimal(12, 2)
+  amountPaid         Decimal    @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  hasInterest        Boolean?   @default(false) @map("has_interest")
+  dueDate            DateTime?  @map("due_date") @db.Date
+  status             DebtStatus @default(on_time)
+  overdueMonths      Int?       @map("overdue_months") @db.SmallInt
+  totalInstallments  Int?       @map("total_installments") @db.SmallInt
+  currentInstallment Int?       @map("current_installment") @db.SmallInt
+  priorityOrder      Int?       @map("priority_order") @db.SmallInt
+  paidAt             DateTime?  @map("paid_at")
+  interestSaved      Decimal?   @map("interest_saved") @db.Decimal(12, 2)
+  createdAt          DateTime   @default(now()) @map("created_at")
+  updatedAt          DateTime   @updatedAt @map("updated_at")
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      DebtCategory       @relation(fields: [categoryId], references: [id])
+  payments      Payment[]
+  insights      AiInsight[]
+  timelineItems PlanTimelineItem[]
+
+  @@index([userId, status])
+  @@map("debts")
+}
+
+model Payment {
+  id           String      @id @default(uuid())
+  userId       String      @map("user_id")
+  debtId       String      @map("debt_id")
+  amount       Decimal     @db.Decimal(12, 2)
+  paymentType  PaymentType @map("payment_type")
+  receiptUrl   String?     @map("receipt_url") @db.VarChar(500)
+  canUndoUntil DateTime?   @map("can_undo_until")
+  undone       Boolean     @default(false)
+  paidAt       DateTime    @map("paid_at")
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debt Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+
+  @@index([debtId])
+  @@map("payments")
+}
+
+model PaymentPlan {
+  id               String       @id @default(uuid())
+  userId           String       @map("user_id")
+  strategy         PlanStrategy @default(smallest_first)
+  monthlyAvailable Decimal      @map("monthly_available") @db.Decimal(12, 2)
+  totalDebtsCount  Int          @map("total_debts_count") @db.SmallInt
+  paidDebtsCount   Int          @default(0) @map("paid_debts_count") @db.SmallInt
+  progressPercent  Decimal      @default(0) @map("progress_percent") @db.Decimal(5, 2)
+  isCritical       Boolean      @default(false) @map("is_critical")
+  allPaid          Boolean      @default(false) @map("all_paid")
+  isActive         Boolean      @default(true) @map("is_active")
+  generatedAt      DateTime     @map("generated_at")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timelineItems PlanTimelineItem[]
+
+  @@index([userId])
+  @@map("payment_plans")
+}
+
+model PlanTimelineItem {
+  id              String             @id @default(uuid())
+  planId          String             @map("plan_id")
+  debtId          String             @map("debt_id")
+  order           Int                @db.SmallInt
+  suggestedAmount Decimal            @map("suggested_amount") @db.Decimal(12, 2)
+  suggestedDate   DateTime           @map("suggested_date") @db.Date
+  status          TimelineItemStatus @default(pending)
+  createdAt       DateTime           @default(now()) @map("created_at")
+
+  plan PaymentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  debt Debt        @relation(fields: [debtId], references: [id], onDelete: Cascade)
+
+  @@map("plan_timeline_items")
+}
+
+model AiInsight {
+  id            String      @id @default(uuid())
+  userId        String      @map("user_id")
+  debtId        String?     @map("debt_id")
+  type          InsightType
+  title         String?     @db.VarChar(255)
+  content       String
+  actionLabel   String?     @map("action_label") @db.VarChar(100)
+  actionUrl     String?     @map("action_url") @db.VarChar(500)
+  impactLabel   String?     @map("impact_label") @db.VarChar(50)
+  savingsAmount Decimal?    @map("savings_amount") @db.Decimal(12, 2)
+  isRead        Boolean     @default(false) @map("is_read")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debt Debt? @relation(fields: [debtId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isRead])
+  @@map("ai_insights")
+}
+
+model NotificationPreference {
+  id               String   @id @default(uuid())
+  userId           String   @unique @map("user_id")
+  dueDates         Boolean  @default(false) @map("due_dates")
+  weeklyProgress   Boolean  @default(true) @map("weekly_progress")
+  paymentIncentive Boolean  @default(true) @map("payment_incentive")
+  riskAlert        Boolean  @default(true) @map("risk_alert")
+  newsAndTips      Boolean  @default(true) @map("news_and_tips")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model DataExport {
+  id          String       @id @default(uuid())
+  userId      String       @map("user_id")
+  format      ExportFormat
+  status      ExportStatus @default(processing)
+  fileUrl     String?      @map("file_url") @db.VarChar(500)
+  requestedAt DateTime     @default(now()) @map("requested_at")
+  readyAt     DateTime?    @map("ready_at")
+  expiresAt   DateTime?    @map("expires_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("data_exports")
+}
+
+model UserJourneyStats {
+  id                 String   @id @default(uuid())
+  userId             String   @unique @map("user_id")
+  totalDebtsCleared  Int      @default(0) @map("total_debts_cleared") @db.SmallInt
+  journeyMonths      Int      @default(0) @map("journey_months") @db.SmallInt
+  totalInterestSaved Decimal  @default(0) @map("total_interest_saved") @db.Decimal(12, 2)
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_journey_stats")
+}
