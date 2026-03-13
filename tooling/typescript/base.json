@@ -1,0 +1,22 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"paths": {
+			"@quita/shared": ["../../packages/shared/src"],
+			"@quita/shared/*": ["../../packages/shared/src/*"]
+		}
+	},
+	"exclude": ["node_modules", "dist"]
+}

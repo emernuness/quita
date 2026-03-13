@@ -1,0 +1,12 @@
+{
+	"name": "@quita/mobile",
+	"version": "0.0.0",
+	"private": true,
+	"main": "expo-router/entry",
+	"scripts": {
+		"dev": "expo start",
+		"build": "echo 'No build step for Expo dev'",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist .expo"
+	}
+}

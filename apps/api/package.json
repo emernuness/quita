@@ -1,0 +1,17 @@
+{
+	"name": "@quita/api",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "nest start --watch",
+		"build": "nest build",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist",
+		"db:generate": "prisma generate",
+		"db:push": "prisma db push",
+		"db:migrate": "prisma migrate dev",
+		"db:seed": "prisma db seed",
+		"db:studio": "prisma studio"
+	}
+}
