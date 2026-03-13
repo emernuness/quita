@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import { colors } from '@/theme/tokens';
+import { colors } from "@/theme/tokens";
+import { Tabs } from "expo-router";
 
 export default function TabLayout() {
 	return (
@@ -17,31 +17,31 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="index"
 				options={{
-					title: 'Home',
+					title: "Home",
 				}}
 			/>
 			<Tabs.Screen
 				name="debts"
 				options={{
-					title: 'Dívidas',
+					title: "Dívidas",
 				}}
 			/>
 			<Tabs.Screen
 				name="plan"
 				options={{
-					title: 'Plano',
+					title: "Plano",
 				}}
 			/>
 			<Tabs.Screen
 				name="finances"
 				options={{
-					title: 'Finanças',
+					title: "Finanças",
 				}}
 			/>
 			<Tabs.Screen
 				name="profile"
 				options={{
-					title: 'Perfil',
+					title: "Perfil",
 				}}
 			/>
 		</Tabs>

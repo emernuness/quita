@@ -1,26 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { DEBT_CATEGORY_SEEDS } from "@quita/shared";
 
 const prisma = new PrismaClient();
 
 async function main() {
-	const categories = [
-		{ slug: "credit_card", name: "Cartao de credito", icon: "credit-card" },
-		{ slug: "bank_loan", name: "Banco / Emprestimo", icon: "landmark" },
-		{ slug: "overdue_bill", name: "Conta atrasada", icon: "alert-circle" },
-		{ slug: "housing", name: "Moradia", icon: "home" },
-		{ slug: "personal", name: "Pessoa conhecida", icon: "users" },
-		{ slug: "other", name: "Outra divida", icon: "more-horizontal" },
-	];
-
-	for (const cat of categories) {
+	for (const cat of DEBT_CATEGORY_SEEDS) {
 		await prisma.debtCategory.upsert({
 			where: { slug: cat.slug },
 			update: { name: cat.name, icon: cat.icon },
-			create: cat,
+			create: { slug: cat.slug, name: cat.name, icon: cat.icon },
 		});
 	}
 
-	console.log("Seed completed: 6 debt categories");
+	console.log(`Seed completed: ${DEBT_CATEGORY_SEEDS.length} debt categories`);
 }
 
 main()

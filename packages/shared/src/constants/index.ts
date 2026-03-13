@@ -6,26 +6,26 @@ export const PAYMENT_UNDO_WINDOW_HOURS = 24;
 export const EXPORT_EXPIRY_HOURS = 48;
 
 export const DEBT_CATEGORY_SEEDS = [
-  { slug: 'credit_card', name: 'Cartao de credito', icon: 'credit-card' },
-  { slug: 'bank_loan', name: 'Banco / Emprestimo', icon: 'landmark' },
-  { slug: 'overdue_bill', name: 'Conta atrasada', icon: 'alert-circle' },
-  { slug: 'housing', name: 'Moradia', icon: 'home' },
-  { slug: 'personal', name: 'Pessoa conhecida', icon: 'users' },
-  { slug: 'other', name: 'Outra divida', icon: 'more-horizontal' },
+	{ slug: "credit_card", name: "Cartão de crédito", icon: "credit-card" },
+	{ slug: "bank_loan", name: "Banco / Empréstimo", icon: "landmark" },
+	{ slug: "overdue_bill", name: "Conta atrasada", icon: "alert-circle" },
+	{ slug: "housing", name: "Moradia", icon: "home" },
+	{ slug: "personal", name: "Pessoa conhecida", icon: "users" },
+	{ slug: "other", name: "Outra dívida", icon: "more-horizontal" },
 ] as const;
 
 export const EXPENSE_CATEGORY_LABELS: Record<string, string> = {
-  housing: 'Moradia',
-  bills: 'Contas',
-  food: 'Alimentacao',
-  transport: 'Transporte',
-  telecom: 'Internet e Celular',
-  other: 'Outros',
+	housing: "Moradia",
+	bills: "Contas",
+	food: "Alimentação",
+	transport: "Transporte",
+	telecom: "Internet e Celular",
+	other: "Outros",
 };
 
 export const INCOME_SOURCE_LABELS: Record<string, string> = {
-  salary: 'Salario',
-  extra: 'Bico / Extra',
-  help: 'Ajuda',
-  other: 'Outro',
+	salary: "Salário",
+	extra: "Bico / Extra",
+	help: "Ajuda",
+	other: "Outro",
 };
