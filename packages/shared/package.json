@@ -1,6 +1,6 @@
 {
 	"name": "@quita/shared",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -8,5 +8,11 @@
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"zod": "^3.24"
+	},
+	"devDependencies": {
+		"typescript": "^5.7"
 	}
 }
