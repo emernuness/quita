@@ -1,0 +1,26 @@
+{
+	"expo": {
+		"name": "Quita",
+		"slug": "quita",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"scheme": "quita",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"backgroundColor": "#FAFAFA"
+		},
+		"ios": {
+			"supportsTablet": false,
+			"bundleIdentifier": "com.quita.app"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"backgroundColor": "#FAFAFA"
+			},
+			"package": "com.quita.app"
+		},
+		"plugins": ["expo-router"]
+	}
+}
