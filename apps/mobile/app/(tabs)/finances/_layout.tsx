@@ -4,7 +4,8 @@ export default function FinancesLayout() {
 	return (
 		<Stack screenOptions={{ headerShown: false }}>
 			<Stack.Screen name="index" />
-			<Stack.Screen name="history" />
+			<Stack.Screen name="[id]" />
+			<Stack.Screen name="charts" />
 		</Stack>
 	);
 }

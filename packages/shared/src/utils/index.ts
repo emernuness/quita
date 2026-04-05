@@ -11,6 +11,27 @@ export function formatBRL(value: number): string {
 }
 
 /**
+ * Formats a number as compact BRL: R$ 8K, R$ 1,6K, R$ 24,5K, R$ 1,2M
+ * Values below 1000 are displayed normally: R$ 850,00
+ */
+export function formatBRLCompact(value: number): string {
+	const abs = Math.abs(value);
+	const sign = value < 0 ? "-" : "";
+
+	if (abs >= 1_000_000) {
+		const m = abs / 1_000_000;
+		const formatted = m % 1 === 0 ? `${m}` : m.toFixed(1).replace(".", ",");
+		return `${sign}R$ ${formatted}M`;
+	}
+	if (abs >= 1_000) {
+		const k = abs / 1_000;
+		const formatted = k % 1 === 0 ? `${k}` : k.toFixed(1).replace(".", ",");
+		return `${sign}R$ ${formatted}K`;
+	}
+	return formatBRL(value);
+}
+
+/**
  * Parses a BRL-formatted string ("1.234,56" or "R$ 1.234,56") to a number.
  */
 export function parseBRL(value: string): number {

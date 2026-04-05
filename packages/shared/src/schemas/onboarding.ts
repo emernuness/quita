@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { DebtStatus } from "../enums/index.js";
+import { DebtNature, DebtStatus } from "../enums/index.js";
 
 export const onboardingIncomeSchema = z.object({
-	salary: z.number().nonnegative(),
+	salary: z.number().positive("Informe sua renda principal"),
 	extra: z.number().nonnegative().optional(),
 	help: z.number().nonnegative().optional(),
 });
@@ -16,8 +16,13 @@ export type OnboardingDebtCategoriesInput = z.infer<typeof onboardingDebtCategor
 export const onboardingDebtSchema = z.object({
 	categoryId: z.string().uuid(),
 	creditor: z.string().min(1),
+	nature: z.enum([DebtNature.INSTALLMENT, DebtNature.RECURRING, DebtNature.ONE_TIME]),
 	totalAmount: z.number().positive(),
-	hasInterest: z.boolean().optional(),
+	monthlyAmount: z.number().nonnegative().optional(),
+	overdueMonths: z.number().int().min(1).max(120).optional(),
+	totalInstallments: z.number().int().min(1).max(600).optional(),
+	currentInstallment: z.number().int().min(1).max(600).optional(),
+	hasInterest: z.boolean().nullable().optional(),
 	dueDate: z.string().date().optional(),
 	status: z.enum([
 		DebtStatus.ON_TIME,

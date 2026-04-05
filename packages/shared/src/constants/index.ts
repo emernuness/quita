@@ -7,7 +7,7 @@ export const EXPORT_EXPIRY_HOURS = 48;
 
 export const DEBT_CATEGORY_SEEDS = [
 	{ slug: "credit_card", name: "Cartão de crédito", icon: "credit-card" },
-	{ slug: "bank_loan", name: "Banco / Empréstimo", icon: "landmark" },
+	{ slug: "bank_loan", name: "Banco / Empréstimo", icon: "briefcase" },
 	{ slug: "overdue_bill", name: "Conta atrasada", icon: "alert-circle" },
 	{ slug: "housing", name: "Moradia", icon: "home" },
 	{ slug: "personal", name: "Pessoa conhecida", icon: "users" },

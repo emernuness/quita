@@ -28,6 +28,13 @@ export const IncomeSource = {
 } as const;
 export type IncomeSource = (typeof IncomeSource)[keyof typeof IncomeSource];
 
+export const DebtNature = {
+	INSTALLMENT: "installment",
+	RECURRING: "recurring",
+	ONE_TIME: "one_time",
+} as const;
+export type DebtNature = (typeof DebtNature)[keyof typeof DebtNature];
+
 export const DebtStatus = {
 	ON_TIME: "on_time",
 	OVERDUE: "overdue",

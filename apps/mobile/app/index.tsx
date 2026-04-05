@@ -1,16 +1,32 @@
 import { Redirect } from "expo-router";
+import { useAuthStore } from "../src/stores/auth";
+import { ActivityIndicator, View } from "react-native";
+import { colors } from "@/theme/tokens";
 
 export default function Index() {
-	// TODO: Check auth state and onboarding status
-	// For now, redirect to auth login
-	const isAuthenticated = false;
-	const hasCompletedOnboarding = false;
+	const { isAuthenticated, isLoading, user } = useAuthStore();
 
-	if (!isAuthenticated) {
-		return <Redirect href="/(auth)/login" />;
+	if (isLoading) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+				<ActivityIndicator size="large" color={colors.textPrimary} />
+			</View>
+		);
 	}
 
-	if (!hasCompletedOnboarding) {
+	if (!isAuthenticated) {
+		return <Redirect href="/splash" />;
+	}
+
+	if (!user?.onboardingCompleted) {
+		const step = user?.onboardingStep ?? 0;
+		if (step >= 3) {
+			return <Redirect href="/(onboarding)/expenses" />;
+		}
+		if (step >= 1) {
+			// Steps 1-2: income done, categories next (or re-select before debt-detail)
+			return <Redirect href="/(onboarding)/categories" />;
+		}
 		return <Redirect href="/(onboarding)/income" />;
 	}
 

@@ -34,6 +34,12 @@ enum IncomeSource {
   other
 }
 
+enum DebtNature {
+  installment
+  recurring
+  one_time
+}
+
 enum DebtStatus {
   on_time
   overdue
@@ -169,6 +175,8 @@ model Debt {
   categoryId         String     @map("category_id")
   creditor           String     @db.VarChar(255)
   totalAmount        Decimal    @map("total_amount") @db.Decimal(12, 2)
+  nature             DebtNature @default(one_time)
+  monthlyAmount      Decimal?   @map("monthly_amount") @db.Decimal(12, 2)
   amountPaid         Decimal    @default(0) @map("amount_paid") @db.Decimal(12, 2)
   hasInterest        Boolean?   @default(false) @map("has_interest")
   dueDate            DateTime?  @map("due_date") @db.Date

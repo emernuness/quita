@@ -1,11 +1,20 @@
 {
-	"extends": "../../tooling/typescript/react-native.json",
-	"compilerOptions": {
-		"paths": {
-			"@quita/shared": ["../../packages/shared/src"],
-			"@/*": ["./src/*"]
-		}
-	},
-	"include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-	"exclude": ["node_modules"]
+  "extends": "../../tooling/typescript/react-native.json",
+  "compilerOptions": {
+    "paths": {
+      "@quita/shared": [
+        "../../packages/shared/src"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
