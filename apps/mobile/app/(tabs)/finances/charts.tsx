@@ -1,21 +1,45 @@
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
 
 const CATEGORIES = [
-	{ name: "Moradia", color: "#FF6600", percent: 37, amount: "R$ 950" },
-	{ name: "Alimentação", color: "#88CC00", percent: 22, amount: "R$ 600" },
-	{ name: "Contas", color: "#0A0A0A", percent: 13, amount: "R$ 280" },
+	{ name: "Moradia", color: colors.brandTealDark, percent: 37, amount: "R$ 950" },
+	{ name: "Alimentação", color: colors.accentGreen, percent: 22, amount: "R$ 600" },
+	{ name: "Contas", color: colors.brandTealMid, percent: 13, amount: "R$ 280" },
 ];
 
 const MONTHS = [
-	{ label: "Jun", bars: [{ height: 60, color: "#0066FF" }, { height: 40, color: "#FF6600" }] },
-	{ label: "Jul", bars: [{ height: 50, color: "#0066FF" }, { height: 55, color: "#FF6600" }] },
-	{ label: "Ago", bars: [{ height: 70, color: "#0066FF" }, { height: 35, color: "#FF6600" }] },
-	{ label: "Set", bars: [{ height: 45, color: "#0066FF" }, { height: 30, color: "#FF6600" }] },
+	{
+		label: "Jun",
+		bars: [
+			{ height: 60, color: colors.brandTealDark },
+			{ height: 40, color: colors.accentGreenLight },
+		],
+	},
+	{
+		label: "Jul",
+		bars: [
+			{ height: 50, color: colors.brandTealDark },
+			{ height: 55, color: colors.accentGreenLight },
+		],
+	},
+	{
+		label: "Ago",
+		bars: [
+			{ height: 70, color: colors.brandTealDark },
+			{ height: 35, color: colors.accentGreenLight },
+		],
+	},
+	{
+		label: "Set",
+		bars: [
+			{ height: 45, color: colors.brandTealDark },
+			{ height: 30, color: colors.accentGreenLight },
+		],
+	},
 ];
 
 export default function ChartsScreen() {
@@ -34,7 +58,7 @@ export default function ChartsScreen() {
 					onPress={() => router.back()}
 				>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-					<Text style={styles.backText}>VOLTAR</Text>
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Title */}
@@ -132,52 +156,49 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.md,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: spacing.xs,
+		gap: spacing.xs + 2,
 		marginBottom: spacing.lg,
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 13,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
+		fontFamily: fonts.heading,
+		fontSize: 28,
 		color: colors.textPrimary,
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
+		fontFamily: fonts.body,
 		fontSize: 14,
-		fontWeight: "500",
 		color: colors.textSecondary,
 		marginBottom: spacing.xl,
 	},
 	card: {
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
-		borderRadius: 12,
-		padding: spacing.md,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		marginBottom: spacing.md,
 	},
 	cardTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 16,
-		fontWeight: "700",
 		color: colors.textPrimary,
 		marginBottom: spacing.xs,
 	},
 	cardSubtitle: {
+		fontFamily: fonts.bodyMedium,
 		fontSize: 13,
-		fontWeight: "500",
 		color: colors.textSecondary,
 		marginBottom: spacing.md,
 	},
@@ -193,27 +214,27 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	barLabel: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "600",
 		color: colors.textPrimary,
 	},
 	barAmount: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
 		color: colors.textPrimary,
 	},
 	barTrack: {
 		height: 8,
-		backgroundColor: "#F0F0F0",
-		borderRadius: 4,
+		backgroundColor: colors.gray200,
+		borderRadius: radius.input,
 	},
 	barFill: {
 		height: 8,
-		borderRadius: 4,
+		borderRadius: radius.input,
 	},
 	barPercent: {
+		fontFamily: fonts.bodyMedium,
 		fontSize: 12,
-		fontWeight: "500",
 		color: colors.textSecondary,
 	},
 	chartContainer: {
@@ -230,15 +251,15 @@ const styles = StyleSheet.create({
 	chartBars: {
 		flexDirection: "row",
 		alignItems: "flex-end",
-		gap: 4,
+		gap: spacing.xs,
 	},
 	chartBar: {
 		width: 20,
-		borderRadius: 4,
+		borderRadius: radius.input,
 	},
 	chartLabel: {
+		fontFamily: fonts.bodyMedium,
 		fontSize: 12,
-		fontWeight: "500",
 		color: colors.textSecondary,
 	},
 	comparativeRow: {
@@ -251,18 +272,18 @@ const styles = StyleSheet.create({
 		gap: spacing.xs,
 	},
 	comparativeDivider: {
-		width: 1,
+		width: 0.5,
 		height: 40,
 		backgroundColor: colors.border,
 	},
 	comparativeLabel: {
+		fontFamily: fonts.bodyMedium,
 		fontSize: 13,
-		fontWeight: "500",
 		color: colors.textSecondary,
 	},
 	comparativeValueGreen: {
+		fontFamily: fonts.heading,
 		fontSize: 16,
-		fontWeight: "800",
 		color: colors.successGreen,
 	},
 });

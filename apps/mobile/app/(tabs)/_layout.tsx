@@ -1,4 +1,4 @@
-import { colors } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import type { ComponentProps } from "react";
@@ -82,8 +82,8 @@ function CustomTabBar({
 									size={20}
 									color={
 										isFocused
-											? "#FFFFFF"
-											: colors.textSecondary
+											? colors.brandTealDark
+											: colors.textTertiary
 									}
 								/>
 								<Text
@@ -125,42 +125,37 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		left: 0,
 		right: 0,
-		alignItems: "center",
-		paddingBottom: Platform.OS === "ios" ? 28 : 12,
-		paddingTop: 12,
-		paddingHorizontal: 21,
+		backgroundColor: colors.surface,
+		borderTopWidth: 0.5,
+		borderTopColor: colors.border,
+		paddingBottom: Platform.OS === "ios" ? 28 : spacing.md,
+		paddingTop: spacing.sm,
+		paddingHorizontal: spacing.sm,
 	},
 	tabBarContainer: {
 		flexDirection: "row",
-		backgroundColor: colors.surface,
-		borderRadius: 200,
-		borderWidth: 1,
-		borderColor: colors.border,
-		paddingVertical: 4,
-		paddingHorizontal: 4,
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "space-around",
 	},
 	tabItem: {
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
-		paddingVertical: 8,
-		paddingHorizontal: 18,
-		borderRadius: 200,
-		gap: 2,
+		paddingVertical: spacing.sm,
+		paddingHorizontal: spacing.md,
+		borderRadius: radius.sm,
+		gap: spacing.xs,
 	},
 	tabItemActive: {
-		backgroundColor: colors.textPrimary,
+		backgroundColor: "transparent",
 	},
 	tabLabel: {
-		fontSize: 10,
-		fontWeight: "600",
-		letterSpacing: 1,
-		color: colors.textSecondary,
-		textTransform: "uppercase",
+		fontFamily: fonts.bodyMedium,
+		fontSize: 12,
+		color: colors.textTertiary,
 	},
 	tabLabelActive: {
-		color: "#FFFFFF",
+		color: colors.brandTealDark,
+		fontFamily: fonts.bodySemiBold,
 	},
 });

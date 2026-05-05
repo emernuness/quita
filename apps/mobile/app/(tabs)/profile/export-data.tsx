@@ -1,15 +1,10 @@
 import React from "react";
-import {
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { Button } from "@/components/Button";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 export default function ExportDataScreen() {
 	const router = useRouter();
@@ -22,16 +17,9 @@ export default function ExportDataScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				{/* Back Button */}
-				<Pressable
-					onPress={() => router.back()}
-					style={styles.backButton}
-				>
-					<Feather
-						name="arrow-left"
-						size={20}
-						color={colors.textPrimary}
-					/>
-					<Text style={styles.backText}>VOLTAR</Text>
+				<Pressable onPress={() => router.back()} style={styles.backButton}>
+					<Feather name="arrow-left" size={20} color={colors.textPrimary} />
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Title */}
@@ -39,8 +27,8 @@ export default function ExportDataScreen() {
 
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
-					Seus dados são seus. Baixe uma cópia completa, entenda o
-					prazo de geração e revise o que será incluído.
+					Seus dados são seus. Baixe uma cópia completa, entenda o prazo de geração
+					e revise o que será incluído.
 				</Text>
 
 				{/* Export Option: PDF */}
@@ -76,44 +64,34 @@ export default function ExportDataScreen() {
 				</Pressable>
 
 				{/* Danger Zone */}
-				<Text style={styles.dangerLabel}>ZONA DE PERIGO</Text>
+				<Text style={styles.dangerLabel}>Zona de perigo</Text>
 
 				<Text style={styles.dangerText}>
-					Ao excluir sua conta, todos os seus dados serão
-					permanentemente apagados. Antes disso, exporte uma cópia e
-					revise o prazo legal de retenção.
+					Ao excluir sua conta, todos os seus dados serão permanentemente apagados.
+					Antes disso, exporte uma cópia e revise o prazo legal de retenção.
 				</Text>
 
-				<Pressable
-					style={({ pressed }) => [
-						styles.dangerButton,
-						pressed && { opacity: 0.85 },
-					]}
+				<Button
+					variant="destructive"
+					label="Excluir minha conta"
 					onPress={() => {
 						/* TODO: delete account flow */
 					}}
-				>
-					<Text style={styles.dangerButtonText}>
-						EXCLUIR MINHA CONTA
-					</Text>
-				</Pressable>
+					style={styles.dangerButton}
+				/>
 
 				<Text style={styles.disclaimerText}>
-					Em conformidade com a LGPD (Lei Geral de Proteção de Dados),
-					você tem direito ao acesso e portabilidade dos seus dados a
-					qualquer momento.
+					Em conformidade com a LGPD (Lei Geral de Proteção de Dados), você tem
+					direito ao acesso e portabilidade dos seus dados a qualquer momento.
 				</Text>
 
 				{/* Info Card */}
 				<View style={styles.infoCard}>
-					<Text style={styles.infoCardTitle}>
-						Como funciona a exportação
-					</Text>
+					<Text style={styles.infoCardTitle}>Como funciona a exportação</Text>
 					<Text style={styles.infoCardText}>
-						Os arquivos podem levar alguns minutos para serem
-						gerados. Você receberá uma notificação quando estiver
-						pronto.{"\n\n"}Inclui: dívidas, receitas, despesas,
-						histórico de pagamentos e plano atual.
+						Os arquivos podem levar alguns minutos para serem gerados. Você
+						receberá uma notificação quando estiver pronto.{"\n\n"}Inclui: dívidas,
+						receitas, despesas, histórico de pagamentos e plano atual.
 					</Text>
 				</View>
 			</ScrollView>
@@ -130,28 +108,29 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: spacing.lg,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.lg,
 		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
+		gap: spacing.sm,
 		marginBottom: spacing.md,
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 14,
 		color: colors.textPrimary,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
+		fontSize: 28,
 		color: colors.textPrimary,
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
+		fontFamily: fonts.body,
 		fontSize: 15,
 		color: colors.textSecondary,
 		lineHeight: 22,
@@ -159,73 +138,62 @@ const styles = StyleSheet.create({
 	},
 	optionCard: {
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 12,
-		padding: spacing.md,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		marginBottom: spacing.md,
 	},
 	optionTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 16,
-		fontWeight: "700",
 		color: colors.textPrimary,
 		marginBottom: 2,
 	},
 	optionSubtitle: {
+		fontFamily: fonts.body,
 		fontSize: 13,
 		color: colors.textSecondary,
 	},
 	dangerLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 14,
 		color: colors.dangerRed,
-		textTransform: "uppercase",
 		marginTop: spacing.xl,
 		marginBottom: spacing.md,
 	},
 	dangerText: {
+		fontFamily: fonts.body,
 		fontSize: 14,
 		color: colors.dangerRed,
 		lineHeight: 20,
 		marginBottom: spacing.md,
 	},
 	dangerButton: {
-		borderWidth: 2,
-		borderColor: colors.dangerRed,
-		borderRadius: 12,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
 		marginBottom: spacing.md,
 	},
-	dangerButtonText: {
-		fontSize: 11,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: colors.dangerRed,
-		textTransform: "uppercase",
-	},
 	disclaimerText: {
+		fontFamily: fonts.body,
 		fontSize: 12,
 		color: colors.textSecondary,
 		lineHeight: 18,
 		marginBottom: spacing.xl,
 	},
 	infoCard: {
-		backgroundColor: "#EEF4FF",
+		backgroundColor: colors.infoBackground,
 		padding: spacing.md,
-		borderRadius: 12,
+		borderRadius: radius.card,
 	},
 	infoCardTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 		marginBottom: spacing.xs,
 	},
 	infoCardText: {
+		fontFamily: fonts.body,
 		fontSize: 13,
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 		lineHeight: 19,
 	},
 });

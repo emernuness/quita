@@ -1,9 +1,9 @@
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 
 const STATS = [
 	{ value: "5", label: "dívidas quitadas" },
@@ -16,27 +16,26 @@ export default function BlueModeModal() {
 
 	return (
 		<View style={styles.gradientBg}>
+			{/* Layered gradient bands using brand teal/green tokens */}
+			<View style={styles.gradientTop} pointerEvents="none" />
+			<View style={styles.gradientBottom} pointerEvents="none" />
 			<SafeAreaView style={styles.safe}>
 				<ScrollView
 					style={styles.scroll}
 					contentContainerStyle={styles.content}
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Trophy Icon */}
 					<View style={styles.iconContainer}>
-						<Feather name="award" size={48} color="#FFFFFF" />
+						<Feather name="award" size={48} color={colors.white} />
 					</View>
 
-					{/* Title */}
 					<Text style={styles.title}>Você está no azul!</Text>
 
-					{/* Subtitle */}
 					<Text style={styles.subtitle}>
-						Todas as suas dívidas foram quitadas. Sua jornada financeira
-						começa agora.
+						Todas as suas dívidas foram quitadas. Sua jornada financeira começa
+						agora.
 					</Text>
 
-					{/* Journey Card */}
 					<View style={styles.card}>
 						<Text style={styles.cardTitle}>Sua jornada</Text>
 						<View style={styles.statsRow}>
@@ -54,38 +53,38 @@ export default function BlueModeModal() {
 						</View>
 					</View>
 
-					{/* Next Step Card */}
 					<View style={styles.nextStepCard}>
-						<Text style={styles.nextStepLabel}>PRÓXIMO PASSO</Text>
+						<Text style={styles.nextStepLabel}>Próximo passo</Text>
 						<Text style={styles.nextStepText}>
 							Agora que você saiu das dívidas, o próximo objetivo é construir
-							uma reserva de emergência. Recomendamos guardar o equivalente a
-							3 meses de despesas.
+							uma reserva de emergência. Recomendamos guardar o equivalente a 3
+							meses de despesas.
 						</Text>
 					</View>
 
-					{/* Buttons */}
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && styles.buttonPressed,
-						]}
-						onPress={() => router.back()}
-					>
-						<Text style={styles.primaryButtonText}>
-							CRIAR RESERVA DE EMERGÊNCIA
-						</Text>
-					</Pressable>
+					<View style={styles.buttonGroup}>
+						<Pressable
+							style={({ pressed }) => [
+								styles.primaryButton,
+								pressed && styles.buttonPressed,
+							]}
+							onPress={() => router.back()}
+						>
+							<Text style={styles.primaryButtonText}>
+								Criar reserva de emergência
+							</Text>
+						</Pressable>
 
-					<Pressable
-						style={({ pressed }) => [
-							styles.secondaryButton,
-							pressed && styles.buttonPressed,
-						]}
-						onPress={() => router.back()}
-					>
-						<Text style={styles.secondaryButtonText}>IR PARA O INÍCIO</Text>
-					</Pressable>
+						<Pressable
+							style={({ pressed }) => [
+								styles.secondaryButton,
+								pressed && styles.buttonPressed,
+							]}
+							onPress={() => router.back()}
+						>
+							<Text style={styles.secondaryButtonText}>Ir para o início</Text>
+						</Pressable>
+					</View>
 				</ScrollView>
 			</SafeAreaView>
 		</View>
@@ -96,6 +95,27 @@ const styles = StyleSheet.create({
 	gradientBg: {
 		flex: 1,
 		backgroundColor: colors.blueModeGradientMid,
+		borderTopLeftRadius: radius.lg,
+		borderTopRightRadius: radius.lg,
+		overflow: "hidden",
+	},
+	gradientTop: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		height: "45%",
+		backgroundColor: colors.blueModeGradientStart,
+		opacity: 0.85,
+	},
+	gradientBottom: {
+		position: "absolute",
+		bottom: 0,
+		left: 0,
+		right: 0,
+		height: "45%",
+		backgroundColor: colors.blueModeGradientEnd,
+		opacity: 0.35,
 	},
 	safe: {
 		flex: 1,
@@ -104,40 +124,39 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.xxl,
-		paddingBottom: 40,
+		paddingBottom: spacing.xxl,
 		alignItems: "center",
 	},
 	iconContainer: {
 		marginBottom: spacing.lg,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
-		color: "#FFFFFF",
+		fontSize: 28,
+		fontFamily: fonts.heading,
+		color: colors.white,
 		textAlign: "center",
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
 		fontSize: 14,
-		fontWeight: "500",
-		color: "rgba(255,255,255,0.8)",
+		fontFamily: fonts.body,
+		color: "rgba(255,255,255,0.85)",
 		textAlign: "center",
 		lineHeight: 22,
 		marginBottom: spacing.xl,
 	},
 	card: {
 		backgroundColor: colors.surface,
-		borderRadius: 12,
-		padding: spacing.md,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		width: "100%",
 		marginBottom: spacing.md,
 	},
 	cardTitle: {
 		fontSize: 16,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 		marginBottom: spacing.md,
 	},
@@ -151,13 +170,13 @@ const styles = StyleSheet.create({
 		gap: spacing.xs,
 	},
 	statValue: {
-		fontSize: 20,
-		fontWeight: "800",
-		color: colors.textPrimary,
+		fontSize: 22,
+		fontFamily: fonts.heading,
+		color: colors.brandTealDark,
 	},
 	statLabel: {
 		fontSize: 11,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		textAlign: "center",
 	},
@@ -168,56 +187,55 @@ const styles = StyleSheet.create({
 	},
 	nextStepCard: {
 		borderWidth: 1,
-		borderColor: "rgba(255,255,255,0.3)",
-		borderRadius: 12,
-		padding: spacing.md,
+		borderColor: "rgba(255,255,255,0.35)",
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		width: "100%",
 		marginBottom: spacing.xl,
 	},
 	nextStepLabel: {
-		fontSize: 11,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: "#FFFFFF",
-		textTransform: "uppercase",
+		fontSize: 12,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.white,
 		marginBottom: spacing.sm,
 	},
 	nextStepText: {
 		fontSize: 13,
-		fontWeight: "500",
-		color: "rgba(255,255,255,0.8)",
+		fontFamily: fonts.body,
+		color: "rgba(255,255,255,0.85)",
 		lineHeight: 20,
 	},
+	buttonGroup: {
+		width: "100%",
+		gap: spacing.sm,
+	},
 	primaryButton: {
-		backgroundColor: "#FFFFFF",
-		height: 52,
+		backgroundColor: colors.white,
+		height: 48,
+		borderRadius: radius.sm,
 		justifyContent: "center",
 		alignItems: "center",
 		width: "100%",
-		marginBottom: spacing.sm,
 	},
 	primaryButtonText: {
-		color: colors.textPrimary,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
+		color: colors.brandTealDark,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 	},
 	secondaryButton: {
 		backgroundColor: "transparent",
-		height: 52,
+		height: 48,
+		borderRadius: radius.sm,
 		justifyContent: "center",
 		alignItems: "center",
 		width: "100%",
-		borderWidth: 2,
-		borderColor: "#FFFFFF",
+		borderWidth: 1.5,
+		borderColor: colors.white,
 	},
 	secondaryButtonText: {
-		color: "#FFFFFF",
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
+		color: colors.white,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 	},
 	buttonPressed: {
 		opacity: 0.85,

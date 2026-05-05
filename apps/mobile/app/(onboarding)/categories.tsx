@@ -1,6 +1,5 @@
-import { colors, spacing } from "@/theme/tokens";
-import { onboardingDebtCategoriesSchema } from "@quita/shared";
 import { Feather } from "@expo/vector-icons";
+import { onboardingDebtCategoriesSchema } from "@quita/shared";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -13,13 +12,16 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSaveCategories } from "../../src/hooks/useOnboarding";
+import { Button } from "../../src/components";
 import { useDebtCategories } from "../../src/hooks/useDebts";
+import { useSaveCategories } from "../../src/hooks/useOnboarding";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { validateWithZod } from "../../src/utils/validation";
 
 export default function CategoriesScreen() {
 	const router = useRouter();
-	const { data: categories, isLoading: isLoadingCategories } = useDebtCategories();
+	const { data: categories, isLoading: isLoadingCategories } =
+		useDebtCategories();
 	const saveCategories = useSaveCategories();
 	const [selected, setSelected] = useState<Set<string>>(new Set());
 	const [error, setError] = useState<string | null>(null);
@@ -43,38 +45,39 @@ export default function CategoriesScreen() {
 		});
 
 		if (!result.success) {
-			const categoryError = result.errors.categoryIds ||
-				Object.entries(result.errors).find(([k]) => k.startsWith("categoryIds"))?.[1] ||
+			const categoryError =
+				result.errors.categoryIds ||
+				Object.entries(result.errors).find(([k]) =>
+					k.startsWith("categoryIds"),
+				)?.[1] ||
 				"Selecione pelo menos uma categoria";
 			setError(categoryError);
 			return;
 		}
 
-		saveCategories.mutate(
-			result.data,
-			{
-				onSuccess: () => {
-					const selectedCategories = Array.from(selected)
-						.map((id) => {
-							const cat = categories?.find((c) => c.id === id);
-							return cat ? { id: cat.id, name: cat.name, icon: cat.icon } : null;
-						})
-						.filter(Boolean);
-					router.push({
-						pathname: "/(onboarding)/debt-detail",
-						params: {
-							categories: JSON.stringify(selectedCategories),
-						},
-					});
-				},
-				onError: (err) => {
-					Alert.alert(
-						"Erro",
-						err.message || "Não foi possível salvar as categorias. Tente novamente.",
-					);
-				},
+		saveCategories.mutate(result.data, {
+			onSuccess: () => {
+				const selectedCategories = Array.from(selected)
+					.map((id) => {
+						const cat = categories?.find((c) => c.id === id);
+						return cat ? { id: cat.id, name: cat.name, icon: cat.icon } : null;
+					})
+					.filter(Boolean);
+				router.push({
+					pathname: "/(onboarding)/debt-detail",
+					params: {
+						categories: JSON.stringify(selectedCategories),
+					},
+				});
 			},
-		);
+			onError: (err) => {
+				Alert.alert(
+					"Erro",
+					err.message ||
+						"Não foi possível salvar as categorias. Tente novamente.",
+				);
+			},
+		});
 	}, [selected, saveCategories, router, categories]);
 
 	return (
@@ -92,17 +95,16 @@ export default function CategoriesScreen() {
 					Passo 3 de 4 · escolha tudo que faz sentido hoje
 				</Text>
 
-				{/* Back Button */}
 				<Pressable
 					style={styles.backButton}
 					onPress={() => router.back()}
 					hitSlop={12}
 				>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-					<Text style={styles.backText}>VOLTAR</Text>
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
-				<Text style={styles.stepLabel}>MAPEAMENTO DE DÍVIDAS</Text>
+				<Text style={styles.stepLabel}>Mapeamento de dívidas</Text>
 
 				<Text style={styles.title}>Pra quem você deve hoje?</Text>
 
@@ -115,16 +117,19 @@ export default function CategoriesScreen() {
 					<Text style={styles.infoTitle}>Por que separar por categoria?</Text>
 					<Text style={styles.infoText}>
 						Cada tipo de dívida tem uma estratégia diferente. Cartão cobra juros
-						altos, empréstimo pode ser renegociado, e dívida com pessoa conhecida
-						precisa de conversa. Separar ajuda a priorizar.
+						altos, empréstimo pode ser renegociado, e dívida com pessoa
+						conhecida precisa de conversa. Separar ajuda a priorizar.
 					</Text>
 				</View>
 
 				<View style={styles.grid}>
 					{isLoadingCategories ? (
-						<ActivityIndicator color={colors.textSecondary} style={{ marginVertical: spacing.lg }} />
+						<ActivityIndicator
+							color={colors.textSecondary}
+							style={{ marginVertical: spacing.lg }}
+						/>
 					) : !categories?.length ? (
-						<Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: "center", marginVertical: spacing.lg }}>
+						<Text style={styles.emptyText}>
 							Não foi possível carregar as categorias. Tente novamente.
 						</Text>
 					) : (
@@ -133,16 +138,15 @@ export default function CategoriesScreen() {
 							return (
 								<Pressable
 									key={id}
-									style={[
-										styles.chip,
-										isSelected && styles.chipSelected,
-									]}
+									style={[styles.chip, isSelected && styles.chipSelected]}
 									onPress={() => toggleCategory(id)}
 								>
 									<Feather
-										name={icon as React.ComponentProps<typeof Feather>["name"]}
+										name={
+											icon as React.ComponentProps<typeof Feather>["name"]
+										}
 										size={18}
-										color={isSelected ? colors.surface : colors.textPrimary}
+										color={isSelected ? colors.white : colors.textPrimary}
 									/>
 									<Text
 										style={[
@@ -159,11 +163,7 @@ export default function CategoriesScreen() {
 					)}
 				</View>
 
-				{error ? (
-					<Text style={{ fontSize: 12, color: colors.dangerRed, marginBottom: spacing.sm }}>
-						{error}
-					</Text>
-				) : null}
+				{error ? <Text style={styles.errorText}>{error}</Text> : null}
 
 				<Text style={styles.helperText}>
 					Não se preocupe se esqueceu alguma. Você pode adicionar depois.
@@ -171,21 +171,13 @@ export default function CategoriesScreen() {
 			</ScrollView>
 
 			<View style={styles.bottomContainer}>
-				<Pressable
-					style={({ pressed }) => [
-						styles.primaryButton,
-						saveCategories.isPending && styles.primaryButtonDisabled,
-						pressed && !saveCategories.isPending && styles.primaryButtonPressed,
-					]}
+				<Button
+					variant="primary"
+					label="Continuar"
 					onPress={handleContinue}
+					loading={saveCategories.isPending}
 					disabled={saveCategories.isPending}
-				>
-					{saveCategories.isPending ? (
-						<ActivityIndicator color={colors.surface} />
-					) : (
-						<Text style={styles.primaryButtonText}>CONTINUAR</Text>
-					)}
-				</Pressable>
+				/>
 			</View>
 		</SafeAreaView>
 	);
@@ -206,15 +198,16 @@ const styles = StyleSheet.create({
 	},
 	progressBarFill: {
 		height: 4,
-		backgroundColor: colors.successGreen,
+		backgroundColor: colors.accentGreen,
 	},
 	scrollContent: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.lg,
 		paddingBottom: spacing.xl,
 	},
 	stepIndicator: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginBottom: spacing.lg,
 	},
@@ -226,52 +219,51 @@ const styles = StyleSheet.create({
 		alignSelf: "flex-start",
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		color: colors.successGreen,
-		letterSpacing: 3,
-		textTransform: "uppercase",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 		marginBottom: spacing.sm,
 	},
 	title: {
-		fontSize: 28,
-		fontWeight: "800",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.md,
 	},
 	subtitle: {
-		fontSize: 15,
-		color: colors.textTertiary,
+		fontSize: 14,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 22,
 		marginBottom: spacing.lg,
 	},
 	infoBox: {
-		backgroundColor: "#F5F5F5",
-		borderRadius: 12,
+		backgroundColor: colors.infoBackground,
+		borderRadius: radius.card,
 		padding: spacing.md,
 		marginBottom: spacing.lg,
 		gap: spacing.xs,
 	},
 	infoTitle: {
 		fontSize: 13,
-		fontWeight: "700",
-		color: colors.textPrimary,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 	infoText: {
 		fontSize: 13,
-		color: colors.textTertiary,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 19,
 	},
 	grid: {
 		flexDirection: "row",
 		flexWrap: "wrap",
-		gap: 12,
+		gap: spacing.md,
 		marginBottom: spacing.lg,
 	},
 	chip: {
@@ -279,30 +271,44 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		height: 52,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		flexDirection: "row",
 		alignItems: "center",
-		paddingHorizontal: spacing.sm,
+		paddingHorizontal: spacing.md,
 		gap: spacing.sm,
 		overflow: "hidden",
 	},
 	chipSelected: {
-		backgroundColor: colors.textPrimary,
-		borderColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
 	},
 	chipLabel: {
 		fontSize: 13,
-		fontWeight: "600",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 		flexShrink: 1,
 	},
 	chipTextSelected: {
-		color: colors.surface,
+		color: colors.white,
+	},
+	emptyText: {
+		fontSize: 14,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
+		textAlign: "center",
+		marginVertical: spacing.lg,
+	},
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.body,
+		color: colors.dangerRed,
+		marginBottom: spacing.sm,
 	},
 	helperText: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		lineHeight: 18,
 	},
@@ -310,24 +316,5 @@ const styles = StyleSheet.create({
 		paddingHorizontal: spacing.lg,
 		paddingBottom: spacing.md,
 		paddingTop: spacing.sm,
-	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	primaryButtonDisabled: {
-		opacity: 0.4,
-	},
-	primaryButtonPressed: {
-		opacity: 0.85,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 	},
 });

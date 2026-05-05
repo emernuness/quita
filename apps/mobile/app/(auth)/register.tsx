@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { useAuthStore } from "../../src/stores/auth";
@@ -126,11 +126,11 @@ export default function RegisterScreen() {
 						hitSlop={12}
 					>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					{/* Step Label */}
-					<Text style={styles.stepLabel}>CRIE SUA CONTA</Text>
+					<Text style={styles.stepLabel}>Crie sua conta</Text>
 
 					{/* Title */}
 					<Text style={styles.title}>
@@ -200,7 +200,7 @@ export default function RegisterScreen() {
 					{/* Divider */}
 					<View style={styles.dividerContainer}>
 						<View style={styles.dividerLine} />
-						<Text style={styles.dividerText}>OU CADASTRE COM</Text>
+						<Text style={styles.dividerText}>Ou cadastre com</Text>
 						<View style={styles.dividerLine} />
 					</View>
 
@@ -213,7 +213,7 @@ export default function RegisterScreen() {
 						onPress={() => Alert.alert("Em breve", "Login com Google estará disponível em breve.")}
 					>
 						<Text style={styles.googleButtonText}>
-							G{"  "}CONTINUAR COM GOOGLE
+							G{"  "}Continuar com Google
 						</Text>
 					</Pressable>
 
@@ -222,7 +222,7 @@ export default function RegisterScreen() {
 
 					{/* Primary Button */}
 					<Button
-						label="CRIAR CONTA"
+						label="Criar conta"
 						loading={loading}
 						onPress={handleRegister}
 					/>
@@ -249,8 +249,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: 20,
-		paddingBottom: 40,
+		paddingHorizontal: spacing.xl,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
@@ -261,24 +262,20 @@ const styles = StyleSheet.create({
 		alignSelf: "flex-start",
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 12,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.successGreen,
-		textTransform: "uppercase",
 		marginTop: spacing.lg,
 		marginBottom: spacing.sm,
 	},
 	title: {
 		fontSize: 28,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.lg,
 	},
@@ -293,31 +290,30 @@ const styles = StyleSheet.create({
 	},
 	dividerLine: {
 		flex: 1,
-		height: 1,
+		height: 0.5,
 		backgroundColor: colors.border,
 	},
 	dividerText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 12,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
 		marginHorizontal: spacing.md,
 	},
 	googleButton: {
-		height: 52,
+		height: 48,
+		paddingHorizontal: 20,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		alignItems: "center",
 		justifyContent: "center",
 		marginBottom: spacing.md,
 	},
 	googleButtonText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 1,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	spacer: {
 		height: spacing.lg,
@@ -330,12 +326,12 @@ const styles = StyleSheet.create({
 	},
 	bottomText: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 	},
 	bottomLink: {
 		fontSize: 14,
-		fontWeight: "600",
-		color: colors.accentBlue,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 });

@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import React, { useEffect, useState } from "react";
 import {
 	Alert,
+	Image,
 	KeyboardAvoidingView,
 	Platform,
 	Pressable,
@@ -10,22 +14,35 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { loginSchema } from "@quita/shared";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { useAuthStore } from "../../src/stores/auth";
 import { validateWithZod } from "../../src/utils/validation";
-import { loginSchema } from "@quita/shared";
+
+const REMEMBER_EMAIL_KEY = "rememberedEmail";
+const REMEMBER_FLAG_KEY = "rememberMe";
 
 export default function LoginScreen() {
 	const router = useRouter();
 	const { login } = useAuthStore();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+
+	useEffect(() => {
+		(async () => {
+			const [savedEmail, savedFlag] = await Promise.all([
+				SecureStore.getItemAsync(REMEMBER_EMAIL_KEY),
+				SecureStore.getItemAsync(REMEMBER_FLAG_KEY),
+			]);
+			if (savedEmail) setEmail(savedEmail);
+			if (savedFlag !== null) setRememberMe(savedFlag === "1");
+		})();
+	}, []);
 
 	const clearError = (field: string) => {
 		setErrors((prev) => {
@@ -34,6 +51,41 @@ export default function LoginScreen() {
 			delete next[field];
 			return next;
 		});
+	};
+
+	const handleSubmit = async () => {
+		const normalizedEmail = email.trim().toLowerCase();
+		const result = validateWithZod(loginSchema, {
+			email: normalizedEmail,
+			password,
+		});
+		if (!result.success) {
+			setErrors(result.errors);
+			return;
+		}
+		setLoading(true);
+		try {
+			await login(normalizedEmail, password);
+			await SecureStore.setItemAsync(
+				REMEMBER_FLAG_KEY,
+				rememberMe ? "1" : "0",
+			);
+			if (rememberMe) {
+				await SecureStore.setItemAsync(REMEMBER_EMAIL_KEY, normalizedEmail);
+			} else {
+				await SecureStore.deleteItemAsync(REMEMBER_EMAIL_KEY);
+				await SecureStore.deleteItemAsync("accessToken");
+			}
+			router.replace("/");
+		} catch (error: unknown) {
+			const message =
+				error instanceof Error
+					? error.message
+					: "Verifique suas credenciais e tente novamente.";
+			Alert.alert("Erro ao entrar", message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -48,37 +100,28 @@ export default function LoginScreen() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Back Button */}
 					<Pressable
 						style={styles.backButton}
 						onPress={() => router.back()}
 						hitSlop={12}
 					>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
-					{/* Logo */}
 					<View style={styles.logoContainer}>
-						<Text style={styles.logo}>QUITA</Text>
+						<Image
+							source={require("../../assets/brand/logo-01.png")}
+							style={styles.logo}
+							resizeMode="contain"
+						/>
 						<Text style={styles.subtitle}>
 							Organize suas dívidas com segurança.
 						</Text>
 					</View>
 
-					{/* Info Box */}
-					<View style={styles.infoBox}>
-						<Text style={styles.infoTitle}>Continue seu diagnóstico</Text>
-						<Text style={styles.infoText}>
-							Entre com seu e-mail e senha para retomar o plano salvo. Se
-							precisar, você recupera o acesso em poucos passos.
-						</Text>
-					</View>
-
-					{/* Section Title */}
 					<Text style={styles.sectionTitle}>Entrar na sua conta</Text>
 
-					{/* Form */}
 					<View style={styles.form}>
 						<Input
 							label="E-MAIL"
@@ -105,67 +148,55 @@ export default function LoginScreen() {
 						/>
 					</View>
 
-					{/* Helper Text */}
-					<Text style={styles.helperText}>
-						Use um aparelho confiável e saia ao terminar.
-					</Text>
+					<View style={styles.rowBetween}>
+						<Pressable
+							style={styles.rememberRow}
+							onPress={() => setRememberMe((v) => !v)}
+							hitSlop={8}
+						>
+							<View
+								style={[
+									styles.checkbox,
+									rememberMe && styles.checkboxChecked,
+								]}
+							>
+								{rememberMe && (
+									<Feather name="check" size={14} color={colors.white} />
+								)}
+							</View>
+							<Text style={styles.rememberLabel}>Lembrar de mim</Text>
+						</Pressable>
 
-					{/* Forgot Password */}
-					<Pressable onPress={() => router.push("/(auth)/forgot-password")}>
-						<Text style={styles.forgotLink}>Esqueci minha senha</Text>
-					</Pressable>
+						<Pressable onPress={() => router.push("/(auth)/forgot-password")}>
+							<Text style={styles.forgotLink}>Esqueci minha senha</Text>
+						</Pressable>
+					</View>
 
-					{/* Divider */}
 					<View style={styles.dividerContainer}>
 						<View style={styles.dividerLine} />
-						<Text style={styles.dividerText}>OU ENTRE COM</Text>
+						<Text style={styles.dividerText}>Ou entre com</Text>
 						<View style={styles.dividerLine} />
 					</View>
 
-					{/* Google Button */}
 					<Pressable
 						style={({ pressed }) => [
 							styles.googleButton,
 							pressed && { opacity: 0.8 },
 						]}
-						onPress={() => Alert.alert("Em breve", "Login com Google estará disponível em breve.")}
+						onPress={() =>
+							Alert.alert(
+								"Em breve",
+								"Login com Google estará disponível em breve.",
+							)
+						}
 					>
-						<Text style={styles.googleButtonText}>G{"  "}ENTRAR COM GOOGLE</Text>
+						<Text style={styles.googleButtonText}>G{"  "}Entrar com Google</Text>
 					</Pressable>
 
-					{/* Spacer */}
 					<View style={styles.spacer} />
 
-					{/* Primary Button */}
-					<Button
-						label="ENTRAR"
-						loading={loading}
-						onPress={async () => {
-							const result = validateWithZod(loginSchema, {
-								email: email.trim().toLowerCase(),
-								password,
-							});
-							if (!result.success) {
-								setErrors(result.errors);
-								return;
-							}
-							setLoading(true);
-							try {
-								await login(email.trim().toLowerCase(), password);
-								router.replace("/");
-							} catch (error: unknown) {
-								const message =
-									error instanceof Error
-										? error.message
-										: "Verifique suas credenciais e tente novamente.";
-								Alert.alert("Erro ao entrar", message);
-							} finally {
-								setLoading(false);
-							}
-						}}
-					/>
+					<Button label="Entrar" loading={loading} onPress={handleSubmit} />
 
-					{/* Bottom Text */}
 					<View style={styles.bottomTextContainer}>
 						<Text style={styles.bottomText}>Não tem conta? </Text>
 						<Pressable onPress={() => router.push("/(auth)/register")}>
@@ -187,8 +218,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: 20,
-		paddingBottom: 40,
+		paddingHorizontal: spacing.xl,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
@@ -199,51 +231,29 @@ const styles = StyleSheet.create({
 		alignSelf: "flex-start",
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	logoContainer: {
 		alignItems: "center",
-		marginTop: spacing.lg,
-		marginBottom: spacing.lg,
+		marginTop: spacing.xl,
+		marginBottom: spacing.xl,
 	},
 	logo: {
-		fontSize: 36,
-		fontWeight: "800",
-		color: colors.textPrimary,
-		textAlign: "center",
+		width: 160,
+		height: 56,
 	},
 	subtitle: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
 		textAlign: "center",
-		marginTop: spacing.sm,
-	},
-	infoBox: {
-		backgroundColor: "#F5F5F5",
-		padding: 16,
-		borderRadius: 8,
-		marginBottom: spacing.lg,
-	},
-	infoTitle: {
-		fontSize: 14,
-		fontWeight: "700",
-		color: colors.textPrimary,
-		marginBottom: spacing.xs,
-	},
-	infoText: {
-		fontSize: 14,
-		fontWeight: "500",
-		color: colors.textTertiary,
-		lineHeight: 20,
+		marginTop: spacing.md,
 	},
 	sectionTitle: {
 		fontSize: 24,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.lg,
 	},
@@ -251,18 +261,40 @@ const styles = StyleSheet.create({
 		gap: spacing.md,
 		marginBottom: spacing.md,
 	},
-	helperText: {
-		fontSize: 12,
-		fontWeight: "500",
-		color: colors.textSecondary,
-		marginBottom: spacing.sm,
+	rowBetween: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: spacing.lg,
+	},
+	rememberRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: spacing.sm,
+	},
+	checkbox: {
+		width: 20,
+		height: 20,
+		borderRadius: radius.input,
+		borderWidth: 1.5,
+		borderColor: colors.border,
+		backgroundColor: colors.surface,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	checkboxChecked: {
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
+	},
+	rememberLabel: {
+		fontSize: 14,
+		fontFamily: fonts.bodyMedium,
+		color: colors.textPrimary,
 	},
 	forgotLink: {
 		fontSize: 14,
-		fontWeight: "600",
-		color: colors.accentBlue,
-		textDecorationLine: "underline",
-		marginBottom: spacing.lg,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 	dividerContainer: {
 		flexDirection: "row",
@@ -271,31 +303,30 @@ const styles = StyleSheet.create({
 	},
 	dividerLine: {
 		flex: 1,
-		height: 1,
+		height: 0.5,
 		backgroundColor: colors.border,
 	},
 	dividerText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 12,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
 		marginHorizontal: spacing.md,
 	},
 	googleButton: {
-		height: 52,
+		height: 48,
+		paddingHorizontal: 20,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		alignItems: "center",
 		justifyContent: "center",
 		marginBottom: spacing.md,
 	},
 	googleButtonText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 1,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	spacer: {
 		height: spacing.lg,
@@ -308,12 +339,12 @@ const styles = StyleSheet.create({
 	},
 	bottomText: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 	},
 	bottomLink: {
 		fontSize: 14,
-		fontWeight: "600",
-		color: colors.accentBlue,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 });

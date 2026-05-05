@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
-import { colors, spacing } from "../theme/tokens";
+import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface MetricCardProps {
 	label: string;
@@ -28,28 +28,25 @@ export function MetricCard({
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
-		paddingVertical: 20,
-		paddingHorizontal: spacing.md,
+		backgroundColor: colors.gray100,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 	},
 	label: {
 		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
-		textTransform: "uppercase",
-		color: colors.textSecondary,
+		fontFamily: fonts.bodyMedium,
+		color: colors.textTertiary,
 	},
 	value: {
-		fontSize: 44,
-		fontWeight: "800",
-		letterSpacing: -2,
+		fontSize: 22,
+		fontFamily: fonts.heading,
 		marginTop: spacing.xs,
 	},
 	subtitle: {
-		fontSize: 14,
-		fontWeight: "500",
+		fontSize: 13,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 		marginTop: spacing.xs,
 	},

@@ -1,14 +1,15 @@
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../src/components";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 
 const SUMMARY_ROWS = [
 	{ label: "Renda mensal", value: "R$ 2.800", color: colors.textPrimary },
 	{ label: "Despesas fixas", value: "R$ 2.950", color: colors.textPrimary },
-	{ label: "Sobra p/ dívidas", value: "- R$ 150", color: colors.dangerRed },
+	{ label: "Sobra para dívidas", value: "- R$ 150", color: colors.dangerRed },
 ];
 
 const AI_SUGGESTIONS = [
@@ -26,25 +27,17 @@ export default function CriticalModal() {
 				contentContainerStyle={styles.content}
 				showsVerticalScrollIndicator={false}
 			>
-				{/* Warning Icon */}
-				<View style={styles.iconContainer}>
-					<Feather
-						name="alert-triangle"
-						size={48}
-						color={colors.dangerRed}
-					/>
+				<View style={styles.iconCircle}>
+					<Feather name="alert-triangle" size={36} color={colors.dangerRed} />
 				</View>
 
-				{/* Title */}
 				<Text style={styles.title}>Situação crítica</Text>
 
-				{/* Subtitle */}
 				<Text style={styles.subtitle}>
 					Suas despesas são iguais ou maiores que sua renda. Não sobra dinheiro
 					para pagar dívidas.
 				</Text>
 
-				{/* Summary Table */}
 				<View style={styles.table}>
 					{SUMMARY_ROWS.map((row, index) => (
 						<View
@@ -62,11 +55,10 @@ export default function CriticalModal() {
 					))}
 				</View>
 
-				{/* AI Suggestion Card */}
 				<View style={styles.aiCard}>
 					<View style={styles.aiHeader}>
-						<Feather name="cpu" size={16} color={colors.accentBlue} />
-						<Text style={styles.aiTitle}>SUGESTÃO DA IA</Text>
+						<Feather name="cpu" size={16} color={colors.brandTealDark} />
+						<Text style={styles.aiTitle}>Sugestão da IA</Text>
 					</View>
 					<Text style={styles.aiText}>
 						Com base nos seus dados, criamos um plano para equilibrar suas
@@ -80,28 +72,18 @@ export default function CriticalModal() {
 					))}
 				</View>
 
-				{/* Buttons */}
-				<Pressable
-					style={({ pressed }) => [
-						styles.primaryButton,
-						pressed && styles.buttonPressed,
-					]}
-					onPress={() => router.back()}
-				>
-					<Text style={styles.primaryButtonText}>
-						REVISAR MINHAS DESPESAS
-					</Text>
-				</Pressable>
-
-				<Pressable
-					style={({ pressed }) => [
-						styles.secondaryButton,
-						pressed && styles.buttonPressed,
-					]}
-					onPress={() => router.back()}
-				>
-					<Text style={styles.secondaryButtonText}>FALAR COM SUPORTE</Text>
-				</Pressable>
+				<View style={styles.buttonGroup}>
+					<Button
+						variant="primary"
+						label="Revisar minhas despesas"
+						onPress={() => router.back()}
+					/>
+					<Button
+						variant="secondary"
+						label="Falar com suporte"
+						onPress={() => router.back()}
+					/>
+				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -110,31 +92,38 @@ export default function CriticalModal() {
 const styles = StyleSheet.create({
 	safe: {
 		flex: 1,
-		backgroundColor: colors.background,
+		backgroundColor: colors.surface,
+		borderTopLeftRadius: radius.lg,
+		borderTopRightRadius: radius.lg,
 	},
 	scroll: {
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.xxl,
-		paddingBottom: 40,
+		paddingBottom: spacing.xxl,
 		alignItems: "center",
 	},
-	iconContainer: {
+	iconCircle: {
+		width: 72,
+		height: 72,
+		borderRadius: radius.full,
+		backgroundColor: colors.dangerBackground,
+		alignItems: "center",
+		justifyContent: "center",
 		marginBottom: spacing.lg,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.dangerRed,
 		textAlign: "center",
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		textAlign: "center",
 		lineHeight: 22,
@@ -144,7 +133,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.surface,
 		borderWidth: 1,
 		borderColor: colors.border,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		width: "100%",
 		marginBottom: spacing.lg,
 		overflow: "hidden",
@@ -154,27 +143,27 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 		paddingHorizontal: spacing.md,
-		paddingVertical: 14,
+		paddingVertical: spacing.md + 2,
 	},
 	tableRowBorder: {
-		borderBottomWidth: 1,
+		borderBottomWidth: 0.5,
 		borderBottomColor: colors.border,
 	},
 	tableLabel: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 	},
 	tableValue: {
 		fontSize: 16,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
 	},
 	aiCard: {
-		backgroundColor: "#EBF2FF",
+		backgroundColor: colors.infoBackground,
 		borderWidth: 1,
-		borderColor: colors.accentBlue,
-		borderRadius: 12,
-		padding: spacing.md,
+		borderColor: colors.brandTealDark,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		width: "100%",
 		marginBottom: spacing.xl,
 	},
@@ -185,16 +174,14 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.sm,
 	},
 	aiTitle: {
-		fontSize: 11,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: colors.accentBlue,
-		textTransform: "uppercase",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 	aiText: {
 		fontSize: 13,
-		fontWeight: "500",
-		color: colors.textTertiary,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 20,
 		marginBottom: spacing.md,
 	},
@@ -206,49 +193,19 @@ const styles = StyleSheet.create({
 	aiBullet: {
 		width: 6,
 		height: 6,
-		borderRadius: 3,
+		borderRadius: radius.full,
 		backgroundColor: colors.warningOrange,
-		marginTop: 6,
+		marginTop: 8,
 	},
 	aiBulletText: {
 		flex: 1,
 		fontSize: 13,
-		fontWeight: "500",
-		color: colors.textTertiary,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 20,
 	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
+	buttonGroup: {
 		width: "100%",
-		marginBottom: spacing.sm,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
-	secondaryButton: {
-		backgroundColor: colors.surface,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-	},
-	secondaryButtonText: {
-		color: colors.textPrimary,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
-	buttonPressed: {
-		opacity: 0.85,
+		gap: spacing.sm,
 	},
 });

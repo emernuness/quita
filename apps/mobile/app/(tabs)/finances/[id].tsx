@@ -1,4 +1,4 @@
-import { colors, spacing } from "@/theme/tokens";
+import { badges, colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -21,7 +21,7 @@ const DEBTS_DATA: Record<
 > = {
 	"1": {
 		creditor: "Nubank",
-		category: "CARTÃO DE CRÉDITO",
+		category: "Cartão de crédito",
 		totalAmount: "R$ 3.200",
 		paidAmount: "R$ 0",
 		hasInterest: true,
@@ -33,7 +33,7 @@ const DEBTS_DATA: Record<
 	},
 	"2": {
 		creditor: "Banco Inter",
-		category: "EMPRÉSTIMO PESSOAL",
+		category: "Empréstimo pessoal",
 		totalAmount: "R$ 5.800",
 		paidAmount: "R$ 0",
 		hasInterest: true,
@@ -45,7 +45,7 @@ const DEBTS_DATA: Record<
 	},
 	"3": {
 		creditor: "Magazine Luiza",
-		category: "CARNÊ / CREDIÁRIO",
+		category: "Carnê / crediário",
 		totalAmount: "R$ 450",
 		paidAmount: "R$ 0",
 		hasInterest: false,
@@ -57,7 +57,7 @@ const DEBTS_DATA: Record<
 	},
 	"4": {
 		creditor: "Minha mãe",
-		category: "INFORMAL / PESSOAL",
+		category: "Informal / pessoal",
 		totalAmount: "R$ 1.000",
 		paidAmount: "R$ 0",
 		hasInterest: false,
@@ -69,7 +69,7 @@ const DEBTS_DATA: Record<
 	},
 	"5": {
 		creditor: "Casas Bahia",
-		category: "CARNÊ / CREDIÁRIO",
+		category: "Carnê / crediário",
 		totalAmount: "R$ 2.000",
 		paidAmount: "R$ 0",
 		hasInterest: true,
@@ -93,12 +93,20 @@ export default function DebtDetailScreen() {
 			label: "Juros/multa",
 			value: debt.hasInterest ? "Sim" : "Não",
 			valueColor: debt.hasInterest
-				? colors.accentBlue
+				? colors.brandTealDark
 				: colors.textPrimary,
 			isLink: debt.hasInterest,
 		},
 		{ label: "Vencimento", value: debt.dueDate },
 	];
+
+	const statusVariant: keyof typeof badges =
+		debt.status === "Atrasada"
+			? "danger"
+			: debt.status === "Em dia"
+				? "success"
+				: "neutral";
+	const statusBadge = badges[statusVariant];
 
 	return (
 		<SafeAreaView style={styles.safe} edges={["top"]}>
@@ -117,7 +125,7 @@ export default function DebtDetailScreen() {
 						size={18}
 						color={colors.textPrimary}
 					/>
-					<Text style={styles.backText}>VOLTAR</Text>
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Category */}
@@ -126,22 +134,20 @@ export default function DebtDetailScreen() {
 				{/* Creditor Name */}
 				<Text style={styles.creditor}>{debt.creditor}</Text>
 
-				{/* Status */}
-				<View style={styles.statusRow}>
+				{/* Status pill */}
+				<View
+					style={[
+						styles.statusPill,
+						{ backgroundColor: statusBadge.background },
+					]}
+				>
 					<View
 						style={[
 							styles.statusDot,
-							debt.status === "Atrasada" && { backgroundColor: colors.dangerRed },
-							debt.status === "Em dia" && { backgroundColor: colors.successGreen },
+							{ backgroundColor: statusBadge.dot },
 						]}
 					/>
-					<Text
-						style={[
-							styles.statusText,
-							debt.status === "Atrasada" && { color: colors.dangerRed },
-							debt.status === "Em dia" && { color: colors.successGreen },
-						]}
-					>
+					<Text style={[styles.statusText, { color: statusBadge.color }]}>
 						{debt.status === "Atrasada"
 							? `Atrasada há ${debt.monthsLate} meses`
 							: debt.status === "Em dia"
@@ -181,11 +187,11 @@ export default function DebtDetailScreen() {
 
 				{/* AI Tip Card */}
 				<View style={styles.tipCard}>
-					<Text style={styles.tipLabel}>💡 DICA DA IA</Text>
+					<Text style={styles.tipLabel}>Dica da IA</Text>
 					<Text style={styles.tipText}>{debt.tip}</Text>
 					{debt.tipLink ? (
 						<Text style={styles.tipLink}>
-							👉 {debt.tipLink}
+							{debt.tipLink}
 						</Text>
 					) : null}
 				</View>
@@ -196,13 +202,13 @@ export default function DebtDetailScreen() {
 					onPress={() => router.push("/(modals)/pay-debt")}
 				>
 					<Text style={styles.primaryButtonText}>
-						MARCAR COMO PAGO
+						Marcar como pago
 					</Text>
 				</Pressable>
 
 				<Pressable style={styles.secondaryButton}>
 					<Text style={styles.secondaryButtonText}>
-						EDITAR DÍVIDA
+						Editar dívida
 					</Text>
 				</Pressable>
 
@@ -221,127 +227,129 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.md,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 6,
+		gap: spacing.xs + 2,
 		marginBottom: spacing.lg,
 	},
 	backText: {
-		fontSize: 12,
-		fontWeight: "700",
-		letterSpacing: 2,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 13,
 		color: colors.textPrimary,
 	},
 	category: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
-		color: colors.successGreen,
-		textTransform: "uppercase",
-		marginBottom: 8,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 13,
+		color: colors.brandTealMid,
+		marginBottom: spacing.sm,
 	},
 	creditor: {
+		fontFamily: fonts.heading,
 		fontSize: 32,
-		fontWeight: "800",
 		color: colors.textPrimary,
-		marginBottom: 8,
+		marginBottom: spacing.md,
 	},
-	statusRow: {
+	statusPill: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
+		gap: spacing.xs + 2,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.xs + 2,
+		borderRadius: radius.pill,
+		alignSelf: "flex-start",
 		marginBottom: spacing.lg,
 	},
 	statusDot: {
-		width: 10,
-		height: 10,
-		borderRadius: 5,
-		backgroundColor: colors.textSecondary,
+		width: 6,
+		height: 6,
+		borderRadius: 3,
 	},
 	statusText: {
-		fontSize: 15,
-		fontWeight: "600",
-		color: colors.textSecondary,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 13,
 	},
 	infoSection: {
 		backgroundColor: colors.surface,
-		borderRadius: 12,
-		padding: 16,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		marginBottom: spacing.lg,
 	},
 	infoRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		paddingVertical: 12,
+		paddingVertical: spacing.md,
 	},
 	infoLabel: {
+		fontFamily: fonts.body,
 		fontSize: 14,
 		color: colors.textSecondary,
 	},
 	infoValue: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 15,
-		fontWeight: "700",
 		color: colors.textPrimary,
 	},
 	separator: {
-		height: 1,
+		height: 0.5,
 		backgroundColor: colors.border,
 	},
 	tipCard: {
-		backgroundColor: "#EEF4FF",
-		borderRadius: 12,
-		padding: 20,
+		backgroundColor: colors.infoBackground,
+		borderRadius: radius.card,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		padding: spacing.xl,
 		marginBottom: spacing.lg,
 	},
 	tipLabel: {
-		fontSize: 11,
-		fontWeight: "700",
-		letterSpacing: 3,
-		color: colors.accentBlue,
-		marginBottom: 10,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 13,
+		color: colors.brandTealDark,
+		marginBottom: spacing.sm + 2,
 	},
 	tipText: {
+		fontFamily: fonts.body,
 		fontSize: 14,
 		color: colors.textPrimary,
 		lineHeight: 22,
-		marginBottom: 12,
+		marginBottom: spacing.md,
 	},
 	tipLink: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 	},
 	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		borderRadius: 12,
-		paddingVertical: 16,
+		backgroundColor: colors.brandTealDark,
+		borderRadius: radius.sm,
+		paddingVertical: spacing.lg,
 		alignItems: "center",
-		marginBottom: 12,
+		marginBottom: spacing.md,
 	},
 	primaryButtonText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: "#FFFFFF",
+		color: colors.white,
 	},
 	secondaryButton: {
 		backgroundColor: colors.surface,
-		borderRadius: 12,
-		borderWidth: 1,
+		borderRadius: radius.sm,
+		borderWidth: 0.5,
 		borderColor: colors.border,
-		paddingVertical: 16,
+		paddingVertical: spacing.lg,
 		alignItems: "center",
 		marginBottom: spacing.md,
 	},
 	secondaryButtonText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 		color: colors.textPrimary,
 	},
 });

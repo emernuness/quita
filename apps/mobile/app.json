@@ -4,12 +4,14 @@
     "slug": "quita",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/brand/icon-01.png",
     "scheme": "quita",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "backgroundColor": "#FAFAFA"
+      "image": "./assets/brand/logo-01.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F6F4"
     },
     "ios": {
       "supportsTablet": false,
@@ -17,13 +19,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FAFAFA"
+        "foregroundImage": "./assets/brand/icon-01.png",
+        "backgroundColor": "#0A5248"
       },
       "package": "com.quita.app"
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
+      "expo-font",
       "@react-native-community/datetimepicker"
     ]
   }

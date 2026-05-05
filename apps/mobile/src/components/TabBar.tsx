@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, spacing } from "../theme/tokens";
+import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface TabItem {
 	name: string;
@@ -24,7 +24,11 @@ interface CustomTabBarProps {
 	};
 	navigation: {
 		navigate: (name: string) => void;
-		emit: (event: { type: string; target: string; canPreventDefault: boolean }) => {
+		emit: (event: {
+			type: string;
+			target: string;
+			canPreventDefault: boolean;
+		}) => {
 			defaultPrevented: boolean;
 		};
 	};
@@ -34,7 +38,12 @@ export function CustomTabBar({ state, navigation }: CustomTabBarProps) {
 	const insets = useSafeAreaInsets();
 
 	return (
-		<View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+		<View
+			style={[
+				styles.wrapper,
+				{ paddingBottom: Math.max(insets.bottom, spacing.sm) },
+			]}
+		>
 			<View style={styles.container}>
 				{TABS.map((tab, index) => {
 					const isActive = state.index === index;
@@ -60,7 +69,7 @@ export function CustomTabBar({ state, navigation }: CustomTabBarProps) {
 							<Feather
 								name={tab.icon}
 								size={18}
-								color={isActive ? colors.surface : colors.textSecondary}
+								color={isActive ? colors.brandTealDark : colors.textSecondary}
 							/>
 							<Text
 								style={[
@@ -84,36 +93,36 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		left: 0,
 		right: 0,
-		alignItems: "center",
+		backgroundColor: colors.surface,
+		borderTopWidth: 0.5,
+		borderTopColor: colors.border,
 		paddingHorizontal: spacing.md,
 	},
 	container: {
 		flexDirection: "row",
-		backgroundColor: colors.surface,
-		borderRadius: 9999,
-		borderWidth: 1,
-		borderColor: colors.border,
-		paddingVertical: spacing.xs,
-		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.sm,
 		gap: spacing.xs,
 	},
 	tab: {
-		flexDirection: "row",
+		flex: 1,
+		flexDirection: "column",
 		alignItems: "center",
-		gap: 6,
-		paddingVertical: 10,
-		paddingHorizontal: 14,
-		borderRadius: 9999,
+		justifyContent: "center",
+		gap: 4,
+		paddingVertical: spacing.sm,
+		paddingHorizontal: spacing.sm,
+		borderRadius: radius.sm,
 	},
 	tabActive: {
-		backgroundColor: colors.textPrimary,
+		backgroundColor: "transparent",
 	},
 	tabLabel: {
 		fontSize: 12,
-		fontWeight: "600",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
 	},
 	tabLabelActive: {
-		color: colors.surface,
+		color: colors.brandTealDark,
+		fontFamily: fonts.bodySemiBold,
 	},
 });

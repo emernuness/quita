@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "../theme/tokens";
+import { colors, fonts, spacing } from "../theme/tokens";
 
 interface ScreenHeaderProps {
 	title: string;
@@ -29,7 +29,7 @@ export function ScreenHeader({
 					]}
 				>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-					<Text style={styles.backLabel}>VOLTAR</Text>
+					<Text style={styles.backLabel}>Voltar</Text>
 				</Pressable>
 			) : null}
 
@@ -45,35 +45,35 @@ export function ScreenHeader({
 const styles = StyleSheet.create({
 	container: {
 		gap: spacing.sm,
+		backgroundColor: colors.surface,
+		borderBottomWidth: 0.5,
+		borderBottomColor: colors.border,
+		paddingBottom: spacing.md,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: spacing.sm,
-		marginBottom: spacing.sm,
+		gap: spacing.xs + 2,
+		marginBottom: spacing.xs,
 	},
 	backLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 13,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-		color: colors.successGreen,
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
+		color: colors.brandTealDark,
 	},
 	title: {
-		fontSize: 30,
-		fontWeight: "800",
+		fontSize: 24,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
-		letterSpacing: -1,
 	},
 	subtitle: {
 		fontSize: 14,
-		fontWeight: "500",
-		color: colors.textTertiary,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 	},
 });

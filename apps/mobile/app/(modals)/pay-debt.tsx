@@ -1,3 +1,6 @@
+import { Feather } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { createPaymentSchema } from "@quita/shared";
 import React, { useState } from "react";
 import {
 	ActivityIndicator,
@@ -12,13 +15,11 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { Button } from "../../src/components";
 import { useCreatePayment, useDebt } from "../../src/hooks/useDebts";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
-import { createPaymentSchema } from "@quita/shared";
 
 type PaymentOption = "full" | "partial" | "renegotiated";
 
@@ -48,8 +49,8 @@ export default function PayDebtModal() {
 	if (!debtId) {
 		return (
 			<SafeAreaView style={styles.safe}>
-				<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-					<Text style={{ color: colors.textSecondary }}>Dívida não encontrada.</Text>
+				<View style={styles.centered}>
+					<Text style={styles.notFoundText}>Dívida não encontrada.</Text>
 				</View>
 			</SafeAreaView>
 		);
@@ -58,8 +59,8 @@ export default function PayDebtModal() {
 	if (isLoadingDebt) {
 		return (
 			<SafeAreaView style={styles.safe}>
-				<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-					<ActivityIndicator size="large" color={colors.textPrimary} />
+				<View style={styles.centered}>
+					<ActivityIndicator size="large" color={colors.brandTealDark} />
 				</View>
 			</SafeAreaView>
 		);
@@ -128,41 +129,31 @@ export default function PayDebtModal() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Back Button */}
 					<Pressable
 						style={styles.backButton}
 						onPress={() => router.back()}
+						hitSlop={12}
 					>
-						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
-					{/* Title */}
 					<Text style={styles.title}>Marcar como pago</Text>
 
-					{/* Subtitle */}
 					<Text style={styles.subtitle}>
-						{debt?.creditor || "..."} — {debt ? formatAmount(debt.totalAmount) : "..."}
+						{debt?.creditor || "..."} —{" "}
+						{debt ? formatAmount(debt.totalAmount) : "..."}
 					</Text>
 
-					{/* Payment Options */}
 					<View style={styles.optionsContainer}>
 						{options.map((option) => {
 							const isSelected = selectedOption === option.key;
-							const isGreen = option.key === "full" && isSelected;
-							const isBlue = option.key === "renegotiated" && isSelected;
-
 							return (
 								<Pressable
 									key={option.key}
 									style={[
 										styles.optionItem,
-										isGreen && styles.optionItemGreen,
-										isBlue && styles.optionItemBlue,
-										isSelected &&
-											!isGreen &&
-											!isBlue &&
-											styles.optionItemSelected,
+										isSelected && styles.optionItemSelected,
 									]}
 									onPress={() => setSelectedOption(option.key)}
 								>
@@ -171,34 +162,13 @@ export default function PayDebtModal() {
 											style={[
 												styles.radio,
 												isSelected && styles.radioSelected,
-												isGreen && styles.radioWhite,
-												isBlue && styles.radioWhite,
 											]}
 										>
-											{isSelected && (
-												<View
-													style={[
-														styles.radioDot,
-														(isGreen || isBlue) && styles.radioDotColored,
-													]}
-												/>
-											)}
+											{isSelected && <View style={styles.radioDot} />}
 										</View>
 										<View style={styles.optionTextContainer}>
-											<Text
-												style={[
-													styles.optionTitle,
-													(isGreen || isBlue) && styles.optionTitleWhite,
-												]}
-											>
-												{option.title}
-											</Text>
-											<Text
-												style={[
-													styles.optionSubtitle,
-													(isGreen || isBlue) && styles.optionSubtitleWhite,
-												]}
-											>
+											<Text style={styles.optionTitle}>{option.title}</Text>
+											<Text style={styles.optionSubtitle}>
 												{option.subtitle}
 											</Text>
 										</View>
@@ -208,62 +178,71 @@ export default function PayDebtModal() {
 						})}
 					</View>
 
-					{/* Amount Input */}
-					{(selectedOption === "partial" || selectedOption === "renegotiated") && (
+					{(selectedOption === "partial" ||
+						selectedOption === "renegotiated") && (
 						<View style={styles.inputSection}>
-							<Text style={styles.label}>QUANTO VOCÊ PAGOU?</Text>
+							<Text style={styles.label}>Quanto você pagou?</Text>
 							<TextInput
 								style={styles.input}
 								value={rawAmountPaid ? maskCurrency(rawAmountPaid) : ""}
-								onChangeText={(t) => { setRawAmountPaid(t.replace(/\D/g, "")); clearError("amount"); }}
+								onChangeText={(t) => {
+									setRawAmountPaid(t.replace(/\D/g, ""));
+									clearError("amount");
+								}}
 								keyboardType="numeric"
 								placeholder="R$ 0,00"
-								placeholderTextColor={colors.textSecondary}
+								placeholderTextColor={colors.textTertiary}
 							/>
-							{errors.amount ? <Text style={{ fontSize: 12, color: colors.dangerRed, marginTop: 4 }}>{errors.amount}</Text> : null}
+							{errors.amount ? (
+								<Text style={styles.errorText}>{errors.amount}</Text>
+							) : null}
 							<Text style={styles.helperText}>
 								O saldo restante será atualizado e a IA recalcula seu plano.
 							</Text>
 						</View>
 					)}
 
-					{/* Primary Button */}
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							createPayment.isPending && styles.primaryButtonDisabled,
-							pressed && !createPayment.isPending && styles.primaryButtonPressed,
-						]}
+					<Button
+						variant="primary"
+						label="Confirmar pagamento"
+						loading={createPayment.isPending}
 						onPress={handleConfirmPayment}
-						disabled={createPayment.isPending}
-					>
-						{createPayment.isPending ? (
-							<ActivityIndicator color={colors.surface} />
-						) : (
-							<Text style={styles.primaryButtonText}>CONFIRMAR PAGAMENTO</Text>
-						)}
-					</Pressable>
+						style={{ marginBottom: spacing.lg }}
+					/>
 
-					{/* Info Box */}
 					<View style={styles.infoBox}>
 						<View style={styles.infoHeader}>
 							<Feather
 								name="alert-circle"
 								size={16}
-								color={colors.textTertiary}
+								color={colors.textSecondary}
 							/>
 							<Text style={styles.infoTitle}>Antes de confirmar</Text>
 						</View>
 						<Text style={styles.infoText}>
-							O pagamento ficará em revisão por 24h. Você pode
-							cancelar a marcação nesse período se precisar.
+							O pagamento ficará em revisão por 24h. Você pode cancelar a
+							marcação nesse período se precisar.
 						</Text>
 						<View style={styles.infoLinks}>
-							<Pressable onPress={() => Alert.alert("Em breve", "Essa funcionalidade estará disponível em breve.")}>
-								<Text style={styles.infoLink}>ver impacto no plano</Text>
+							<Pressable
+								onPress={() =>
+									Alert.alert(
+										"Em breve",
+										"Essa funcionalidade estará disponível em breve.",
+									)
+								}
+							>
+								<Text style={styles.infoLink}>Ver impacto no plano</Text>
 							</Pressable>
-							<Pressable onPress={() => Alert.alert("Em breve", "Essa funcionalidade estará disponível em breve.")}>
-								<Text style={styles.infoLink}>adicionar comprovante</Text>
+							<Pressable
+								onPress={() =>
+									Alert.alert(
+										"Em breve",
+										"Essa funcionalidade estará disponível em breve.",
+									)
+								}
+							>
+								<Text style={styles.infoLink}>Adicionar comprovante</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -276,14 +255,27 @@ export default function PayDebtModal() {
 const styles = StyleSheet.create({
 	safe: {
 		flex: 1,
-		backgroundColor: colors.background,
+		backgroundColor: colors.surface,
+		borderTopLeftRadius: radius.lg,
+		borderTopRightRadius: radius.lg,
 	},
 	flex: {
 		flex: 1,
 	},
+	centered: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	notFoundText: {
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
+		fontSize: 14,
+	},
 	scrollContent: {
-		padding: 20,
-		paddingBottom: 40,
+		paddingHorizontal: spacing.xl,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
@@ -292,22 +284,19 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.lg,
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginBottom: spacing.xl,
 	},
@@ -316,26 +305,19 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.xl,
 	},
 	optionItem: {
-		borderWidth: 2,
+		borderWidth: 1,
 		borderColor: colors.border,
-		borderLeftWidth: 5,
-		height: 68,
+		borderRadius: radius.card,
+		minHeight: 68,
 		justifyContent: "center",
 		paddingHorizontal: spacing.md,
-	},
-	optionItemGreen: {
-		backgroundColor: colors.successGreen,
-		borderColor: colors.successGreen,
-		borderLeftColor: colors.successGreen,
-	},
-	optionItemBlue: {
-		backgroundColor: colors.accentBlue,
-		borderColor: colors.accentBlue,
-		borderLeftColor: colors.accentBlue,
+		paddingVertical: spacing.md,
+		backgroundColor: colors.surface,
 	},
 	optionItemSelected: {
-		borderColor: colors.borderStrong,
-		borderLeftColor: colors.borderStrong,
+		borderColor: colors.brandTealDark,
+		borderWidth: 1.5,
+		backgroundColor: colors.infoBackground,
 	},
 	optionContent: {
 		flexDirection: "row",
@@ -345,95 +327,70 @@ const styles = StyleSheet.create({
 	radio: {
 		width: 20,
 		height: 20,
-		borderRadius: 10,
-		borderWidth: 2,
+		borderRadius: radius.full,
+		borderWidth: 1.5,
 		borderColor: colors.border,
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	radioSelected: {
-		borderColor: colors.borderStrong,
-	},
-	radioWhite: {
-		borderColor: "#FFFFFF",
+		borderColor: colors.brandTealDark,
 	},
 	radioDot: {
 		width: 10,
 		height: 10,
-		borderRadius: 5,
-		backgroundColor: colors.textPrimary,
-	},
-	radioDotColored: {
-		backgroundColor: "#FFFFFF",
+		borderRadius: radius.full,
+		backgroundColor: colors.brandTealDark,
 	},
 	optionTextContainer: {
 		flex: 1,
 	},
 	optionTitle: {
 		fontSize: 14,
-		fontWeight: "600",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-	},
-	optionTitleWhite: {
-		color: "#FFFFFF",
 	},
 	optionSubtitle: {
 		fontSize: 12,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
-	},
-	optionSubtitleWhite: {
-		color: "rgba(255,255,255,0.8)",
+		marginTop: 2,
 	},
 	inputSection: {
 		marginBottom: spacing.xl,
 		gap: spacing.sm,
 	},
 	label: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
-		textTransform: "uppercase",
 	},
 	input: {
-		height: 52,
+		height: 48,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: spacing.md,
-		fontSize: 18,
-		fontWeight: "500",
+		fontSize: 16,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
+	},
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
+		color: colors.dangerRed,
+		marginTop: 4,
 	},
 	helperText: {
 		fontSize: 12,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		lineHeight: 18,
 	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: spacing.lg,
-	},
-	primaryButtonPressed: {
-		opacity: 0.85,
-	},
-	primaryButtonDisabled: {
-		opacity: 0.6,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 1,
-		textTransform: "uppercase",
-	},
 	infoBox: {
-		backgroundColor: "#F5F5F5",
+		backgroundColor: colors.neutralBackground,
+		borderRadius: radius.card,
 		padding: spacing.md,
 		gap: spacing.sm,
 	},
@@ -444,24 +401,25 @@ const styles = StyleSheet.create({
 	},
 	infoTitle: {
 		fontSize: 14,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	infoText: {
 		fontSize: 13,
-		fontWeight: "500",
-		color: colors.textTertiary,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 20,
 	},
 	infoLinks: {
 		flexDirection: "row",
 		gap: spacing.lg,
 		marginTop: spacing.xs,
+		flexWrap: "wrap",
 	},
 	infoLink: {
 		fontSize: 13,
-		fontWeight: "600",
-		color: colors.accentBlue,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 		textDecorationLine: "underline",
 	},
 });

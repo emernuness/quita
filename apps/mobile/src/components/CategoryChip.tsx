@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "../theme/tokens";
+import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface CategoryChipProps {
 	icon: keyof typeof Feather.glyphMap;
@@ -22,15 +22,20 @@ export function CategoryChip({
 			style={({ pressed }) => [
 				styles.container,
 				selected ? styles.selected : styles.unselected,
-				pressed && onPress ? { opacity: 0.8 } : undefined,
+				pressed && onPress ? { opacity: 0.85 } : undefined,
 			]}
 		>
 			<Feather
 				name={icon}
-				size={18}
-				color={selected ? colors.surface : colors.textPrimary}
+				size={16}
+				color={selected ? colors.white : colors.textPrimary}
 			/>
-			<Text style={[styles.label, selected ? styles.labelSelected : styles.labelUnselected]}>
+			<Text
+				style={[
+					styles.label,
+					selected ? styles.labelSelected : styles.labelUnselected,
+				]}
+			>
 				{label}
 			</Text>
 		</Pressable>
@@ -41,24 +46,23 @@ const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		alignItems: "center",
-		height: 52,
-		paddingHorizontal: 14,
-		gap: spacing.sm,
+		height: 36,
+		paddingHorizontal: spacing.md + 2,
+		gap: spacing.sm - 2,
+		borderRadius: radius.pill,
 	},
 	selected: {
-		backgroundColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
 	},
 	unselected: {
-		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		backgroundColor: colors.gray100,
 	},
 	label: {
-		fontSize: 14,
-		fontWeight: "600",
+		fontSize: 13,
+		fontFamily: fonts.bodyMedium,
 	},
 	labelSelected: {
-		color: colors.surface,
+		color: colors.white,
 	},
 	labelUnselected: {
 		color: colors.textPrimary,

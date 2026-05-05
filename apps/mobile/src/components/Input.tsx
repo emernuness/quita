@@ -1,6 +1,12 @@
-import React from "react";
-import { StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from "react-native";
-import { colors, spacing } from "../theme/tokens";
+import React, { useState } from "react";
+import {
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+	type KeyboardTypeOptions,
+} from "react-native";
+import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface InputProps {
 	label: string;
@@ -23,18 +29,26 @@ export function Input({
 	error,
 	autoCapitalize,
 }: InputProps) {
+	const [focused, setFocused] = useState(false);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.label}>{label}</Text>
 			<TextInput
-				style={[styles.input, error ? styles.inputError : undefined]}
+				style={[
+					styles.input,
+					focused ? styles.inputFocused : undefined,
+					error ? styles.inputError : undefined,
+				]}
 				placeholder={placeholder}
-				placeholderTextColor={colors.textSecondary}
+				placeholderTextColor={colors.textTertiary}
 				value={value}
 				onChangeText={onChangeText}
 				secureTextEntry={secureTextEntry}
 				keyboardType={keyboardType}
 				autoCapitalize={autoCapitalize ?? "none"}
+				onFocus={() => setFocused(true)}
+				onBlur={() => setFocused(false)}
 			/>
 			{error ? <Text style={styles.error}>{error}</Text> : null}
 		</View>
@@ -47,28 +61,30 @@ const styles = StyleSheet.create({
 		gap: spacing.sm,
 	},
 	label: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
-		textTransform: "uppercase",
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
 	},
 	input: {
-		height: 52,
+		height: 48,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: spacing.md,
-		fontSize: 16,
-		fontWeight: "500",
+		fontSize: 14,
+		fontFamily: fonts.body,
 		color: colors.textPrimary,
+	},
+	inputFocused: {
+		borderColor: colors.brandTealDark,
 	},
 	inputError: {
 		borderColor: colors.dangerRed,
 	},
 	error: {
 		fontSize: 12,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.dangerRed,
 	},
 });

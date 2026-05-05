@@ -6,9 +6,9 @@ import {
 	Text,
 	type ViewStyle,
 } from "react-native";
-import { colors, spacing } from "../theme/tokens";
+import { colors, fonts, radius, spacing } from "../theme/tokens";
 
-type ButtonVariant = "primary" | "secondary";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
 
 interface ButtonProps {
 	variant?: ButtonVariant;
@@ -27,7 +27,30 @@ export function Button({
 	loading = false,
 	style,
 }: ButtonProps) {
-	const isPrimary = variant === "primary";
+	const containerStyle =
+		variant === "primary"
+			? styles.primary
+			: variant === "secondary"
+				? styles.secondary
+				: variant === "ghost"
+					? styles.ghost
+					: styles.destructive;
+
+	const labelStyle =
+		variant === "primary"
+			? styles.labelPrimary
+			: variant === "secondary"
+				? styles.labelSecondary
+				: variant === "ghost"
+					? styles.labelGhost
+					: styles.labelDestructive;
+
+	const indicatorColor =
+		variant === "primary" || variant === "destructive"
+			? colors.white
+			: variant === "ghost"
+				? colors.accentGreen
+				: colors.brandTealDark;
 
 	return (
 		<Pressable
@@ -35,26 +58,16 @@ export function Button({
 			disabled={disabled || loading}
 			style={({ pressed }) => [
 				styles.base,
-				isPrimary ? styles.primary : styles.secondary,
+				containerStyle,
 				(disabled || loading) && styles.disabled,
-				pressed && !disabled && !loading && { opacity: 0.8 },
+				pressed && !disabled && !loading && { opacity: 0.85 },
 				style,
 			]}
 		>
 			{loading ? (
-				<ActivityIndicator
-					color={isPrimary ? colors.surface : colors.textPrimary}
-					size="small"
-				/>
+				<ActivityIndicator color={indicatorColor} size="small" />
 			) : (
-				<Text
-					style={[
-						styles.label,
-						isPrimary ? styles.labelPrimary : styles.labelSecondary,
-					]}
-				>
-					{label}
-				</Text>
+				<Text style={[styles.label, labelStyle]}>{label}</Text>
 			)}
 		</Pressable>
 	);
@@ -62,32 +75,46 @@ export function Button({
 
 const styles = StyleSheet.create({
 	base: {
-		height: 52,
+		height: 48,
 		alignItems: "center",
 		justifyContent: "center",
 		width: "100%",
+		paddingHorizontal: spacing.lg + 4,
+		borderRadius: radius.sm,
 	},
 	primary: {
-		backgroundColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
 	},
 	secondary: {
-		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
+		backgroundColor: "transparent",
+		borderWidth: 1.5,
+		borderColor: colors.brandTealDark,
+	},
+	ghost: {
+		backgroundColor: "transparent",
+		borderWidth: 1.5,
+		borderColor: colors.accentGreen,
+	},
+	destructive: {
+		backgroundColor: colors.dangerRed,
 	},
 	disabled: {
 		opacity: 0.5,
 	},
 	label: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 1,
-		textTransform: "uppercase",
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 	},
 	labelPrimary: {
-		color: colors.surface,
+		color: colors.white,
 	},
 	labelSecondary: {
-		color: colors.textPrimary,
+		color: colors.brandTealDark,
+	},
+	labelGhost: {
+		color: colors.accentGreen,
+	},
+	labelDestructive: {
+		color: colors.white,
 	},
 });

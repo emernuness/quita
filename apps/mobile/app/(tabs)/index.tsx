@@ -1,4 +1,4 @@
-import { colors, spacing } from "@/theme/tokens";
+import { badges, colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
 import { formatBRL, formatBRLCompact } from "@quita/shared";
 import { useRouter } from "expo-router";
@@ -19,7 +19,7 @@ export default function HomeScreen() {
 		return (
 			<SafeAreaView style={styles.safe} edges={["top"]}>
 				<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-					<ActivityIndicator size="large" color={colors.accentBlue} />
+					<ActivityIndicator size="large" color={colors.brandTealDark} />
 				</View>
 			</SafeAreaView>
 		);
@@ -54,7 +54,7 @@ export default function HomeScreen() {
 
 				{/* Main Metric Card */}
 				<View style={styles.mainCard}>
-					<Text style={styles.label}>TOTAL DE DÍVIDAS</Text>
+					<Text style={styles.label}>Total de dívidas</Text>
 					<Text style={styles.mainAmount}>{formatBRL(data?.totalDebt ?? 0)}</Text>
 					<Text style={styles.mainSubtext}>
 						{overdueCount} contas em atraso · {data?.debtsCount ?? 0} no total
@@ -62,22 +62,22 @@ export default function HomeScreen() {
 				</View>
 
 				{/* Saldo do Mês */}
-				<Text style={styles.label}>SALDO DO MÊS</Text>
+				<Text style={styles.label}>Saldo do mês</Text>
 				<View style={styles.balanceRow}>
 					<View style={[styles.balanceCard, { flex: 1 }]}>
-						<Text style={styles.label}>ENTRA</Text>
+						<Text style={styles.label}>Entra</Text>
 						<Text style={styles.balanceAmountGreen}>{formatBRLCompact(data?.totalIncome ?? 0)}</Text>
 					</View>
-					<View style={{ width: 12 }} />
+					<View style={{ width: spacing.md }} />
 					<View style={[styles.balanceCard, { flex: 1 }]}>
-						<Text style={styles.label}>SAI EM FIXAS</Text>
+						<Text style={styles.label}>Sai em fixas</Text>
 						<Text style={styles.balanceAmountRed}>{formatBRLCompact(data?.totalExpenses ?? 0)}</Text>
 					</View>
 				</View>
 
-				{/* Green Highlight Card */}
+				{/* Highlight Card — Sobra pra dívidas */}
 				<View style={styles.greenCard}>
-					<Text style={styles.greenLabel}>SOBRA PRA DÍVIDAS</Text>
+					<Text style={styles.greenLabel}>Sobra pra dívidas</Text>
 					<Text style={styles.greenAmount}>{formatBRLCompact(data?.surplusForDebts ?? 0)}</Text>
 				</View>
 
@@ -86,9 +86,10 @@ export default function HomeScreen() {
 					<View style={styles.actionCard}>
 						<View style={styles.actionHeader}>
 							<Text style={styles.actionLabel}>
-								PRÓXIMA AÇÃO RECOMENDADA
+								Próxima ação recomendada
 							</Text>
 							<View style={styles.impactBadge}>
+								<View style={styles.impactBadgeDot} />
 								<Text style={styles.impactBadgeText}>
 									Prioridade
 								</Text>
@@ -106,7 +107,7 @@ export default function HomeScreen() {
 								onPress={() => router.push(`/(tabs)/debts/${data.debts[0].id}` as any)}
 							>
 								<Text style={styles.actionBtnPrimaryText}>
-									ver detalhes
+									Ver detalhes
 								</Text>
 							</Pressable>
 						</View>
@@ -115,7 +116,7 @@ export default function HomeScreen() {
 
 				{/* Progress Section */}
 				<View style={styles.progressSection}>
-					<Text style={styles.label}>PROGRESSO</Text>
+					<Text style={styles.label}>Progresso</Text>
 					<View style={styles.progressBarBg}>
 						<View style={[styles.progressBarFill, { width: `${data?.progressPercent ?? 0}%` }]} />
 					</View>
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.md,
 	},
 	header: {
@@ -149,51 +150,50 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.lg,
 	},
 	greeting: {
+		fontFamily: fonts.heading,
 		fontSize: 28,
-		fontWeight: "800",
 		color: colors.textPrimary,
 	},
 	subtitle: {
+		fontFamily: fonts.body,
 		fontSize: 15,
 		color: colors.textSecondary,
-		marginTop: 4,
+		marginTop: spacing.xs,
 	},
 	bellButton: {
 		width: 44,
 		height: 44,
-		borderRadius: 22,
+		borderRadius: radius.full,
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	mainCard: {
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 12,
-		padding: 20,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		borderRadius: radius.card,
+		padding: spacing.xl,
 		marginBottom: spacing.md,
 	},
 	label: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 13,
 		color: colors.textSecondary,
-		textTransform: "uppercase",
-		marginBottom: 8,
+		marginBottom: spacing.sm,
 	},
 	mainAmount: {
-		fontSize: 44,
-		fontWeight: "800",
-		color: colors.dangerRed,
-		letterSpacing: -2,
+		fontFamily: fonts.heading,
+		fontSize: 40,
+		color: colors.brandTealDark,
 	},
 	mainSubtext: {
+		fontFamily: fonts.body,
 		fontSize: 13,
 		color: colors.textTertiary,
-		marginTop: 8,
+		marginTop: spacing.sm,
 	},
 	balanceRow: {
 		flexDirection: "row",
@@ -201,124 +201,124 @@ const styles = StyleSheet.create({
 	},
 	balanceCard: {
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
-		borderRadius: 12,
-		padding: 16,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 	},
 	balanceAmountGreen: {
+		fontFamily: fonts.heading,
 		fontSize: 24,
-		fontWeight: "800",
 		color: colors.successGreen,
 	},
 	balanceAmountRed: {
+		fontFamily: fonts.heading,
 		fontSize: 24,
-		fontWeight: "800",
 		color: colors.dangerRed,
 	},
 	greenCard: {
-		backgroundColor: colors.successGreen,
-		borderRadius: 12,
-		padding: 20,
+		backgroundColor: colors.brandTealDark,
+		borderRadius: radius.card,
+		padding: spacing.xl,
 		marginBottom: spacing.md,
 	},
 	greenLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
-		color: "rgba(255,255,255,0.7)",
-		textTransform: "uppercase",
-		marginBottom: 8,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 13,
+		color: colors.white,
+		opacity: 0.8,
+		marginBottom: spacing.sm,
 	},
 	greenAmount: {
+		fontFamily: fonts.heading,
 		fontSize: 32,
-		fontWeight: "800",
-		color: "#FFFFFF",
+		color: colors.white,
 	},
 	actionCard: {
-		backgroundColor: colors.accentBlue,
-		borderRadius: 12,
-		padding: 20,
+		backgroundColor: colors.brandTealDark,
+		borderRadius: radius.card,
+		padding: spacing.xl,
 		marginBottom: spacing.md,
 	},
 	actionHeader: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
-		marginBottom: 12,
+		gap: spacing.sm,
+		marginBottom: spacing.md,
 	},
 	actionLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
-		color: "rgba(255,255,255,0.7)",
-		textTransform: "uppercase",
+		fontFamily: fonts.bodyMedium,
+		fontSize: 12,
+		color: colors.white,
+		opacity: 0.8,
 	},
 	impactBadge: {
-		backgroundColor: colors.warningOrange,
-		borderRadius: 100,
-		paddingHorizontal: 8,
+		backgroundColor: badges.warning.background,
+		borderRadius: radius.pill,
+		paddingHorizontal: spacing.sm,
 		paddingVertical: 3,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: spacing.xs,
+	},
+	impactBadgeDot: {
+		width: 6,
+		height: 6,
+		borderRadius: 3,
+		backgroundColor: badges.warning.dot,
 	},
 	impactBadgeText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 11,
-		fontWeight: "700",
-		color: "#FFFFFF",
+		color: badges.warning.color,
 	},
 	actionTitle: {
+		fontFamily: fonts.heading,
 		fontSize: 18,
-		fontWeight: "700",
-		color: "#FFFFFF",
-		marginBottom: 8,
+		color: colors.white,
+		marginBottom: spacing.sm,
 		lineHeight: 24,
 	},
 	actionDescription: {
+		fontFamily: fonts.body,
 		fontSize: 14,
-		color: "rgba(255,255,255,0.8)",
+		color: colors.white,
+		opacity: 0.85,
 		lineHeight: 20,
-		marginBottom: 16,
+		marginBottom: spacing.lg,
 	},
 	actionButtons: {
 		flexDirection: "row",
-		gap: 12,
+		gap: spacing.md,
 	},
 	actionBtnPrimary: {
-		backgroundColor: "#FFFFFF",
-		borderRadius: 100,
-		paddingHorizontal: 16,
-		paddingVertical: 10,
+		backgroundColor: colors.white,
+		borderRadius: radius.sm,
+		paddingHorizontal: spacing.lg,
+		paddingVertical: spacing.sm + 2,
 	},
 	actionBtnPrimaryText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 13,
-		fontWeight: "700",
-		color: colors.accentBlue,
-	},
-	actionBtnSecondary: {
-		backgroundColor: "rgba(255,255,255,0.2)",
-		borderRadius: 100,
-		paddingHorizontal: 16,
-		paddingVertical: 10,
-	},
-	actionBtnSecondaryText: {
-		fontSize: 13,
-		fontWeight: "600",
-		color: "#FFFFFF",
+		color: colors.brandTealDark,
 	},
 	progressSection: {
 		marginBottom: spacing.md,
 	},
 	progressBarBg: {
-		height: 14,
-		backgroundColor: colors.border,
-		borderRadius: 7,
-		marginBottom: 8,
+		height: 10,
+		backgroundColor: colors.gray200,
+		borderRadius: radius.pill,
+		marginBottom: spacing.sm,
+		overflow: "hidden",
 	},
 	progressBarFill: {
-		height: 14,
+		height: 10,
 		backgroundColor: colors.successGreen,
-		borderRadius: 4,
+		borderRadius: radius.pill,
 	},
 	progressText: {
+		fontFamily: fonts.body,
 		fontSize: 13,
 		color: colors.textTertiary,
 	},

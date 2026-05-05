@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import {
 	useNotificationPrefs,
 	useUpdateNotificationPrefs,
@@ -96,16 +96,9 @@ export default function NotificationsScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				{/* Back Button */}
-				<Pressable
-					onPress={() => router.back()}
-					style={styles.backButton}
-				>
-					<Feather
-						name="arrow-left"
-						size={20}
-						color={colors.textPrimary}
-					/>
-					<Text style={styles.backText}>VOLTAR</Text>
+				<Pressable onPress={() => router.back()} style={styles.backButton}>
+					<Feather name="arrow-left" size={20} color={colors.textPrimary} />
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Title */}
@@ -121,15 +114,13 @@ export default function NotificationsScreen() {
 					<View key={item.key} style={styles.toggleRow}>
 						<View style={{ flex: 1 }}>
 							<Text style={styles.toggleTitle}>{item.title}</Text>
-							<Text style={styles.toggleSubtitle}>
-								{item.subtitle}
-							</Text>
+							<Text style={styles.toggleSubtitle}>{item.subtitle}</Text>
 						</View>
 						<Switch
 							value={getSettingValue(item.key, item.defaultValue)}
 							onValueChange={() => toggleSetting(item.key)}
-							trackColor={{ false: "#E5E5E5", true: "#00AA55" }}
-							thumbColor="#FFFFFF"
+							trackColor={{ false: colors.border, true: colors.accentGreen }}
+							thumbColor={colors.white}
 							disabled={updatePrefs.isPending}
 						/>
 					</View>
@@ -138,8 +129,7 @@ export default function NotificationsScreen() {
 				{/* Info Card */}
 				<View style={styles.infoCard}>
 					<Text style={styles.infoCardText}>
-						💡 Notificações de vencimento são exclusivas para
-						assinantes Premium.
+						Notificações de vencimento são exclusivas para assinantes Premium.
 					</Text>
 				</View>
 			</ScrollView>
@@ -156,28 +146,29 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: spacing.lg,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.lg,
 		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
+		gap: spacing.sm,
 		marginBottom: spacing.md,
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 14,
 		color: colors.textPrimary,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
+		fontSize: 28,
 		color: colors.textPrimary,
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
+		fontFamily: fonts.body,
 		fontSize: 15,
 		color: colors.textSecondary,
 		lineHeight: 22,
@@ -188,28 +179,30 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingVertical: spacing.md,
-		borderBottomWidth: 1,
+		borderBottomWidth: 0.5,
 		borderBottomColor: colors.border,
 	},
 	toggleTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 16,
-		fontWeight: "700",
 		color: colors.textPrimary,
 		marginBottom: 2,
 	},
 	toggleSubtitle: {
+		fontFamily: fonts.body,
 		fontSize: 13,
 		color: colors.textSecondary,
 	},
 	infoCard: {
-		backgroundColor: "#EEF4FF",
+		backgroundColor: colors.infoBackground,
 		padding: spacing.md,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		marginTop: spacing.xl,
 	},
 	infoCardText: {
+		fontFamily: fonts.body,
 		fontSize: 13,
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 		lineHeight: 19,
 	},
 });

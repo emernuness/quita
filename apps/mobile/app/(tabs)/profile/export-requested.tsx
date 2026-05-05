@@ -1,9 +1,10 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { Button } from "@/components/Button";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 const INFO_ITEMS = [
 	"Formatos disponíveis: PDF e CSV.",
@@ -23,7 +24,7 @@ export default function ExportRequestedScreen() {
 			>
 				{/* Icon */}
 				<View style={styles.iconContainer}>
-					<Feather name="download" size={48} color={colors.accentBlue} />
+					<Feather name="download" size={48} color={colors.brandTealDark} />
 				</View>
 
 				{/* Title */}
@@ -46,27 +47,19 @@ export default function ExportRequestedScreen() {
 				</View>
 
 				{/* Buttons */}
-				<Pressable
-					style={({ pressed }) => [
-						styles.primaryButton,
-						pressed && styles.buttonPressed,
-					]}
+				<Button
+					variant="primary"
+					label="Entendi"
 					onPress={() => router.back()}
-				>
-					<Text style={styles.primaryButtonText}>ENTENDI</Text>
-				</Pressable>
+					style={styles.primaryButton}
+				/>
 
-				<Pressable
-					style={({ pressed }) => [
-						styles.secondaryButton,
-						pressed && styles.buttonPressed,
-					]}
+				<Button
+					variant="secondary"
+					label="Ver o que será exportado"
 					onPress={() => router.back()}
-				>
-					<Text style={styles.secondaryButtonText}>
-						VER O QUE SERÁ EXPORTADO
-					</Text>
-				</Pressable>
+					style={styles.secondaryButton}
+				/>
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -81,25 +74,24 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.xxl,
-		paddingBottom: 40,
+		paddingBottom: spacing.xxl,
 		alignItems: "center",
 	},
 	iconContainer: {
 		marginBottom: spacing.lg,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
-		color: colors.accentBlue,
+		fontFamily: fonts.heading,
+		fontSize: 28,
+		color: colors.brandTealDark,
 		textAlign: "center",
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
+		fontFamily: fonts.bodyMedium,
 		fontSize: 14,
-		fontWeight: "500",
 		color: colors.textSecondary,
 		textAlign: "center",
 		lineHeight: 22,
@@ -107,9 +99,9 @@ const styles = StyleSheet.create({
 	},
 	card: {
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		padding: spacing.md,
 		width: "100%",
 		marginBottom: spacing.xl,
@@ -123,48 +115,20 @@ const styles = StyleSheet.create({
 		width: 6,
 		height: 6,
 		borderRadius: 3,
-		backgroundColor: colors.accentBlue,
+		backgroundColor: colors.brandTealDark,
 		marginTop: 6,
 	},
 	bulletText: {
 		flex: 1,
+		fontFamily: fonts.bodyMedium,
 		fontSize: 13,
-		fontWeight: "500",
-		color: colors.textTertiary,
+		color: colors.textSecondary,
 		lineHeight: 20,
 	},
 	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
 		marginBottom: spacing.sm,
 	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
 	secondaryButton: {
-		backgroundColor: colors.surface,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-	},
-	secondaryButtonText: {
-		color: colors.textPrimary,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
-	buttonPressed: {
-		opacity: 0.85,
+		marginBottom: spacing.sm,
 	},
 });

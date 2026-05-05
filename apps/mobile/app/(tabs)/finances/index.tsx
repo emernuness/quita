@@ -1,4 +1,4 @@
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
 import { formatBRL } from "@quita/shared";
 import { useRouter } from "expo-router";
@@ -48,23 +48,23 @@ interface Section {
 
 // --- Constants ---
 const TYPE_FILTER_OPTIONS: { key: ItemTypeFilter; label: string }[] = [
-	{ key: "all", label: "TUDO" },
-	{ key: "debts", label: "DIVIDAS" },
-	{ key: "incomes", label: "RECEITAS" },
-	{ key: "expenses", label: "DESPESAS" },
+	{ key: "all", label: "Tudo" },
+	{ key: "debts", label: "Dívidas" },
+	{ key: "incomes", label: "Receitas" },
+	{ key: "expenses", label: "Despesas" },
 ];
 
 const STATUS_FILTER_OPTIONS = [
-	{ key: "overdue", label: "ATRASADA" },
-	{ key: "on_time", label: "EM DIA" },
-	{ key: "renegotiated", label: "NEGOCIANDO" },
-	{ key: "paid", label: "QUITADA" },
+	{ key: "overdue", label: "Atrasada" },
+	{ key: "on_time", label: "Em dia" },
+	{ key: "renegotiated", label: "Negociando" },
+	{ key: "paid", label: "Quitada" },
 ];
 
 const SORT_OPTIONS: { key: SortOrder; label: string }[] = [
-	{ key: "dueDate", label: "VENCIMENTO" },
-	{ key: "amount", label: "VALOR" },
-	{ key: "name", label: "NOME" },
+	{ key: "dueDate", label: "Vencimento" },
+	{ key: "amount", label: "Valor" },
+	{ key: "name", label: "Nome" },
 ];
 
 const STATUS_LABELS: Record<string, string> = {
@@ -72,15 +72,6 @@ const STATUS_LABELS: Record<string, string> = {
 	overdue: "Atrasada",
 	renegotiated: "Negociando",
 	paid: "Quitada",
-};
-
-const EXPENSE_CATEGORY_LABELS: Record<string, string> = {
-	housing: "Moradia",
-	bills: "Contas",
-	food: "Alimentacao",
-	transport: "Transporte",
-	telecom: "Internet",
-	other: "Outros",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -219,7 +210,7 @@ export default function FinancesScreen() {
 					type: "debt",
 					name: debt.creditor,
 					amount: remaining,
-					detail: [categoryName, duePart].filter(Boolean).join(" \u00B7 "),
+					detail: [categoryName, duePart].filter(Boolean).join(" · "),
 					frequency: STATUS_LABELS[debt.status] ?? debt.status,
 					dueDate: debt.dueDate,
 					rawId: debt.id,
@@ -228,7 +219,7 @@ export default function FinancesScreen() {
 			if (items.length > 0) {
 				result.push({
 					key: "debts",
-					title: "Dividas",
+					title: "Dívidas",
 					total: items.reduce((s, i) => s + i.amount, 0),
 					color: colors.dangerRed,
 					items: sortItems(items),
@@ -250,7 +241,7 @@ export default function FinancesScreen() {
 					type: "income",
 					name: income.name,
 					amount: income.amount,
-					detail: [duePart, typeLabel].filter(Boolean).join(" \u00B7 "),
+					detail: [duePart, typeLabel].filter(Boolean).join(" · "),
 					frequency: FREQUENCY_LABELS[income.type] ?? income.type,
 					dueDate: income.dueDate,
 					rawId: income.id,
@@ -281,7 +272,7 @@ export default function FinancesScreen() {
 					type: "expense",
 					name: expense.name,
 					amount: expense.amount,
-					detail: [duePart, typeLabel].filter(Boolean).join(" \u00B7 "),
+					detail: [duePart, typeLabel].filter(Boolean).join(" · "),
 					frequency: FREQUENCY_LABELS[expense.type] ?? expense.type,
 					dueDate: expense.dueDate,
 					rawId: expense.id,
@@ -306,36 +297,36 @@ export default function FinancesScreen() {
 	return (
 		<SafeAreaView style={styles.safe} edges={["top"]}>
 			<ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-				{/* ═══ Header ═══ */}
+				{/* Header */}
 				<View style={styles.headerRow}>
 					<View style={styles.headerLeft}>
-						<Text style={styles.title}>Minhas{"\n"}Financas</Text>
-						<Text style={styles.subtitle}>Veja entradas e saidas de qualquer mes</Text>
+						<Text style={styles.title}>Minhas{"\n"}finanças</Text>
+						<Text style={styles.subtitle}>Veja entradas e saídas de qualquer mês</Text>
 					</View>
 					<View style={styles.headerButtons}>
 						<Pressable style={styles.filterHeaderButton} onPress={toggleFilters}>
-							<Feather name="sliders" size={12} color={colors.textSecondary} />
-							<Text style={styles.filterHeaderButtonText}>FILTROS</Text>
+							<Feather name="sliders" size={14} color={colors.textSecondary} />
+							<Text style={styles.filterHeaderButtonText}>Filtros</Text>
 						</Pressable>
 						<Pressable
 							style={styles.headerButton}
 							onPress={() => router.push("/(modals)/new-item-picker")}
 						>
-							<Text style={styles.headerButtonText}>+ NOVA</Text>
+							<Text style={styles.headerButtonText}>+ Nova</Text>
 						</Pressable>
 					</View>
 				</View>
 
-				{/* ═══ Summary Boxes ═══ */}
+				{/* Summary Boxes */}
 				<View style={styles.summaryRow}>
 					<View style={[styles.summaryBox, { borderLeftColor: colors.successGreen }]}>
-						<Text style={styles.summaryLabel}>ENTROU</Text>
+						<Text style={styles.summaryLabel}>Entrou</Text>
 						<Text style={[styles.summaryValue, { color: colors.successGreen }]} numberOfLines={1}>
 							{formatCompact(summary?.totalIncome ?? 0)}
 						</Text>
 					</View>
 					<View style={[styles.summaryBox, { borderLeftColor: colors.dangerRed }]}>
-						<Text style={styles.summaryLabel}>SAIU</Text>
+						<Text style={styles.summaryLabel}>Saiu</Text>
 						<Text style={[styles.summaryValue, { color: colors.dangerRed }]} numberOfLines={1}>
 							{formatCompact(summary?.totalExpenses ?? 0)}
 						</Text>
@@ -349,7 +340,7 @@ export default function FinancesScreen() {
 							},
 						]}
 					>
-						<Text style={styles.summaryLabel}>SOBROU</Text>
+						<Text style={styles.summaryLabel}>Sobrou</Text>
 						<Text
 							style={[
 								styles.summaryValue,
@@ -362,23 +353,23 @@ export default function FinancesScreen() {
 					</View>
 				</View>
 
-				{/* ═══ Sobra pra Dividas ═══ */}
+				{/* Sobra pra Dividas */}
 				<View style={styles.debtSurplusCard}>
 					<View style={styles.debtSurplusLeft}>
-						<Text style={styles.debtSurplusLabel}>SOBRA PRA DIVIDAS</Text>
+						<Text style={styles.debtSurplusLabel}>Sobra pra dívidas</Text>
 						<Text style={styles.debtSurplusValue}>
-							{formatCompact(summary?.available ?? 0)}/mes
+							{formatCompact(summary?.available ?? 0)}/mês
 						</Text>
 					</View>
-					<Feather name="trending-up" size={24} color={colors.successGreen} />
+					<Feather name="trending-up" size={24} color={colors.accentGreenLight} />
 				</View>
 
-				{/* ═══ Expandable Filters ═══ */}
+				{/* Expandable Filters */}
 				{showFilters && (
 					<View style={styles.filtersContainer}>
 						{/* Type */}
 						<View style={styles.filterSection}>
-							<Text style={styles.filterLabel}>TIPO</Text>
+							<Text style={styles.filterLabel}>Tipo</Text>
 							<View style={styles.filterPillRow}>
 								{TYPE_FILTER_OPTIONS.map((opt) => (
 									<Pressable
@@ -402,7 +393,7 @@ export default function FinancesScreen() {
 						{/* Status (debt-only) */}
 						{(typeFilter === "all" || typeFilter === "debts") && (
 							<View style={styles.filterSection}>
-								<Text style={styles.filterLabel}>SITUACAO</Text>
+								<Text style={styles.filterLabel}>Situação</Text>
 								<View style={styles.filterPillRow}>
 									{STATUS_FILTER_OPTIONS.map((opt) => (
 										<Pressable
@@ -426,7 +417,7 @@ export default function FinancesScreen() {
 
 						{/* Sort */}
 						<View style={styles.filterSection}>
-							<Text style={styles.filterLabel}>ORDENAR POR</Text>
+							<Text style={styles.filterLabel}>Ordenar por</Text>
 							<View style={styles.filterPillRow}>
 								{SORT_OPTIONS.map((opt) => (
 									<Pressable
@@ -451,7 +442,7 @@ export default function FinancesScreen() {
 					</View>
 				)}
 
-				{/* ═══ Month Navigator ═══ */}
+				{/* Month Navigator */}
 				<View style={styles.monthNav}>
 					<Pressable style={styles.monthArrow} onPress={goToPrevMonth} hitSlop={8}>
 						<Feather name="chevron-left" size={20} color={colors.textPrimary} />
@@ -462,10 +453,10 @@ export default function FinancesScreen() {
 					</Pressable>
 				</View>
 
-				{/* ═══ Sections ═══ */}
+				{/* Sections */}
 				{isLoading ? (
 					<View style={styles.emptyContainer}>
-						<ActivityIndicator size="large" color={colors.accentBlue} />
+						<ActivityIndicator size="large" color={colors.brandTealDark} />
 					</View>
 				) : totalItems === 0 ? (
 					<View style={styles.emptyContainer}>
@@ -521,7 +512,7 @@ export default function FinancesScreen() {
 const styles = StyleSheet.create({
 	safe: { flex: 1, backgroundColor: colors.background },
 	scroll: { flex: 1 },
-	content: { paddingHorizontal: spacing.lg, paddingTop: spacing.md },
+	content: { paddingHorizontal: spacing.xl, paddingTop: spacing.md },
 
 	// Header
 	headerRow: {
@@ -531,122 +522,120 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.lg,
 	},
 	headerLeft: { flex: 1 },
-	title: { fontSize: 28, fontWeight: "800", color: colors.textPrimary, lineHeight: 34 },
-	subtitle: { fontSize: 14, color: colors.textSecondary, marginTop: spacing.xs },
+	title: { fontFamily: fonts.heading, fontSize: 28, color: colors.textPrimary, lineHeight: 34 },
+	subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.textSecondary, marginTop: spacing.xs },
 	headerButtons: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs },
 	filterHeaderButton: {
-		borderRadius: 100,
-		paddingHorizontal: 14,
-		paddingVertical: 8,
+		borderRadius: radius.pill,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 6,
-		borderWidth: 1,
+		gap: spacing.xs + 2,
+		borderWidth: 0.5,
 		borderColor: colors.border,
 		backgroundColor: colors.surface,
 	},
-	filterHeaderButtonText: { fontSize: 11, fontWeight: "700", letterSpacing: 2, color: colors.textSecondary },
+	filterHeaderButtonText: { fontFamily: fonts.bodySemiBold, fontSize: 12, color: colors.textSecondary },
 	headerButton: {
-		backgroundColor: colors.textPrimary,
-		borderRadius: 100,
-		paddingHorizontal: 14,
-		paddingVertical: 8,
+		backgroundColor: colors.brandTealDark,
+		borderRadius: radius.pill,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 6,
+		gap: spacing.xs + 2,
 	},
-	headerButtonText: { fontSize: 11, fontWeight: "700", letterSpacing: 2, color: "#FFFFFF" },
+	headerButtonText: { fontFamily: fonts.bodySemiBold, fontSize: 12, color: colors.white },
 
 	// Month Navigator
 	monthNav: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingVertical: 4,
+		paddingVertical: spacing.xs,
 		marginBottom: spacing.sm,
 	},
 	monthArrow: { width: 28, height: 28, alignItems: "center", justifyContent: "center" },
-	monthText: { fontSize: 14, fontWeight: "700", color: colors.textPrimary },
+	monthText: { fontFamily: fonts.bodySemiBold, fontSize: 14, color: colors.textPrimary },
 
-	// Summary Boxes (left colored border + thin gray border)
-	summaryRow: { flexDirection: "row", gap: 8, marginBottom: spacing.sm },
+	// Summary Boxes
+	summaryRow: { flexDirection: "row", gap: spacing.sm, marginBottom: spacing.sm },
 	summaryBox: {
 		flex: 1,
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
 		borderLeftWidth: 4,
-		paddingHorizontal: 12,
-		paddingVertical: 12,
+		borderRadius: radius.card,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.md,
 	},
 	summaryLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 12,
 		color: colors.textSecondary,
-		textTransform: "uppercase",
-		marginBottom: 4,
+		marginBottom: spacing.xs,
 	},
-	summaryValue: { fontSize: 20, fontWeight: "800" },
+	summaryValue: { fontFamily: fonts.heading, fontSize: 20 },
 
-	// Sobra pra Dividas (dark card)
+	// Sobra pra Dividas
 	debtSurplusCard: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		backgroundColor: colors.textPrimary,
-		paddingHorizontal: spacing.md,
-		paddingVertical: 14,
+		backgroundColor: colors.brandTealDark,
+		borderRadius: radius.card,
+		paddingHorizontal: spacing.lg,
+		paddingVertical: spacing.md + 2,
 		marginBottom: spacing.md,
 	},
 	debtSurplusLeft: { flex: 1 },
 	debtSurplusLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		color: colors.textSecondary,
-		textTransform: "uppercase",
-		marginBottom: 4,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 12,
+		color: colors.white,
+		opacity: 0.8,
+		marginBottom: spacing.xs,
 	},
-	debtSurplusValue: { fontSize: 22, fontWeight: "800", color: "#FFFFFF" },
+	debtSurplusValue: { fontFamily: fonts.heading, fontSize: 22, color: colors.white },
 
 	// Filter actions
 	clearFiltersButton: { alignSelf: "flex-end" },
-	clearFiltersText: { fontSize: 12, fontWeight: "500", color: colors.accentBlue },
+	clearFiltersText: { fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.brandTealDark },
 
 	// Expandable Filters
 	filtersContainer: {
 		backgroundColor: colors.surface,
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderColor: colors.border,
+		borderRadius: radius.card,
 		padding: spacing.md,
 		gap: spacing.md,
 		marginBottom: spacing.md,
 	},
 	filterSection: { gap: spacing.xs },
 	filterLabel: {
-		fontSize: 10,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontFamily: fonts.bodyMedium,
+		fontSize: 12,
 		color: colors.textSecondary,
-		textTransform: "uppercase",
 	},
 	filterPillRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
 	filterPill: {
-		paddingHorizontal: 12,
-		paddingVertical: 6,
-		borderRadius: 100,
-		borderWidth: 1,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.xs + 2,
+		borderRadius: radius.pill,
+		borderWidth: 0.5,
 		borderColor: colors.border,
 		backgroundColor: colors.background,
 	},
-	filterPillSelected: { backgroundColor: colors.textPrimary, borderColor: colors.textPrimary },
-	filterPillText: { fontSize: 11, fontWeight: "600", color: colors.textSecondary },
-	filterPillTextSelected: { color: "#FFFFFF" },
+	filterPillSelected: { backgroundColor: colors.brandTealDark, borderColor: colors.brandTealDark },
+	filterPillText: { fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.textSecondary },
+	filterPillTextSelected: { color: colors.white, fontFamily: fonts.bodySemiBold },
 
 	// Sections
 	emptyContainer: { paddingVertical: spacing.xl, alignItems: "center" },
-	emptyText: { fontSize: 14, color: colors.textSecondary },
+	emptyText: { fontFamily: fonts.body, fontSize: 14, color: colors.textSecondary },
 
 	sectionContainer: { marginBottom: spacing.lg },
 	sectionHeader: {
@@ -654,24 +643,24 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 		paddingBottom: spacing.sm,
-		borderBottomWidth: 2,
+		borderBottomWidth: 1,
 	},
-	sectionTitle: { fontSize: 20, fontWeight: "800", fontStyle: "italic", color: colors.textPrimary },
-	sectionTotal: { fontSize: 16, fontWeight: "700" },
+	sectionTitle: { fontFamily: fonts.heading, fontSize: 20, color: colors.textPrimary },
+	sectionTotal: { fontFamily: fonts.bodySemiBold, fontSize: 16 },
 
-	// Item rows (prototype: 53px, separator line at top)
+	// Item rows
 	itemRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		paddingVertical: 12,
-		borderTopWidth: 1,
+		paddingVertical: spacing.md,
+		borderTopWidth: 0.5,
 		borderTopColor: colors.border,
 	},
 	itemLeft: { flex: 1, marginRight: spacing.sm },
-	itemName: { fontSize: 15, fontWeight: "600", color: colors.textPrimary, marginBottom: 2 },
-	itemDetail: { fontSize: 12, color: colors.textSecondary },
+	itemName: { fontFamily: fonts.bodySemiBold, fontSize: 15, color: colors.textPrimary, marginBottom: 2 },
+	itemDetail: { fontFamily: fonts.body, fontSize: 12, color: colors.textSecondary },
 	itemRight: { alignItems: "flex-end" },
-	itemAmount: { fontSize: 15, fontWeight: "700", marginBottom: 2 },
-	itemFrequency: { fontSize: 12, color: colors.textSecondary },
+	itemAmount: { fontFamily: fonts.bodySemiBold, fontSize: 15, marginBottom: 2 },
+	itemFrequency: { fontFamily: fonts.body, fontSize: 12, color: colors.textSecondary },
 });

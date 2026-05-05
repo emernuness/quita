@@ -21,7 +21,7 @@ export class AuthService {
 		});
 
 		if (existing) {
-			throw new ConflictException("Email already registered");
+			throw new ConflictException("Esse e-mail já está cadastrado.");
 		}
 
 		const passwordHash = await bcrypt.hash(data.password, 10);
@@ -54,7 +54,7 @@ export class AuthService {
 		});
 
 		if (!user) {
-			throw new UnauthorizedException("Invalid credentials");
+			throw new UnauthorizedException("E-mail ou senha incorretos.");
 		}
 
 		const passwordValid = await bcrypt.compare(
@@ -63,7 +63,7 @@ export class AuthService {
 		);
 
 		if (!passwordValid) {
-			throw new UnauthorizedException("Invalid credentials");
+			throw new UnauthorizedException("E-mail ou senha incorretos.");
 		}
 
 		const accessToken = this.generateToken(user.id, user.email);
@@ -79,7 +79,7 @@ export class AuthService {
 		});
 
 		if (!user) {
-			throw new UnauthorizedException("User not found");
+			throw new UnauthorizedException("Usuário não encontrado.");
 		}
 
 		const accessToken = this.generateToken(user.id, user.email);
@@ -95,7 +95,7 @@ export class AuthService {
 		});
 
 		if (!user) {
-			throw new UnauthorizedException("User not found");
+			throw new UnauthorizedException("Usuário não encontrado.");
 		}
 
 		const { passwordHash: _, ...userWithoutPassword } = user;

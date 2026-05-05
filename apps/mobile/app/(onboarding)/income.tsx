@@ -1,13 +1,10 @@
-import { colors, spacing } from "@/theme/tokens";
 import { onboardingIncomeSchema } from "@quita/shared";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-	ActivityIndicator,
 	Alert,
 	KeyboardAvoidingView,
 	Platform,
-	Pressable,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -15,14 +12,16 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../src/components";
 import { useSaveIncome } from "../../src/hooks/useOnboarding";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
 const FIELDS = [
-	{ key: "salary", label: "SALÁRIO / RENDA FIXA" },
-	{ key: "extra", label: "BICOS / RENDA EXTRA" },
-	{ key: "help", label: "AJUDA DE ALGUÉM?" },
+	{ key: "salary", label: "Salário / renda fixa" },
+	{ key: "extra", label: "Bicos / renda extra" },
+	{ key: "help", label: "Ajuda de alguém?" },
 ] as const;
 
 type FieldKey = (typeof FIELDS)[number]["key"];
@@ -64,20 +63,17 @@ export default function IncomeScreen() {
 			return;
 		}
 
-		saveIncome.mutate(
-			result.data,
-			{
-				onSuccess: () => {
-					router.push("/(onboarding)/categories");
-				},
-				onError: (error) => {
-					Alert.alert(
-						"Erro",
-						error.message || "Não foi possível salvar sua renda. Tente novamente.",
-					);
-				},
+		saveIncome.mutate(result.data, {
+			onSuccess: () => {
+				router.push("/(onboarding)/categories");
 			},
-		);
+			onError: (error) => {
+				Alert.alert(
+					"Erro",
+					error.message || "Não foi possível salvar sua renda. Tente novamente.",
+				);
+			},
+		});
 	}, [values, saveIncome, router]);
 
 	return (
@@ -100,7 +96,7 @@ export default function IncomeScreen() {
 						Passo 2 de 4 · você pode estimar e ajustar depois
 					</Text>
 
-					<Text style={styles.stepLabel}>RENDA MENSAL</Text>
+					<Text style={styles.stepLabel}>Renda mensal</Text>
 
 					<Text style={styles.title}>Quanto entra por mês?</Text>
 
@@ -119,12 +115,10 @@ export default function IncomeScreen() {
 									onChangeText={(text) => handleChange(key, text)}
 									keyboardType="numeric"
 									placeholder="R$ 0,00"
-									placeholderTextColor={colors.textSecondary}
+									placeholderTextColor={colors.textTertiary}
 								/>
 								{errors[key] ? (
-									<Text style={{ fontSize: 12, color: colors.dangerRed, marginTop: 4 }}>
-										{errors[key]}
-									</Text>
+									<Text style={styles.errorText}>{errors[key]}</Text>
 								) : null}
 							</View>
 						))}
@@ -136,21 +130,13 @@ export default function IncomeScreen() {
 				</ScrollView>
 
 				<View style={styles.bottomContainer}>
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && !saveIncome.isPending && styles.primaryButtonPressed,
-							saveIncome.isPending && styles.primaryButtonDisabled,
-						]}
+					<Button
+						variant="primary"
+						label="Continuar"
 						onPress={handleContinue}
+						loading={saveIncome.isPending}
 						disabled={saveIncome.isPending}
-					>
-						{saveIncome.isPending ? (
-							<ActivityIndicator color={colors.surface} />
-						) : (
-							<Text style={styles.primaryButtonText}>CONTINUAR</Text>
-						)}
-					</Pressable>
+					/>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
@@ -172,35 +158,35 @@ const styles = StyleSheet.create({
 	},
 	progressBarFill: {
 		height: 4,
-		backgroundColor: colors.successGreen,
+		backgroundColor: colors.accentGreen,
 	},
 	scrollContent: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.lg,
 		paddingBottom: spacing.xl,
 	},
 	stepIndicator: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginBottom: spacing.lg,
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		color: colors.successGreen,
-		letterSpacing: 3,
-		textTransform: "uppercase",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 		marginBottom: spacing.sm,
 	},
 	title: {
-		fontSize: 28,
-		fontWeight: "800",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.md,
 	},
 	subtitle: {
-		fontSize: 15,
-		color: colors.textTertiary,
+		fontSize: 14,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 22,
 		marginBottom: spacing.xl,
 	},
@@ -212,24 +198,30 @@ const styles = StyleSheet.create({
 		gap: spacing.xs,
 	},
 	fieldLabel: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
-		letterSpacing: 3,
-		textTransform: "uppercase",
 	},
 	fieldInput: {
 		height: 52,
 		fontSize: 18,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
-		borderBottomWidth: 2,
-		borderBottomColor: colors.borderStrong,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: 0,
 		paddingVertical: spacing.sm,
 	},
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.body,
+		color: colors.dangerRed,
+		marginTop: spacing.xs,
+	},
 	helperText: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		lineHeight: 18,
 	},
@@ -237,24 +229,5 @@ const styles = StyleSheet.create({
 		paddingHorizontal: spacing.lg,
 		paddingBottom: spacing.md,
 		paddingTop: spacing.sm,
-	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	primaryButtonPressed: {
-		opacity: 0.85,
-	},
-	primaryButtonDisabled: {
-		opacity: 0.6,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 	},
 });

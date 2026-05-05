@@ -1,13 +1,11 @@
-import { colors, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
 import { createExpenseSchema } from "@quita/shared";
 import type { CreateExpenseInput } from "@quita/shared";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import type { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-	ActivityIndicator,
 	Alert,
 	KeyboardAvoidingView,
 	LayoutAnimation,
@@ -21,32 +19,32 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../src/components";
 import { useCreateExpense } from "../../src/hooks/useFinancial";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
-// --- Android LayoutAnimation ---
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// --- Constants ---
 type ExpenseType = "fixed" | "one_time" | "recurring";
 type CategoryKey = "housing" | "bills" | "food" | "transport" | "telecom" | "other";
 
 const CATEGORY_OPTIONS: { key: CategoryKey; label: string }[] = [
-	{ key: "housing", label: "MORADIA" },
-	{ key: "bills", label: "CONTAS" },
-	{ key: "food", label: "ALIMENTACAO" },
-	{ key: "transport", label: "TRANSPORTE" },
-	{ key: "telecom", label: "INTERNET" },
-	{ key: "other", label: "OUTROS" },
+	{ key: "housing", label: "Moradia" },
+	{ key: "bills", label: "Contas" },
+	{ key: "food", label: "Alimentação" },
+	{ key: "transport", label: "Transporte" },
+	{ key: "telecom", label: "Internet" },
+	{ key: "other", label: "Outros" },
 ];
 
 const TYPE_OPTIONS: { key: ExpenseType; label: string }[] = [
-	{ key: "fixed", label: "FIXA" },
-	{ key: "one_time", label: "PONTUAL" },
-	{ key: "recurring", label: "RECORRENTE" },
+	{ key: "fixed", label: "Fixa" },
+	{ key: "one_time", label: "Pontual" },
+	{ key: "recurring", label: "Recorrente" },
 ];
 
 function animateLayout() {
@@ -66,12 +64,10 @@ function formatDateISO(date: Date): string {
 	return `${y}-${m}-${d}`;
 }
 
-// --- Component ---
 export default function NewExpenseModal() {
 	const router = useRouter();
 	const createExpense = useCreateExpense();
 
-	// Form state
 	const [name, setName] = useState("");
 	const [category, setCategory] = useState<CategoryKey | null>(null);
 	const [expenseType, setExpenseType] = useState<ExpenseType>("fixed");
@@ -80,7 +76,6 @@ export default function NewExpenseModal() {
 	const [showDatePicker, setShowDatePicker] = useState(false);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	// Progressive disclosure
 	const showBlock2 = category !== null;
 	const showBlock3 = showBlock2 && rawAmount.length > 0;
 
@@ -137,32 +132,41 @@ export default function NewExpenseModal() {
 
 		createExpense.mutate(data, {
 			onSuccess: () => router.back(),
-			onError: (error) => Alert.alert("Erro", error.message || "Nao foi possivel salvar a despesa."),
+			onError: (error) =>
+				Alert.alert("Erro", error.message || "Não foi possível salvar a despesa."),
 		});
 	}, [name, category, expenseType, rawAmount, dueDate, createExpense, router]);
 
 	return (
 		<SafeAreaView style={styles.safe}>
-			<KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+			<KeyboardAvoidingView
+				style={styles.flex}
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+			>
 				<ScrollView
 					style={styles.flex}
 					contentContainerStyle={styles.scrollContent}
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Header */}
-					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
-						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+					<Pressable
+						style={styles.backButton}
+						onPress={() => router.back()}
+						hitSlop={12}
+					>
+						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<Text style={styles.title}>Nova despesa</Text>
-					<Text style={styles.subtitle}>Registre seus gastos fixos e recorrentes.</Text>
+					<Text style={styles.subtitle}>
+						Registre seus gastos fixos e recorrentes.
+					</Text>
 
-					{/* ═══ BLOCK 1: NOME + CATEGORIA ═══ */}
+					{/* Block 1 */}
 					<View style={styles.fieldsContainer}>
 						<View style={styles.fieldWrapper}>
-							<Text style={styles.fieldLabel}>NOME DA DESPESA</Text>
+							<Text style={styles.fieldLabel}>Nome da despesa</Text>
 							<TextInput
 								style={styles.fieldInput}
 								value={name}
@@ -171,48 +175,68 @@ export default function NewExpenseModal() {
 									clearError("name");
 								}}
 								placeholder="Ex: Aluguel, Mercado, Luz"
-								placeholderTextColor={colors.textSecondary}
+								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
-							{errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+							{errors.name ? (
+								<Text style={styles.errorText}>{errors.name}</Text>
+							) : null}
 						</View>
 
 						<View style={styles.fieldWrapper}>
-							<Text style={styles.fieldLabel}>CATEGORIA</Text>
+							<Text style={styles.fieldLabel}>Categoria</Text>
 							<View style={styles.toggleWrap}>
 								{CATEGORY_OPTIONS.map((opt) => (
 									<Pressable
 										key={opt.key}
-										style={[styles.toggleChip, category === opt.key && styles.toggleChipSelected]}
+										style={[
+											styles.toggleChip,
+											category === opt.key && styles.toggleChipSelected,
+										]}
 										onPress={() => {
 											if (opt.key !== category) animateLayout();
 											setCategory(opt.key);
 											clearError("category");
 										}}
 									>
-										<Text style={[styles.toggleChipText, category === opt.key && styles.toggleChipTextSelected]}>
+										<Text
+											style={[
+												styles.toggleChipText,
+												category === opt.key && styles.toggleChipTextSelected,
+											]}
+										>
 											{opt.label}
 										</Text>
 									</Pressable>
 								))}
 							</View>
-							{errors.category ? <Text style={styles.errorText}>{errors.category}</Text> : null}
+							{errors.category ? (
+								<Text style={styles.errorText}>{errors.category}</Text>
+							) : null}
 						</View>
 					</View>
 
-					{/* ═══ BLOCK 2: TIPO + VALOR ═══ */}
+					{/* Block 2 */}
 					{showBlock2 && (
 						<View style={styles.fieldsContainer}>
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>TIPO</Text>
+								<Text style={styles.fieldLabel}>Tipo</Text>
 								<View style={styles.pillRow}>
 									{TYPE_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[styles.pill, expenseType === opt.key && styles.pillSelected]}
+											style={[
+												styles.pill,
+												expenseType === opt.key && styles.pillSelected,
+											]}
 											onPress={() => setExpenseType(opt.key)}
 										>
-											<Text style={[styles.pillText, expenseType === opt.key && styles.pillTextSelected]}>
+											<Text
+												style={[
+													styles.pillText,
+													expenseType === opt.key && styles.pillTextSelected,
+												]}
+											>
 												{opt.label}
 											</Text>
 										</Pressable>
@@ -221,25 +245,29 @@ export default function NewExpenseModal() {
 							</View>
 
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>VALOR</Text>
+								<Text style={styles.fieldLabel}>Valor</Text>
 								<TextInput
 									style={styles.fieldInput}
 									value={rawAmount}
 									onChangeText={handleAmountChange}
 									placeholder="R$ 0,00"
-									placeholderTextColor={colors.textSecondary}
+									placeholderTextColor={colors.textTertiary}
 									keyboardType="numeric"
 								/>
-								{errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
+								{errors.amount ? (
+									<Text style={styles.errorText}>{errors.amount}</Text>
+								) : null}
 							</View>
 						</View>
 					)}
 
-					{/* ═══ BLOCK 3: DATA ═══ */}
+					{/* Block 3 */}
 					{showBlock3 && (
 						<View style={styles.fieldsContainer}>
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>DATA DE VENCIMENTO (SE SOUBER)</Text>
+								<Text style={styles.fieldLabel}>
+									Data de vencimento (se souber)
+								</Text>
 								<Pressable
 									style={styles.datePickerTrigger}
 									onPress={() => {
@@ -247,13 +275,22 @@ export default function NewExpenseModal() {
 										clearError("dueDate");
 									}}
 								>
-									<Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
-										{dueDate ? formatDateDisplay(dueDate) : "Toque para selecionar"}
+									<Text
+										style={[
+											styles.datePickerText,
+											!dueDate && styles.datePickerPlaceholder,
+										]}
+									>
+										{dueDate
+											? formatDateDisplay(dueDate)
+											: "Toque para selecionar"}
 									</Text>
 									<Feather
 										name="calendar"
 										size={20}
-										color={dueDate ? colors.textPrimary : colors.textSecondary}
+										color={
+											dueDate ? colors.textPrimary : colors.textSecondary
+										}
 									/>
 								</Pressable>
 								{dueDate && (
@@ -279,143 +316,204 @@ export default function NewExpenseModal() {
 											minimumDate={new Date(2000, 0, 1)}
 										/>
 										{Platform.OS === "ios" && (
-											<Pressable onPress={() => setShowDatePicker(false)} style={styles.datePickerDone}>
-												<Text style={styles.datePickerDoneText}>Confirmar</Text>
+											<Pressable
+												onPress={() => setShowDatePicker(false)}
+												style={styles.datePickerDone}
+											>
+												<Text style={styles.datePickerDoneText}>
+													Confirmar
+												</Text>
 											</Pressable>
 										)}
 									</View>
 								)}
-								{errors.dueDate ? <Text style={styles.errorText}>{errors.dueDate}</Text> : null}
+								{errors.dueDate ? (
+									<Text style={styles.errorText}>{errors.dueDate}</Text>
+								) : null}
 							</View>
 						</View>
 					)}
 				</ScrollView>
 
-				{/* CTA */}
 				<View style={styles.bottomContainer}>
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && !createExpense.isPending && styles.primaryButtonPressed,
-							createExpense.isPending && styles.primaryButtonDisabled,
-						]}
+					<Button
+						variant="primary"
+						label="Salvar despesa"
+						loading={createExpense.isPending}
 						onPress={handleSave}
-						disabled={createExpense.isPending}
-					>
-						{createExpense.isPending ? (
-							<ActivityIndicator color={colors.surface} />
-						) : (
-							<Text style={styles.primaryButtonText}>SALVAR DESPESA</Text>
-						)}
-					</Pressable>
+					/>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
 }
 
-// --- Styles ---
 const styles = StyleSheet.create({
-	safe: { flex: 1, backgroundColor: colors.background },
+	safe: {
+		flex: 1,
+		backgroundColor: colors.surface,
+		borderTopLeftRadius: radius.lg,
+		borderTopRightRadius: radius.lg,
+	},
 	flex: { flex: 1 },
-	scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.xl },
-	backButton: { flexDirection: "row", alignItems: "center", gap: spacing.xs, marginBottom: spacing.lg },
-	backText: { fontSize: 11, fontWeight: "600", letterSpacing: 3, color: colors.textPrimary },
-	title: { fontSize: 28, fontWeight: "800", fontStyle: "italic", color: colors.textPrimary, marginBottom: spacing.xs },
-	subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: spacing.lg },
+	scrollContent: {
+		paddingHorizontal: spacing.xl,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.xl,
+	},
+	backButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: spacing.xs,
+		marginBottom: spacing.lg,
+	},
+	backText: {
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.textPrimary,
+	},
+	title: {
+		fontSize: 26,
+		fontFamily: fonts.heading,
+		color: colors.textPrimary,
+		marginBottom: spacing.xs,
+	},
+	subtitle: {
+		fontSize: 14,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
+		marginBottom: spacing.lg,
+	},
 
 	fieldsContainer: { gap: spacing.lg, marginBottom: spacing.lg },
-	fieldWrapper: { gap: spacing.xs },
+	fieldWrapper: { gap: spacing.sm },
 	fieldLabel: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
-		letterSpacing: 3,
-		textTransform: "uppercase",
 	},
 	fieldInput: {
-		height: 52,
+		height: 48,
 		fontSize: 16,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: spacing.md,
 	},
-	errorText: { fontSize: 12, color: colors.dangerRed, marginTop: 4 },
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
+		color: colors.dangerRed,
+		marginTop: 4,
+	},
 
-	// Category toggle chips (wrap layout)
-	toggleWrap: { flexDirection: "row", flexWrap: "wrap", gap: 0, marginTop: spacing.xs },
+	// Category chips
+	toggleWrap: {
+		flexDirection: "row",
+		flexWrap: "wrap",
+		gap: spacing.sm,
+		marginTop: spacing.xs,
+	},
 	toggleChip: {
-		height: 44,
-		paddingHorizontal: 14,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
 		alignItems: "center",
 		justifyContent: "center",
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
+		borderWidth: 1,
+		borderColor: colors.border,
 		backgroundColor: colors.surface,
-		marginLeft: -2,
-		marginTop: -2,
+		borderRadius: radius.pill,
 	},
-	toggleChipSelected: { backgroundColor: colors.successGreen, borderColor: colors.successGreen, zIndex: 1 },
-	toggleChipText: { fontSize: 11, fontWeight: "600", letterSpacing: 2, color: colors.textPrimary },
-	toggleChipTextSelected: { color: "#FFFFFF" },
+	toggleChipSelected: {
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
+	},
+	toggleChipText: {
+		fontSize: 13,
+		fontFamily: fonts.bodyMedium,
+		color: colors.textPrimary,
+	},
+	toggleChipTextSelected: {
+		color: colors.white,
+	},
 
 	// Pills
 	pillRow: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs },
 	pill: {
 		flex: 1,
 		height: 44,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.pill,
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: colors.surface,
 	},
-	pillSelected: { backgroundColor: colors.successGreen, borderColor: colors.successGreen },
-	pillText: { fontSize: 11, fontWeight: "700", color: colors.textPrimary, letterSpacing: 1 },
-	pillTextSelected: { color: "#FFFFFF" },
+	pillSelected: {
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
+	},
+	pillText: {
+		fontSize: 13,
+		fontFamily: fonts.bodyMedium,
+		color: colors.textPrimary,
+	},
+	pillTextSelected: {
+		color: colors.white,
+	},
 
 	// Date picker
 	datePickerTrigger: {
-		height: 52,
+		height: 48,
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: spacing.md,
 	},
-	datePickerText: { fontSize: 18, fontWeight: "500", color: colors.textPrimary },
-	datePickerPlaceholder: { color: colors.textSecondary },
-	clearDateText: { fontSize: 12, color: colors.accentBlue, fontWeight: "500", marginTop: spacing.xs },
+	datePickerText: {
+		fontSize: 16,
+		fontFamily: fonts.bodyMedium,
+		color: colors.textPrimary,
+	},
+	datePickerPlaceholder: {
+		color: colors.textTertiary,
+		fontFamily: fonts.body,
+	},
+	clearDateText: {
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
+		color: colors.brandTealDark,
+		marginTop: spacing.xs,
+	},
 	datePickerContainer: {
 		marginTop: spacing.sm,
 		backgroundColor: colors.surface,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		overflow: "hidden",
 	},
 	datePickerDone: {
 		alignItems: "center",
-		paddingVertical: 12,
-		borderTopWidth: 1,
+		paddingVertical: spacing.md,
+		borderTopWidth: 0.5,
 		borderTopColor: colors.border,
 	},
-	datePickerDoneText: { fontSize: 16, fontWeight: "600", color: colors.accentBlue },
+	datePickerDoneText: {
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
+	},
 
 	// CTA
-	bottomContainer: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md, paddingTop: spacing.sm },
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
+	bottomContainer: {
+		paddingHorizontal: spacing.lg,
+		paddingBottom: spacing.md,
+		paddingTop: spacing.sm,
 	},
-	primaryButtonPressed: { opacity: 0.85 },
-	primaryButtonDisabled: { opacity: 0.6 },
-	primaryButtonText: { color: colors.surface, fontSize: 14, fontWeight: "700", letterSpacing: 2 },
 });

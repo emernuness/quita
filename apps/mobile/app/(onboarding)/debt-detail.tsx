@@ -1,13 +1,11 @@
-import { colors, spacing } from "@/theme/tokens";
-import { onboardingDebtSchema } from "@quita/shared";
-import type { OnboardingDebtInput } from "@quita/shared";
+import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import type { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { Feather } from "@expo/vector-icons";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { onboardingDebtSchema } from "@quita/shared";
+import type { OnboardingDebtInput } from "@quita/shared";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
-	ActivityIndicator,
 	Alert,
 	KeyboardAvoidingView,
 	LayoutAnimation,
@@ -21,7 +19,9 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../src/components";
 import { useSaveDebts } from "../../src/hooks/useOnboarding";
+import { badges, colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
@@ -35,8 +35,12 @@ if (
 
 // --- Constants ---
 
-const STATUS_OPTIONS = ["ATRASADA", "NEGOCIANDO", "EM DIA"] as const;
-type DebtStatusLabel = (typeof STATUS_OPTIONS)[number];
+const STATUS_OPTIONS = [
+	{ key: "ATRASADA" as const, label: "Atrasada" },
+	{ key: "NEGOCIANDO" as const, label: "Negociando" },
+	{ key: "EM DIA" as const, label: "Em dia" },
+];
+type DebtStatusLabel = (typeof STATUS_OPTIONS)[number]["key"];
 
 const JUROS_OPTIONS = ["Sim", "Não", "Não sei"] as const;
 type JurosOption = (typeof JUROS_OPTIONS)[number];
@@ -44,17 +48,17 @@ type JurosOption = (typeof JUROS_OPTIONS)[number];
 const NATURE_OPTIONS = [
 	{
 		key: "installment" as const,
-		label: "PARCELA TODO MÊS",
+		label: "Parcela todo mês",
 		subtitle: "Financiamento, carnê, cartão parcelado",
 	},
 	{
 		key: "recurring" as const,
-		label: "CONTA FIXA",
+		label: "Conta fixa",
 		subtitle: "Condomínio, aluguel, internet",
 	},
 	{
 		key: "one_time" as const,
-		label: "PAGO SÓ UMA VEZ",
+		label: "Pago só uma vez",
 		subtitle: "Empréstimo pessoal, dívida avulsa",
 	},
 ] as const;
@@ -151,15 +155,9 @@ export default function DebtDetailScreen() {
 			? Number.parseInt(overdueCustom, 10) || null
 			: overdueMonths;
 
-	// --- Progressive Disclosure ---
-	// Block 1 (always visible): CREDOR + NATUREZA
-	// Block 2 (when nature selected): SITUAÇÃO + overdue + nature-specific fields
-	// Block 3 (when block 2 complete): VALOR TOTAL + JUROS + VENCIMENTO
 	const showBlock2 = nature !== null;
-	const showBlock3 =
-		nature === "one_time" || valorMensal.length > 0;
+	const showBlock3 = nature === "one_time" || valorMensal.length > 0;
 
-	// Auto-suggestion for valor total
 	const autoSuggestion = useMemo(() => {
 		const monthly = unmaskCurrency(valorMensal);
 		if (
@@ -215,9 +213,7 @@ export default function DebtDetailScreen() {
 			nature: nature || ("one_time" as const),
 			totalAmount,
 			monthlyAmount:
-				nature !== "one_time" && monthlyAmount > 0
-					? monthlyAmount
-					: undefined,
+				nature !== "one_time" && monthlyAmount > 0 ? monthlyAmount : undefined,
 			overdueMonths:
 				isOverdue && effectiveOverdueMonths
 					? effectiveOverdueMonths
@@ -274,15 +270,20 @@ export default function DebtDetailScreen() {
 			setErrors((prev) => ({ ...prev, ...formErrors }));
 			return { success: false as const, errors: formErrors };
 		}
-		// Validate with Zod for error messages, but return the raw data
-		// from buildDebtData() to avoid Zod stripping fields due to
-		// Metro bundler caching stale schema versions
 		const zodResult = validateWithZod(onboardingDebtSchema, data);
 		if (!zodResult.success) {
 			return zodResult;
 		}
 		return { success: true as const, data: data as OnboardingDebtInput };
-	}, [buildDebtData, nature, isOverdue, overdueMonths, overdueCustom, totalParcelas, parcelaAtual]);
+	}, [
+		buildDebtData,
+		nature,
+		isOverdue,
+		overdueMonths,
+		overdueCustom,
+		totalParcelas,
+		parcelaAtual,
+	]);
 
 	const handleAddAnother = useCallback(() => {
 		const result = validateForm();
@@ -383,7 +384,6 @@ export default function DebtDetailScreen() {
 	// --- Date Picker handlers ---
 	const handleDateChange = useCallback(
 		(event: DateTimePickerEvent, selectedDate?: Date) => {
-			// Android: close picker on any event (set or dismissed)
 			if (Platform.OS === "android") {
 				setShowDatePicker(false);
 			}
@@ -404,11 +404,9 @@ export default function DebtDetailScreen() {
 		setShowDatePicker(false);
 	}, []);
 
-	// --- Valor mensal handler with disclosure animation ---
 	const handleValorMensalChange = useCallback(
 		(text: string) => {
 			const masked = maskCurrency(text);
-			// Animate when block 3 visibility changes (empty ↔ filled)
 			if ((!valorMensal && masked) || (valorMensal && !masked)) {
 				animateLayout();
 			}
@@ -420,10 +418,8 @@ export default function DebtDetailScreen() {
 	if (!currentCategory) {
 		return (
 			<SafeAreaView style={styles.safeArea}>
-				<View
-					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-				>
-					<Text style={{ color: colors.textSecondary }}>
+				<View style={styles.emptyStateWrapper}>
+					<Text style={styles.emptyStateText}>
 						Nenhuma categoria selecionada.
 					</Text>
 				</View>
@@ -455,9 +451,13 @@ export default function DebtDetailScreen() {
 						editar depois
 					</Text>
 
-					<Pressable style={styles.backButton} onPress={handleBack} hitSlop={12}>
+					<Pressable
+						style={styles.backButton}
+						onPress={handleBack}
+						hitSlop={12}
+					>
 						<Feather name="arrow-left" size={20} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<View style={styles.categoryLabel}>
@@ -468,11 +468,9 @@ export default function DebtDetailScreen() {
 								>["name"]
 							}
 							size={14}
-							color={colors.successGreen}
+							color={colors.brandTealDark}
 						/>
-						<Text style={styles.stepLabel}>
-							{currentCategory.name.toUpperCase()}
-						</Text>
+						<Text style={styles.stepLabel}>{currentCategory.name}</Text>
 					</View>
 
 					<Text style={styles.title}>Detalhe da dívida</Text>
@@ -481,7 +479,7 @@ export default function DebtDetailScreen() {
 					{debtsForCurrentCategory.length > 0 && (
 						<View style={styles.addedDebtsSection}>
 							<Text style={styles.addedDebtsTitle}>
-								DÍVIDAS ADICIONADAS ({debtsForCurrentCategory.length})
+								Dívidas adicionadas ({debtsForCurrentCategory.length})
 							</Text>
 							{debtsForCurrentCategory.map((debt, idx) => (
 								<View
@@ -511,13 +509,10 @@ export default function DebtDetailScreen() {
 						</View>
 					)}
 
-					{/* ═══════════════════════════════════════════════ */}
-					{/* BLOCK 1 — Always visible: CREDOR + NATUREZA   */}
-					{/* ═══════════════════════════════════════════════ */}
+					{/* BLOCK 1 — CREDOR + NATUREZA */}
 					<View style={styles.fieldsContainer}>
-						{/* 1. CREDOR */}
 						<View style={styles.fieldWrapper}>
-							<Text style={styles.fieldLabel}>CREDOR</Text>
+							<Text style={styles.fieldLabel}>Credor</Text>
 							<TextInput
 								style={styles.fieldInput}
 								value={credor}
@@ -526,7 +521,7 @@ export default function DebtDetailScreen() {
 									clearFieldError("creditor");
 								}}
 								placeholder="Ex: Nubank, Condomínio, Casas Bahia"
-								placeholderTextColor={colors.textSecondary}
+								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
 							{errors.creditor ? (
@@ -534,9 +529,8 @@ export default function DebtDetailScreen() {
 							) : null}
 						</View>
 
-						{/* 2. COMO FUNCIONA ESSA DÍVIDA? */}
 						<View style={styles.fieldWrapper}>
-							<Text style={styles.fieldLabel}>COMO FUNCIONA ESSA DÍVIDA?</Text>
+							<Text style={styles.fieldLabel}>Como funciona essa dívida?</Text>
 							<View style={styles.natureColumn}>
 								{NATURE_OPTIONS.map((opt) => (
 									<Pressable
@@ -582,51 +576,70 @@ export default function DebtDetailScreen() {
 						</View>
 					</View>
 
-					{/* ═══════════════════════════════════════════════════════════════ */}
-					{/* BLOCK 2 — After nature selected: SITUAÇÃO + nature fields     */}
-					{/* ═══════════════════════════════════════════════════════════════ */}
+					{/* BLOCK 2 — SITUAÇÃO + nature fields */}
 					{showBlock2 && (
 						<View style={styles.fieldsContainer}>
-							{/* 3. SITUAÇÃO */}
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>SITUAÇÃO DESSA DÍVIDA</Text>
+								<Text style={styles.fieldLabel}>Situação dessa dívida</Text>
 								<View style={styles.pillRow}>
-									{STATUS_OPTIONS.map((opt) => (
-										<Pressable
-											key={opt}
-											style={[
-												styles.pillButton,
-												status === opt && styles.pillButtonSelected,
-											]}
-											onPress={() => {
-												setStatus(opt);
-												if (opt !== "ATRASADA") {
-													setOverdueMonths(null);
-													setOverdueCustom("");
-												}
-											}}
-										>
-											<Text
+									{STATUS_OPTIONS.map((opt) => {
+										const selected = status === opt.key;
+										const variant =
+											opt.key === "ATRASADA"
+												? "danger"
+												: opt.key === "NEGOCIANDO"
+													? "warning"
+													: "success";
+										const badge = badges[variant];
+										return (
+											<Pressable
+												key={opt.key}
 												style={[
-													styles.pillButtonText,
-													status === opt && styles.pillButtonTextSelected,
+													styles.statusPill,
+													selected && {
+														backgroundColor: badge.background,
+														borderColor: badge.dot,
+													},
 												]}
+												onPress={() => {
+													setStatus(opt.key);
+													if (opt.key !== "ATRASADA") {
+														setOverdueMonths(null);
+														setOverdueCustom("");
+													}
+												}}
 											>
-												{opt}
-											</Text>
-										</Pressable>
-									))}
+												<View
+													style={[
+														styles.statusDot,
+														{
+															backgroundColor: selected
+																? badge.dot
+																: colors.gray400,
+														},
+													]}
+												/>
+												<Text
+													style={[
+														styles.statusPillText,
+														selected && { color: badge.color },
+													]}
+												>
+													{opt.label}
+												</Text>
+											</Pressable>
+										);
+									})}
 								</View>
 								<Text style={styles.helperText}>
 									Se não souber, escolha a opção mais próxima.
 								</Text>
 							</View>
 
-							{/* 4. HÁ QUANTOS MESES? (if overdue) */}
 							{isOverdue && (
 								<View style={styles.fieldWrapper}>
 									<Text style={styles.fieldLabel}>
-										HÁ QUANTOS MESES ESTÁ ATRASADA?
+										Há quantos meses está atrasada?
 									</Text>
 									<View style={styles.overduePillRow}>
 										{OVERDUE_PILLS.map((n) => (
@@ -679,7 +692,7 @@ export default function DebtDetailScreen() {
 												clearFieldError("overdueMonths");
 											}}
 											placeholder="Quantos meses?"
-											placeholderTextColor={colors.textSecondary}
+											placeholderTextColor={colors.textTertiary}
 											keyboardType="numeric"
 											maxLength={3}
 										/>
@@ -695,22 +708,21 @@ export default function DebtDetailScreen() {
 								</View>
 							)}
 
-							{/* 5. CONDITIONAL FIELDS BY NATURE */}
 							{nature === "installment" && (
 								<>
 									<View style={styles.fieldWrapper}>
-										<Text style={styles.fieldLabel}>VALOR DA PARCELA</Text>
+										<Text style={styles.fieldLabel}>Valor da parcela</Text>
 										<TextInput
 											style={styles.fieldInput}
 											value={valorMensal}
 											onChangeText={handleValorMensalChange}
 											placeholder="R$ 0,00"
-											placeholderTextColor={colors.textSecondary}
+											placeholderTextColor={colors.textTertiary}
 											keyboardType="numeric"
 										/>
 									</View>
 									<View style={styles.fieldWrapper}>
-										<Text style={styles.fieldLabel}>PARCELA ATUAL</Text>
+										<Text style={styles.fieldLabel}>Parcela atual</Text>
 										<View style={styles.installmentRow}>
 											<TextInput
 												style={[styles.fieldInput, styles.installmentInput]}
@@ -720,7 +732,7 @@ export default function DebtDetailScreen() {
 													clearFieldError("currentInstallment");
 												}}
 												placeholder="3"
-												placeholderTextColor={colors.textSecondary}
+												placeholderTextColor={colors.textTertiary}
 												keyboardType="numeric"
 												maxLength={3}
 											/>
@@ -733,7 +745,7 @@ export default function DebtDetailScreen() {
 													clearFieldError("currentInstallment");
 												}}
 												placeholder="10"
-												placeholderTextColor={colors.textSecondary}
+												placeholderTextColor={colors.textTertiary}
 												keyboardType="numeric"
 												maxLength={3}
 											/>
@@ -752,13 +764,13 @@ export default function DebtDetailScreen() {
 
 							{nature === "recurring" && (
 								<View style={styles.fieldWrapper}>
-									<Text style={styles.fieldLabel}>VALOR MENSAL</Text>
+									<Text style={styles.fieldLabel}>Valor mensal</Text>
 									<TextInput
 										style={styles.fieldInput}
 										value={valorMensal}
 										onChangeText={handleValorMensalChange}
 										placeholder="R$ 0,00"
-										placeholderTextColor={colors.textSecondary}
+										placeholderTextColor={colors.textTertiary}
 										keyboardType="numeric"
 									/>
 									<Text style={styles.helperText}>
@@ -769,14 +781,11 @@ export default function DebtDetailScreen() {
 						</View>
 					)}
 
-					{/* ═══════════════════════════════════════════════════════════ */}
-					{/* BLOCK 3 — Final fields: VALOR TOTAL + JUROS + VENCIMENTO  */}
-					{/* ═══════════════════════════════════════════════════════════ */}
+					{/* BLOCK 3 — VALOR TOTAL + JUROS + VENCIMENTO */}
 					{showBlock2 && showBlock3 && (
 						<View style={styles.fieldsContainer}>
-							{/* 6. VALOR TOTAL */}
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>VALOR TOTAL DA DÍVIDA</Text>
+								<Text style={styles.fieldLabel}>Valor total da dívida</Text>
 								<TextInput
 									style={styles.fieldInput}
 									value={valorTotal}
@@ -785,7 +794,7 @@ export default function DebtDetailScreen() {
 										clearFieldError("totalAmount");
 									}}
 									placeholder="R$ 0,00"
-									placeholderTextColor={colors.textSecondary}
+									placeholderTextColor={colors.textTertiary}
 									keyboardType="numeric"
 								/>
 								{autoSuggestion && !valorTotal && (
@@ -814,9 +823,8 @@ export default function DebtDetailScreen() {
 								</Text>
 							</View>
 
-							{/* 7. JUROS */}
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>TEM JUROS OU MULTA?</Text>
+								<Text style={styles.fieldLabel}>Tem juros ou multa?</Text>
 								<View style={styles.pillRow}>
 									{JUROS_OPTIONS.map((opt) => (
 										<Pressable
@@ -840,9 +848,8 @@ export default function DebtDetailScreen() {
 								</View>
 							</View>
 
-							{/* 8. VENCIMENTO — Native Date Picker */}
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>VENCIMENTO (SE SOUBER)</Text>
+								<Text style={styles.fieldLabel}>Vencimento (se souber)</Text>
 								<Pressable
 									style={styles.datePickerTrigger}
 									onPress={() => {
@@ -865,7 +872,7 @@ export default function DebtDetailScreen() {
 									<Feather
 										name="calendar"
 										size={20}
-										color={dueDate ? colors.textPrimary : colors.textSecondary}
+										color={dueDate ? colors.textPrimary : colors.textTertiary}
 									/>
 								</Pressable>
 
@@ -880,9 +887,7 @@ export default function DebtDetailScreen() {
 										<DateTimePicker
 											value={dueDate || new Date()}
 											mode="date"
-											display={
-												Platform.OS === "ios" ? "spinner" : "default"
-											}
+											display={Platform.OS === "ios" ? "spinner" : "default"}
 											onChange={handleDateChange}
 											locale="pt-BR"
 											maximumDate={new Date(2100, 11, 31)}
@@ -908,7 +913,6 @@ export default function DebtDetailScreen() {
 						</View>
 					)}
 
-					{/* Add another + info — only visible when block 3 is shown */}
 					{showBlock2 && showBlock3 && (
 						<>
 							<Pressable
@@ -918,9 +922,9 @@ export default function DebtDetailScreen() {
 								]}
 								onPress={handleAddAnother}
 							>
-								<Feather name="plus" size={18} color={colors.textPrimary} />
+								<Feather name="plus" size={18} color={colors.brandTealDark} />
 								<Text style={styles.addAnotherButtonText}>
-									ADICIONAR OUTRA DÍVIDA NESTA CATEGORIA
+									Adicionar outra dívida nesta categoria
 								</Text>
 							</Pressable>
 
@@ -934,25 +938,14 @@ export default function DebtDetailScreen() {
 					)}
 				</ScrollView>
 
-				{/* Bottom CTA */}
 				<View style={styles.bottomContainer}>
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && !saveDebts.isPending && styles.primaryButtonPressed,
-							saveDebts.isPending && styles.primaryButtonDisabled,
-						]}
+					<Button
+						variant="primary"
+						label={isLastCategory ? "Salvar dívidas" : "Próxima categoria"}
 						onPress={handleAdvance}
+						loading={saveDebts.isPending}
 						disabled={saveDebts.isPending}
-					>
-						{saveDebts.isPending ? (
-							<ActivityIndicator color={colors.surface} />
-						) : (
-							<Text style={styles.primaryButtonText}>
-								{isLastCategory ? "SALVAR DÍVIDAS" : "PRÓXIMA CATEGORIA"}
-							</Text>
-						)}
-					</Pressable>
+					/>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
@@ -964,50 +957,59 @@ export default function DebtDetailScreen() {
 const styles = StyleSheet.create({
 	safeArea: { flex: 1, backgroundColor: colors.background },
 	flex: { flex: 1 },
+	emptyStateWrapper: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	emptyStateText: {
+		fontFamily: fonts.body,
+		fontSize: 14,
+		color: colors.textSecondary,
+	},
 	progressBarTrack: {
 		height: 4,
 		backgroundColor: colors.border,
 		width: "100%",
 	},
-	progressBarFill: { height: 4, backgroundColor: colors.successGreen },
+	progressBarFill: { height: 4, backgroundColor: colors.accentGreen },
 	scrollContent: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.md,
 		paddingBottom: spacing.xl,
 	},
 	stepIndicator: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginBottom: spacing.lg,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
+		gap: spacing.sm,
 		marginBottom: spacing.md,
 		alignSelf: "flex-start",
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	categoryLabel: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 6,
+		gap: spacing.xs + 2,
 		marginBottom: spacing.sm,
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		color: colors.successGreen,
-		letterSpacing: 3,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 	title: {
-		fontSize: 28,
-		fontWeight: "800",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.lg,
 	},
@@ -1015,10 +1017,9 @@ const styles = StyleSheet.create({
 	// Added debts summary
 	addedDebtsSection: { marginBottom: spacing.lg, gap: spacing.sm },
 	addedDebtsTitle: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
-		letterSpacing: 2,
 	},
 	addedDebtCard: {
 		flexDirection: "row",
@@ -1026,18 +1027,19 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.surface,
 		borderWidth: 1,
 		borderColor: colors.border,
-		borderRadius: 8,
+		borderRadius: radius.card,
 		paddingHorizontal: spacing.md,
 		paddingVertical: spacing.sm,
 	},
 	addedDebtInfo: { flex: 1 },
 	addedDebtCreditor: {
 		fontSize: 14,
-		fontWeight: "600",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	addedDebtAmount: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginTop: 2,
 	},
@@ -1047,25 +1049,30 @@ const styles = StyleSheet.create({
 	fieldsContainer: { gap: spacing.lg, marginBottom: spacing.lg },
 	fieldWrapper: { gap: spacing.xs },
 	fieldLabel: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
-		letterSpacing: 3,
-		textTransform: "uppercase",
 	},
 	fieldInput: {
 		height: 52,
 		fontSize: 18,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
-		borderBottomWidth: 2,
-		borderBottomColor: colors.borderStrong,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: 0,
 		paddingVertical: spacing.sm,
 	},
-	errorText: { fontSize: 12, color: colors.dangerRed, marginTop: 4 },
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.body,
+		color: colors.dangerRed,
+		marginTop: spacing.xs,
+	},
 	helperText: {
 		fontSize: 12,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		lineHeight: 18,
 		marginTop: spacing.xs,
@@ -1074,54 +1081,77 @@ const styles = StyleSheet.create({
 	// Nature pills (vertical)
 	natureColumn: { gap: spacing.sm, marginTop: spacing.xs },
 	naturePill: {
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		paddingHorizontal: spacing.md,
-		paddingVertical: 12,
+		paddingVertical: spacing.md,
 		backgroundColor: colors.surface,
 	},
 	naturePillSelected: {
-		backgroundColor: colors.textPrimary,
-		borderColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
 	},
 	naturePillLabel: {
-		fontSize: 13,
-		fontWeight: "700",
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		letterSpacing: 1,
 	},
-	naturePillLabelSelected: { color: colors.surface },
+	naturePillLabelSelected: { color: colors.white },
 	naturePillSubtitle: {
 		fontSize: 12,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginTop: 2,
 	},
 	naturePillSubtitleSelected: { color: colors.overlayLight },
 
-	// Status pills
+	// Status pills (badge style)
 	pillRow: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs },
+	statusPill: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: spacing.xs + 2,
+		height: 44,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.pill,
+		backgroundColor: colors.surface,
+		paddingHorizontal: spacing.sm,
+	},
+	statusDot: {
+		width: 6,
+		height: 6,
+		borderRadius: radius.full,
+		backgroundColor: colors.gray400,
+	},
+	statusPillText: {
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.textPrimary,
+	},
 	pillButton: {
 		flex: 1,
 		height: 44,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.pill,
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: colors.surface,
 	},
 	pillButtonSelected: {
-		backgroundColor: colors.textPrimary,
-		borderColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
 	},
 	pillButtonText: {
-		fontSize: 11,
-		fontWeight: "700",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		letterSpacing: 1,
 	},
-	pillButtonTextSelected: { color: colors.surface },
+	pillButtonTextSelected: { color: colors.white },
 
 	// Overdue pills
 	overduePillRow: {
@@ -1132,23 +1162,23 @@ const styles = StyleSheet.create({
 	overduePill: {
 		width: 44,
 		height: 44,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: colors.surface,
 	},
 	overduePillSelected: {
-		backgroundColor: colors.textPrimary,
-		borderColor: colors.textPrimary,
+		backgroundColor: colors.brandTealDark,
+		borderColor: colors.brandTealDark,
 	},
 	overduePillText: {
 		fontSize: 14,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
-	overduePillTextSelected: { color: colors.surface },
+	overduePillTextSelected: { color: colors.white },
 
 	// Installment row
 	installmentRow: {
@@ -1159,16 +1189,16 @@ const styles = StyleSheet.create({
 	installmentInput: { flex: 1, textAlign: "center" },
 	installmentSeparator: {
 		fontSize: 16,
-		fontWeight: "600",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
 	},
 
 	// Auto suggestion
 	autoSuggestion: {
 		fontSize: 13,
-		color: colors.accentBlue,
+		fontFamily: fonts.bodyMedium,
+		color: colors.brandTealDark,
 		marginTop: spacing.xs,
-		fontWeight: "500",
 	},
 
 	// Date picker
@@ -1177,40 +1207,40 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		borderBottomWidth: 2,
-		borderBottomColor: colors.borderStrong,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
 		paddingVertical: spacing.sm,
 	},
 	datePickerText: {
 		fontSize: 18,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
 	},
 	datePickerPlaceholder: {
-		color: colors.textSecondary,
+		color: colors.textTertiary,
 	},
 	clearDateText: {
 		fontSize: 12,
-		color: colors.accentBlue,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
+		color: colors.brandTealDark,
 		marginTop: spacing.xs,
 	},
 	datePickerContainer: {
 		marginTop: spacing.sm,
 		backgroundColor: colors.surface,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		overflow: "hidden",
 	},
 	datePickerDone: {
 		alignItems: "center",
-		paddingVertical: 12,
-		borderTopWidth: 1,
+		paddingVertical: spacing.md,
+		borderTopWidth: 0.5,
 		borderTopColor: colors.border,
 	},
 	datePickerDoneText: {
 		fontSize: 16,
-		fontWeight: "600",
-		color: colors.accentBlue,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 
 	// Add another
@@ -1220,47 +1250,37 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		gap: spacing.sm,
 		height: 48,
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.sm,
 		borderStyle: "dashed",
 		marginBottom: spacing.md,
+		backgroundColor: colors.surface,
 	},
 	addAnotherButtonPressed: { opacity: 0.6 },
 	addAnotherButtonText: {
-		fontSize: 11,
-		fontWeight: "700",
-		color: colors.textPrimary,
-		letterSpacing: 1,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 	},
 
 	// Info card
 	infoCard: {
 		backgroundColor: colors.infoBackground,
 		padding: spacing.md,
-		borderRadius: 12,
+		borderRadius: radius.card,
 	},
-	infoCardText: { fontSize: 13, color: colors.accentBlue, lineHeight: 19 },
+	infoCardText: {
+		fontSize: 13,
+		fontFamily: fonts.body,
+		color: colors.brandTealDark,
+		lineHeight: 19,
+	},
 
 	// Bottom CTA
 	bottomContainer: {
 		paddingHorizontal: spacing.lg,
 		paddingBottom: spacing.md,
 		paddingTop: spacing.sm,
-	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	primaryButtonPressed: { opacity: 0.85 },
-	primaryButtonDisabled: { opacity: 0.6 },
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 	},
 });

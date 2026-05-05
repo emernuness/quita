@@ -1,9 +1,10 @@
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../src/components";
+import { badges, colors, fonts, radius, spacing } from "../../src/theme/tokens";
 
 const DEBT_DETAILS = [
 	{ label: "Valor total pago", value: "R$ 3.250,00" },
@@ -20,29 +21,25 @@ export default function CelebrationModal() {
 				contentContainerStyle={styles.content}
 				showsVerticalScrollIndicator={false}
 			>
-				{/* Party Icon */}
-				<View style={styles.iconContainer}>
-					<Feather name="award" size={48} color={colors.successGreen} />
+				<View style={styles.iconCircle}>
+					<Feather name="award" size={36} color={colors.successGreen} />
 				</View>
 
-				{/* Title */}
 				<Text style={styles.title}>Parabéns!</Text>
 
-				{/* Subtitle */}
 				<Text style={styles.subtitle}>Você quitou uma dívida!</Text>
 
-				{/* Description */}
 				<Text style={styles.description}>
 					Cada dívida quitada é um passo importante na sua jornada financeira.
 					Continue assim!
 				</Text>
 
-				{/* Debt Card */}
 				<View style={styles.debtCard}>
 					<View style={styles.debtHeader}>
 						<Text style={styles.debtName}>Cartão Nubank</Text>
 						<View style={styles.badge}>
-							<Text style={styles.badgeText}>QUITADA</Text>
+							<View style={styles.badgeDot} />
+							<Text style={styles.badgeText}>Quitada</Text>
 						</View>
 					</View>
 
@@ -59,7 +56,6 @@ export default function CelebrationModal() {
 					</View>
 				</View>
 
-				{/* Progress Section */}
 				<View style={styles.progressSection}>
 					<View style={styles.progressHeader}>
 						<Text style={styles.progressTitle}>Progresso geral</Text>
@@ -70,28 +66,18 @@ export default function CelebrationModal() {
 					</View>
 				</View>
 
-				{/* Buttons */}
-				<Pressable
-					style={({ pressed }) => [
-						styles.primaryButton,
-						pressed && styles.buttonPressed,
-					]}
-					onPress={() => router.back()}
-				>
-					<Text style={styles.primaryButtonText}>VER MINHAS DÍVIDAS</Text>
-				</Pressable>
-
-				<Pressable
-					style={({ pressed }) => [
-						styles.secondaryButton,
-						pressed && styles.buttonPressed,
-					]}
-					onPress={() => router.back()}
-				>
-					<Text style={styles.secondaryButtonText}>
-						COMPARTILHAR CONQUISTA
-					</Text>
-				</Pressable>
+				<View style={styles.buttonGroup}>
+					<Button
+						variant="primary"
+						label="Ver minhas dívidas"
+						onPress={() => router.back()}
+					/>
+					<Button
+						variant="secondary"
+						label="Compartilhar conquista"
+						onPress={() => router.back()}
+					/>
+				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -100,38 +86,45 @@ export default function CelebrationModal() {
 const styles = StyleSheet.create({
 	safe: {
 		flex: 1,
-		backgroundColor: colors.background,
+		backgroundColor: colors.surface,
+		borderTopLeftRadius: radius.lg,
+		borderTopRightRadius: radius.lg,
 	},
 	scroll: {
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.xxl,
-		paddingBottom: 40,
+		paddingBottom: spacing.xxl,
 		alignItems: "center",
 	},
-	iconContainer: {
+	iconCircle: {
+		width: 72,
+		height: 72,
+		borderRadius: radius.full,
+		backgroundColor: colors.successBackground,
+		alignItems: "center",
+		justifyContent: "center",
 		marginBottom: spacing.lg,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
-		fontStyle: "italic",
-		color: colors.successGreen,
+		fontSize: 28,
+		fontFamily: fonts.heading,
+		color: colors.textPrimary,
 		textAlign: "center",
 		marginBottom: spacing.xs,
 	},
 	subtitle: {
 		fontSize: 18,
-		fontWeight: "600",
-		color: colors.textPrimary,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 		textAlign: "center",
 		marginBottom: spacing.md,
 	},
 	description: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		textAlign: "center",
 		lineHeight: 22,
@@ -141,10 +134,10 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.surface,
 		borderWidth: 1,
 		borderColor: colors.border,
-		borderRadius: 12,
-		borderLeftWidth: 4,
+		borderRadius: radius.card,
+		borderLeftWidth: 1.5,
 		borderLeftColor: colors.successGreen,
-		padding: spacing.md,
+		padding: spacing.lg,
 		width: "100%",
 		marginBottom: spacing.lg,
 	},
@@ -156,43 +149,50 @@ const styles = StyleSheet.create({
 	},
 	debtName: {
 		fontSize: 16,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	badge: {
-		backgroundColor: colors.successGreen,
-		paddingHorizontal: 10,
-		paddingVertical: 4,
-		borderRadius: 4,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: spacing.xs,
+		backgroundColor: badges.success.background,
+		paddingHorizontal: spacing.sm + 2,
+		paddingVertical: spacing.xs,
+		borderRadius: radius.pill,
+	},
+	badgeDot: {
+		width: 6,
+		height: 6,
+		borderRadius: radius.full,
+		backgroundColor: badges.success.dot,
 	},
 	badgeText: {
-		fontSize: 10,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: "#FFFFFF",
-		textTransform: "uppercase",
+		fontSize: 11,
+		fontFamily: fonts.bodySemiBold,
+		color: badges.success.color,
 	},
 	detailRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		paddingVertical: 8,
-		borderTopWidth: 1,
+		paddingVertical: spacing.sm,
+		borderTopWidth: 0.5,
 		borderTopColor: colors.border,
 	},
 	detailLabel: {
 		fontSize: 13,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 	},
 	detailValue: {
 		fontSize: 14,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	detailValueGreen: {
 		fontSize: 14,
-		fontWeight: "700",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.successGreen,
 	},
 	progressSection: {
@@ -207,57 +207,27 @@ const styles = StyleSheet.create({
 	},
 	progressTitle: {
 		fontSize: 14,
-		fontWeight: "600",
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	progressCount: {
 		fontSize: 13,
-		fontWeight: "500",
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 	},
 	progressBarBg: {
 		height: 8,
-		backgroundColor: "#E5E5E5",
-		borderRadius: 4,
+		backgroundColor: colors.gray200,
+		borderRadius: radius.full,
 	},
 	progressBarFill: {
 		height: 8,
 		width: "60%",
 		backgroundColor: colors.successGreen,
-		borderRadius: 4,
+		borderRadius: radius.full,
 	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
+	buttonGroup: {
 		width: "100%",
-		marginBottom: spacing.sm,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
-	secondaryButton: {
-		backgroundColor: colors.surface,
-		height: 52,
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
-		borderWidth: 2,
-		borderColor: colors.borderStrong,
-	},
-	secondaryButtonText: {
-		color: colors.textPrimary,
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
-	},
-	buttonPressed: {
-		opacity: 0.85,
+		gap: spacing.sm,
 	},
 });

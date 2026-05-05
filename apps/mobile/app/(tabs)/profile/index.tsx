@@ -1,11 +1,12 @@
-import { colors, spacing } from "@/theme/tokens";
+import { Button } from "@/components/Button";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import type { ComponentProps } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useAuthStore } from "../../../src/stores/auth";
 import { useProfile } from "../../../src/hooks/useProfile";
+import { useAuthStore } from "../../../src/stores/auth";
 
 type FeatherName = ComponentProps<typeof Feather>["name"];
 
@@ -31,7 +32,8 @@ export default function ProfileScreen() {
 
 	const displayName = profile?.name ?? user?.name ?? "Usuário";
 	const displayPhone = profile?.phone ?? user?.phone ?? "";
-	const displayInitials = profile?.avatarInitials ?? user?.avatarInitials ?? displayName.slice(0, 2).toUpperCase();
+	const displayInitials =
+		profile?.avatarInitials ?? user?.avatarInitials ?? displayName.slice(0, 2).toUpperCase();
 
 	const handleMenuPress = (item: MenuItem) => {
 		if (item.danger) {
@@ -72,7 +74,7 @@ export default function ProfileScreen() {
 				</View>
 
 				{/* Settings Section */}
-				<Text style={styles.sectionLabel}>CONFIGURAÇÕES</Text>
+				<Text style={styles.sectionLabel}>Configurações</Text>
 				<View style={styles.menuCard}>
 					{MENU_ITEMS.map((item, index) => (
 						<View key={item.label}>
@@ -98,12 +100,10 @@ export default function ProfileScreen() {
 								<Feather
 									name="chevron-right"
 									size={20}
-									color={item.danger ? colors.dangerRed : colors.textSecondary}
+									color={item.danger ? colors.dangerRed : colors.textTertiary}
 								/>
 							</Pressable>
-							{index < MENU_ITEMS.length - 1 && (
-								<View style={styles.separator} />
-							)}
+							{index < MENU_ITEMS.length - 1 && <View style={styles.separator} />}
 						</View>
 					))}
 				</View>
@@ -111,33 +111,32 @@ export default function ProfileScreen() {
 				{/* Logout Button */}
 				<Pressable style={styles.logoutButton} onPress={handleLogout}>
 					<Feather name="log-out" size={20} color={colors.dangerRed} />
-					<Text style={styles.logoutText}>SAIR</Text>
+					<Text style={styles.logoutText}>Sair</Text>
 				</Pressable>
 
 				{/* Premium Card */}
 				<View style={styles.premiumCard}>
 					<View style={styles.premiumHeader}>
 						<View style={styles.premiumBadge}>
-							<Text style={styles.premiumBadgeText}>
-								PREMIUM
-							</Text>
+							<Text style={styles.premiumBadgeText}>Premium</Text>
 						</View>
 						<Text style={styles.premiumPrice}>R$ 9,90/mês</Text>
 					</View>
 					<Text style={styles.premiumDescription}>
-						Desbloqueie simulações ilimitadas, plano personalizado
-						pela IA, alertas inteligentes e suporte prioritário.
+						Desbloqueie simulações ilimitadas, plano personalizado pela IA, alertas
+						inteligentes e suporte prioritário.
 					</Text>
-					<Pressable style={styles.premiumButton}>
-						<Text style={styles.premiumButtonText}>
-							ASSINAR AGORA
-						</Text>
-					</Pressable>
+					<Button
+						variant="primary"
+						label="Assinar agora"
+						onPress={() => {}}
+						style={styles.premiumButton}
+					/>
 				</View>
 
 				{/* Disclaimer */}
 				<Text style={styles.disclaimer}>
-					QUITA v1.0 · Feito com 💙 no Brasil{"\n"}
+					QUITA v1.0 · Feito no Brasil{"\n"}
 					Seus dados são criptografados e nunca compartilhados.
 				</Text>
 
@@ -156,7 +155,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.xl,
 	},
 	avatarSection: {
@@ -166,133 +165,124 @@ const styles = StyleSheet.create({
 	avatar: {
 		width: 80,
 		height: 80,
-		borderRadius: 40,
-		backgroundColor: colors.textPrimary,
+		borderRadius: radius.full,
+		backgroundColor: colors.brandNavy,
 		alignItems: "center",
 		justifyContent: "center",
-		marginBottom: 12,
+		marginBottom: spacing.md,
 	},
 	avatarText: {
+		fontFamily: fonts.heading,
 		fontSize: 28,
-		fontWeight: "800",
-		color: "#FFFFFF",
+		color: colors.white,
 	},
 	name: {
+		fontFamily: fonts.heading,
 		fontSize: 22,
-		fontWeight: "800",
 		color: colors.textPrimary,
 		textAlign: "center",
-		marginBottom: 4,
+		marginBottom: spacing.xs,
 	},
 	phone: {
+		fontFamily: fonts.body,
 		fontSize: 14,
 		color: colors.textSecondary,
 		textAlign: "center",
 	},
 	sectionLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 14,
 		color: colors.textSecondary,
-		textTransform: "uppercase",
-		marginBottom: 12,
+		marginBottom: spacing.md,
 	},
 	menuCard: {
 		backgroundColor: colors.surface,
-		borderRadius: 12,
-		padding: 4,
+		borderRadius: radius.card,
+		borderWidth: 0.5,
+		borderColor: colors.border,
 		marginBottom: spacing.xl,
 	},
 	menuItem: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingVertical: 14,
-		paddingHorizontal: 14,
+		paddingVertical: spacing.lg,
+		paddingHorizontal: spacing.lg,
 	},
 	menuLeft: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 14,
+		gap: spacing.md,
 	},
 	menuLabel: {
-		fontSize: 15,
-		fontWeight: "600",
+		fontFamily: fonts.body,
+		fontSize: 14,
 		color: colors.textPrimary,
 	},
 	menuLabelDanger: {
 		color: colors.dangerRed,
 	},
 	separator: {
-		height: 1,
+		height: 0.5,
 		backgroundColor: colors.border,
-		marginHorizontal: 14,
+		marginHorizontal: spacing.lg,
 	},
 	logoutButton: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "center",
-		gap: 8,
-		paddingVertical: 14,
+		gap: spacing.sm,
+		paddingVertical: spacing.md,
 		marginBottom: spacing.xl,
 		borderWidth: 1,
 		borderColor: colors.dangerRed,
-		borderRadius: 12,
+		borderRadius: radius.sm,
 	},
 	logoutText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 		color: colors.dangerRed,
 	},
 	premiumCard: {
-		backgroundColor: colors.textPrimary,
-		borderRadius: 12,
-		padding: 20,
+		backgroundColor: colors.brandNavy,
+		borderRadius: radius.card,
+		padding: spacing.lg,
 		marginBottom: spacing.lg,
 	},
 	premiumHeader: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		marginBottom: 12,
+		marginBottom: spacing.md,
 	},
 	premiumBadge: {
 		backgroundColor: "rgba(255,255,255,0.15)",
-		borderRadius: 100,
-		paddingHorizontal: 10,
-		paddingVertical: 4,
+		borderRadius: radius.pill,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.xs,
 	},
 	premiumBadgeText: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 12,
-		fontWeight: "700",
-		color: "#FFFFFF",
-		letterSpacing: 2,
+		color: colors.white,
 	},
 	premiumPrice: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 15,
-		fontWeight: "700",
 		color: "rgba(255,255,255,0.7)",
 	},
 	premiumDescription: {
+		fontFamily: fonts.body,
 		fontSize: 14,
 		color: "rgba(255,255,255,0.7)",
 		lineHeight: 22,
-		marginBottom: 16,
+		marginBottom: spacing.lg,
 	},
 	premiumButton: {
-		backgroundColor: "#FFFFFF",
-		borderRadius: 12,
-		paddingVertical: 14,
-		alignItems: "center",
-	},
-	premiumButtonText: {
-		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
-		color: colors.textPrimary,
+		marginTop: 0,
 	},
 	disclaimer: {
+		fontFamily: fonts.body,
 		fontSize: 12,
 		color: colors.textSecondary,
 		textAlign: "center",

@@ -1,9 +1,8 @@
-import { colors, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
 import { onboardingExpensesSchema } from "@quita/shared";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-	ActivityIndicator,
 	Alert,
 	KeyboardAvoidingView,
 	Platform,
@@ -15,17 +14,21 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import { useSaveExpenses, useCompleteOnboarding } from "../../src/hooks/useOnboarding";
+import { Button } from "../../src/components";
+import {
+	useCompleteOnboarding,
+	useSaveExpenses,
+} from "../../src/hooks/useOnboarding";
+import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
 const FIELDS = [
-	{ key: "aluguel", label: "ALUGUEL / PRESTAÇÃO", apiKey: "housing" },
-	{ key: "utilidades", label: "LUZ, ÁGUA, GÁS", apiKey: "bills" },
-	{ key: "mercado", label: "MERCADO", apiKey: "food" },
-	{ key: "transporte", label: "TRANSPORTE", apiKey: "transport" },
-	{ key: "internet", label: "INTERNET E CELULAR", apiKey: "telecom" },
+	{ key: "aluguel", label: "Aluguel / prestação", apiKey: "housing" },
+	{ key: "utilidades", label: "Luz, água, gás", apiKey: "bills" },
+	{ key: "mercado", label: "Mercado", apiKey: "food" },
+	{ key: "transporte", label: "Transporte", apiKey: "transport" },
+	{ key: "internet", label: "Internet e celular", apiKey: "telecom" },
 ] as const;
 
 type FieldKey = (typeof FIELDS)[number]["key"];
@@ -50,7 +53,6 @@ export default function ExpensesScreen() {
 		const masked = maskCurrency(text);
 		setValues((prev) => ({ ...prev, [key]: masked }));
 		setErrors((prev) => {
-			// Clear error for the corresponding API key
 			const field = FIELDS.find((f) => f.key === key);
 			const apiKey = field?.apiKey ?? key;
 			if (!prev[apiKey]) return prev;
@@ -62,10 +64,13 @@ export default function ExpensesScreen() {
 
 	const handleGeneratePlan = useCallback(() => {
 		if (expensesSaved) {
-			// Retry only completeOnboarding
 			completeOnboarding.mutate(undefined, {
 				onSuccess: () => router.replace("/"),
-				onError: (error) => Alert.alert("Erro", error.message || "Não foi possível finalizar. Tente novamente."),
+				onError: (error) =>
+					Alert.alert(
+						"Erro",
+						error.message || "Não foi possível finalizar. Tente novamente.",
+					),
 			});
 			return;
 		}
@@ -91,37 +96,31 @@ export default function ExpensesScreen() {
 			return;
 		}
 
-		saveExpenses.mutate(
-			result.data,
-			{
-				onSuccess: () => {
-					setExpensesSaved(true);
-					completeOnboarding.mutate(
-						undefined,
-						{
-							onSuccess: () => {
-								router.replace("/");
-							},
-							onError: (error) => {
-								Alert.alert(
-									"Erro",
-									error.message || "Não foi possível finalizar. Tente novamente.",
-								);
-							},
-						},
-					);
-				},
-				onError: (error) => {
-					Alert.alert(
-						"Erro",
-						error.message || "Não foi possível salvar. Tente novamente.",
-					);
-				},
+		saveExpenses.mutate(result.data, {
+			onSuccess: () => {
+				setExpensesSaved(true);
+				completeOnboarding.mutate(undefined, {
+					onSuccess: () => {
+						router.replace("/");
+					},
+					onError: (error) => {
+						Alert.alert(
+							"Erro",
+							error.message ||
+								"Não foi possível finalizar. Tente novamente.",
+						);
+					},
+				});
 			},
-		);
+			onError: (error) => {
+				Alert.alert(
+					"Erro",
+					error.message || "Não foi possível salvar. Tente novamente.",
+				);
+			},
+		});
 	}, [values, saveExpenses, completeOnboarding, router, expensesSaved]);
 
-	// Map API keys back to field keys for error display
 	const getErrorForField = (key: FieldKey): string | undefined => {
 		const field = FIELDS.find((f) => f.key === key);
 		const apiKey = field?.apiKey ?? key;
@@ -130,7 +129,6 @@ export default function ExpensesScreen() {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			{/* Progress Bar */}
 			<View style={styles.progressBarTrack}>
 				<View style={[styles.progressBarFill, { width: "100%" }]} />
 			</View>
@@ -145,34 +143,28 @@ export default function ExpensesScreen() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Step Indicator */}
 					<Text style={styles.stepIndicator}>
 						Passo 4 de 4 · se não souber algum valor, deixe zerado
 					</Text>
 
-					{/* Back Button */}
 					<Pressable
 						style={styles.backButton}
 						onPress={() => router.back()}
 						hitSlop={12}
 					>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backText}>VOLTAR</Text>
+						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
-					{/* Category Label */}
-					<Text style={styles.stepLabel}>DESPESAS FIXAS</Text>
+					<Text style={styles.stepLabel}>Despesas fixas</Text>
 
-					{/* Title */}
 					<Text style={styles.title}>Suas contas fixas do mês</Text>
 
-					{/* Subtitle */}
 					<Text style={styles.subtitle}>
-						Esses gastos ajudam a entender quanto sobra para
-						negociar dívidas com segurança.
+						Esses gastos ajudam a entender quanto sobra para negociar dívidas com
+						segurança.
 					</Text>
 
-					{/* Fields */}
 					<View style={styles.fieldsContainer}>
 						{FIELDS.map(({ key, label }) => {
 							const fieldError = getErrorForField(key);
@@ -182,17 +174,13 @@ export default function ExpensesScreen() {
 									<TextInput
 										style={styles.fieldInput}
 										value={values[key]}
-										onChangeText={(text) =>
-											handleChange(key, text)
-										}
+										onChangeText={(text) => handleChange(key, text)}
 										keyboardType="numeric"
 										placeholder="R$ 0,00"
-										placeholderTextColor={colors.textSecondary}
+										placeholderTextColor={colors.textTertiary}
 									/>
 									{fieldError ? (
-										<Text style={{ fontSize: 12, color: colors.dangerRed, marginTop: 4 }}>
-											{fieldError}
-										</Text>
+										<Text style={styles.errorText}>{fieldError}</Text>
 									) : null}
 								</View>
 							);
@@ -200,25 +188,14 @@ export default function ExpensesScreen() {
 					</View>
 				</ScrollView>
 
-				{/* Bottom Button */}
 				<View style={styles.bottomContainer}>
-					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && !isLoading && styles.primaryButtonPressed,
-							isLoading && styles.primaryButtonDisabled,
-						]}
+					<Button
+						variant="primary"
+						label="Gerar meu plano"
 						onPress={handleGeneratePlan}
+						loading={isLoading}
 						disabled={isLoading}
-					>
-						{isLoading ? (
-							<ActivityIndicator color={colors.surface} />
-						) : (
-							<Text style={styles.primaryButtonText}>
-								GERAR MEU PLANO
-							</Text>
-						)}
-					</Pressable>
+					/>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
@@ -240,15 +217,16 @@ const styles = StyleSheet.create({
 	},
 	progressBarFill: {
 		height: 4,
-		backgroundColor: colors.successGreen,
+		backgroundColor: colors.accentGreen,
 	},
 	scrollContent: {
-		paddingHorizontal: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		paddingTop: spacing.lg,
 		paddingBottom: spacing.xl,
 	},
 	stepIndicator: {
 		fontSize: 13,
+		fontFamily: fonts.body,
 		color: colors.textSecondary,
 		marginBottom: spacing.lg,
 	},
@@ -260,28 +238,26 @@ const styles = StyleSheet.create({
 		alignSelf: "flex-start",
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		color: colors.successGreen,
-		letterSpacing: 3,
-		textTransform: "uppercase",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
+		color: colors.brandTealDark,
 		marginBottom: spacing.sm,
 	},
 	title: {
-		fontSize: 28,
-		fontWeight: "800",
+		fontSize: 26,
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.md,
 	},
 	subtitle: {
-		fontSize: 15,
-		color: colors.textTertiary,
+		fontSize: 14,
+		fontFamily: fonts.body,
+		color: colors.textSecondary,
 		lineHeight: 22,
 		marginBottom: spacing.xl,
 	},
@@ -293,44 +269,30 @@ const styles = StyleSheet.create({
 		gap: spacing.xs,
 	},
 	fieldLabel: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 13,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textSecondary,
-		letterSpacing: 3,
-		textTransform: "uppercase",
 	},
 	fieldInput: {
 		height: 52,
 		fontSize: 18,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textPrimary,
-		borderBottomWidth: 2,
-		borderBottomColor: colors.borderStrong,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
+		borderRadius: radius.input,
 		paddingHorizontal: 0,
 		paddingVertical: spacing.sm,
+	},
+	errorText: {
+		fontSize: 12,
+		fontFamily: fonts.body,
+		color: colors.dangerRed,
+		marginTop: spacing.xs,
 	},
 	bottomContainer: {
 		paddingHorizontal: spacing.lg,
 		paddingBottom: spacing.md,
 		paddingTop: spacing.sm,
-	},
-	primaryButton: {
-		backgroundColor: colors.textPrimary,
-		height: 52,
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	primaryButtonPressed: {
-		opacity: 0.85,
-	},
-	primaryButtonDisabled: {
-		opacity: 0.6,
-	},
-	primaryButtonText: {
-		color: colors.surface,
-		fontSize: 14,
-		fontWeight: "700",
-		letterSpacing: 2,
 	},
 });

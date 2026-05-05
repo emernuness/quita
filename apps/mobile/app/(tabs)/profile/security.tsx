@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 export default function SecurityScreen() {
 	const router = useRouter();
@@ -25,33 +18,23 @@ export default function SecurityScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				{/* Back Button */}
-				<Pressable
-					onPress={() => router.back()}
-					style={styles.backButton}
-				>
-					<Feather
-						name="arrow-left"
-						size={20}
-						color={colors.textPrimary}
-					/>
-					<Text style={styles.backText}>VOLTAR</Text>
+				<Pressable onPress={() => router.back()} style={styles.backButton}>
+					<Feather name="arrow-left" size={20} color={colors.textPrimary} />
+					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Title */}
-				<Text style={styles.title}>Segurança e Biometria</Text>
+				<Text style={styles.title}>Segurança e biometria</Text>
 
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
-					Proteja seus dados. Ninguém além de você deve ver suas
-					dívidas.
+					Proteja seus dados. Ninguém além de você deve ver suas dívidas.
 				</Text>
 
 				{/* Fingerprint Toggle */}
 				<View style={styles.toggleRow}>
 					<View style={{ flex: 1 }}>
-						<Text style={styles.toggleTitle}>
-							Desbloqueio com digital
-						</Text>
+						<Text style={styles.toggleTitle}>Desbloqueio com digital</Text>
 						<Text style={styles.toggleSubtitle}>
 							Usar impressão digital pra abrir o app
 						</Text>
@@ -59,17 +42,15 @@ export default function SecurityScreen() {
 					<Switch
 						value={fingerprint}
 						onValueChange={setFingerprint}
-						trackColor={{ false: "#E5E5E5", true: "#00AA55" }}
-						thumbColor="#FFFFFF"
+						trackColor={{ false: colors.border, true: colors.accentGreen }}
+						thumbColor={colors.white}
 					/>
 				</View>
 
 				{/* Face Unlock Toggle */}
 				<View style={styles.toggleRow}>
 					<View style={{ flex: 1 }}>
-						<Text style={styles.toggleTitle}>
-							Desbloqueio com rosto
-						</Text>
+						<Text style={styles.toggleTitle}>Desbloqueio com rosto</Text>
 						<Text style={styles.toggleSubtitle}>
 							Usar reconhecimento facial
 						</Text>
@@ -77,8 +58,8 @@ export default function SecurityScreen() {
 					<Switch
 						value={faceUnlock}
 						onValueChange={setFaceUnlock}
-						trackColor={{ false: "#E5E5E5", true: "#00AA55" }}
-						thumbColor="#FFFFFF"
+						trackColor={{ false: colors.border, true: colors.accentGreen }}
+						thumbColor={colors.white}
 					/>
 				</View>
 
@@ -95,21 +76,15 @@ export default function SecurityScreen() {
 							Atualizar sua senha de acesso
 						</Text>
 					</View>
-					<Feather
-						name="chevron-right"
-						size={20}
-						color={colors.textSecondary}
-					/>
+					<Feather name="chevron-right" size={20} color={colors.textTertiary} />
 				</Pressable>
 
 				{/* Info Card */}
 				<View style={styles.infoCard}>
-					<Text style={styles.infoCardTitle}>
-						Visibilidade da segurança
-					</Text>
+					<Text style={styles.infoCardTitle}>Visibilidade da segurança</Text>
 					<Text style={styles.infoCardText}>
-						Em breve, você poderá ver o último acesso, dispositivos
-						conectados e receber alertas de login suspeito.
+						Em breve, você poderá ver o último acesso, dispositivos conectados e
+						receber alertas de login suspeito.
 					</Text>
 				</View>
 			</ScrollView>
@@ -126,28 +101,29 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: spacing.lg,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.lg,
 		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 8,
+		gap: spacing.sm,
 		marginBottom: spacing.md,
 	},
 	backText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 14,
 		color: colors.textPrimary,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
+		fontSize: 28,
 		color: colors.textPrimary,
 		marginBottom: spacing.sm,
 	},
 	subtitle: {
+		fontFamily: fonts.body,
 		fontSize: 15,
 		color: colors.textSecondary,
 		lineHeight: 22,
@@ -158,34 +134,36 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingVertical: spacing.md,
-		borderBottomWidth: 1,
+		borderBottomWidth: 0.5,
 		borderBottomColor: colors.border,
 	},
 	toggleTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 16,
-		fontWeight: "700",
 		color: colors.textPrimary,
 		marginBottom: 2,
 	},
 	toggleSubtitle: {
+		fontFamily: fonts.body,
 		fontSize: 13,
 		color: colors.textSecondary,
 	},
 	infoCard: {
-		backgroundColor: "#EEF4FF",
+		backgroundColor: colors.infoBackground,
 		padding: spacing.md,
-		borderRadius: 12,
+		borderRadius: radius.card,
 		marginTop: spacing.xl,
 	},
 	infoCardTitle: {
+		fontFamily: fonts.bodySemiBold,
 		fontSize: 14,
-		fontWeight: "700",
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 		marginBottom: spacing.xs,
 	},
 	infoCardText: {
+		fontFamily: fonts.body,
 		fontSize: 13,
-		color: colors.accentBlue,
+		color: colors.brandTealDark,
 		lineHeight: 19,
 	},
 });

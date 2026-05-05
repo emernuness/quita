@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { validateWithZod } from "../../src/utils/validation";
@@ -51,11 +51,11 @@ export default function ForgotPasswordScreen() {
 						hitSlop={12}
 					>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
-						<Text style={styles.backButtonText}>VOLTAR</Text>
+						<Text style={styles.backButtonText}>Voltar</Text>
 					</Pressable>
 
 					{/* Step Label */}
-					<Text style={styles.stepLabel}>RECUPERAÇÃO SEGURA</Text>
+					<Text style={styles.stepLabel}>Recuperação segura</Text>
 
 					{/* Steps Indicator */}
 					<Text style={styles.stepsText}>
@@ -101,7 +101,7 @@ export default function ForgotPasswordScreen() {
 
 					{/* Primary Button */}
 					<Button
-						label="ENVIAR CÓDIGO"
+						label="Enviar código"
 						loading={loading}
 						onPress={() => {
 							const result = validateWithZod(forgotPasswordSchema, {
@@ -119,7 +119,7 @@ export default function ForgotPasswordScreen() {
 					<View style={styles.secondaryButtonContainer}>
 						<Button
 							variant="secondary"
-							label="VOLTAR AO LOGIN"
+							label="Voltar ao login"
 							onPress={() => router.push("/(auth)/login")}
 						/>
 					</View>
@@ -138,8 +138,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		padding: 20,
-		paddingBottom: 40,
+		paddingHorizontal: spacing.xl,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.xxl,
 	},
 	backButton: {
 		flexDirection: "row",
@@ -150,36 +151,32 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.lg,
 	},
 	backButtonText: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 3,
+		fontSize: 14,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.textPrimary,
-		textTransform: "uppercase",
 	},
 	stepLabel: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
+		fontSize: 12,
+		fontFamily: fonts.bodySemiBold,
 		color: colors.successGreen,
-		textTransform: "uppercase",
 		marginBottom: spacing.sm,
 	},
 	stepsText: {
 		fontSize: 12,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
 		marginBottom: spacing.lg,
 		lineHeight: 18,
 	},
 	title: {
 		fontSize: 32,
-		fontWeight: "800",
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.md,
 	},
 	description: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 		lineHeight: 22,
 		marginBottom: spacing.lg,
@@ -188,20 +185,22 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.lg,
 	},
 	infoBox: {
-		backgroundColor: "#EEF4FF",
-		padding: 16,
-		borderRadius: 8,
+		backgroundColor: colors.infoBackground,
+		padding: spacing.lg,
+		borderRadius: radius.sm,
+		borderWidth: 0.5,
+		borderColor: colors.border,
 		marginBottom: spacing.md,
 	},
 	infoTitle: {
 		fontSize: 14,
-		fontWeight: "700",
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 		marginBottom: spacing.xs,
 	},
 	infoText: {
 		fontSize: 14,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 		lineHeight: 20,
 	},

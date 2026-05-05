@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, spacing } from "../theme/tokens";
+import { badges, colors, fonts, radius, spacing } from "../theme/tokens";
 
 type DebtStatus = "pending" | "negotiating" | "settled";
 
@@ -13,21 +13,21 @@ interface DebtCardProps {
 	onPress?: () => void;
 }
 
-const statusConfig: Record<DebtStatus, { label: string; color: string; bg: string }> = {
+const statusConfig: Record<
+	DebtStatus,
+	{ label: string; badge: (typeof badges)[keyof typeof badges] }
+> = {
 	pending: {
-		label: "PENDENTE",
-		color: colors.dangerRed,
-		bg: "#FFF0EB",
+		label: "Pendente",
+		badge: badges.warning,
 	},
 	negotiating: {
-		label: "NEGOCIANDO",
-		color: colors.accentBlue,
-		bg: "#EBF0FF",
+		label: "Negociando",
+		badge: badges.info,
 	},
 	settled: {
-		label: "QUITADA",
-		color: colors.successGreen,
-		bg: "#EBFFF3",
+		label: "Quitada",
+		badge: badges.success,
 	},
 };
 
@@ -47,14 +47,19 @@ export function DebtCard({
 	onPress,
 }: DebtCardProps) {
 	const config = statusConfig[status];
-	const amountColor = status === "settled" ? colors.successGreen : colors.dangerRed;
+	const amountColor =
+		status === "settled"
+			? colors.successGreen
+			: status === "pending"
+				? colors.warningOrange
+				: colors.textPrimary;
 
 	return (
 		<Pressable
 			onPress={onPress}
 			style={({ pressed }) => [
 				styles.container,
-				pressed && onPress ? { opacity: 0.8 } : undefined,
+				pressed && onPress ? { opacity: 0.85 } : undefined,
 			]}
 		>
 			<View style={styles.content}>
@@ -69,8 +74,16 @@ export function DebtCard({
 					<Text style={[styles.amount, { color: amountColor }]}>
 						{formatCurrency(amount)}
 					</Text>
-					<View style={[styles.badge, { backgroundColor: config.bg }]}>
-						<Text style={[styles.badgeText, { color: config.color }]}>
+					<View
+						style={[
+							styles.badge,
+							{ backgroundColor: config.badge.background },
+						]}
+					>
+						<View
+							style={[styles.badgeDot, { backgroundColor: config.badge.dot }]}
+						/>
+						<Text style={[styles.badgeText, { color: config.badge.color }]}>
 							{config.label}
 						</Text>
 					</View>
@@ -83,9 +96,10 @@ export function DebtCard({
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: colors.surface,
-		borderWidth: 2,
-		borderColor: colors.textPrimary,
-		padding: spacing.md,
+		borderWidth: 0.5,
+		borderColor: colors.border,
+		borderRadius: radius.card,
+		padding: spacing.md + 2,
 	},
 	content: {
 		flexDirection: "row",
@@ -99,19 +113,17 @@ const styles = StyleSheet.create({
 	},
 	creditor: {
 		fontSize: 16,
-		fontWeight: "700",
+		fontFamily: fonts.heading,
 		color: colors.textPrimary,
 	},
 	category: {
-		fontSize: 11,
-		fontWeight: "600",
-		letterSpacing: 2,
-		textTransform: "uppercase",
+		fontSize: 12,
+		fontFamily: fonts.bodyMedium,
 		color: colors.textSecondary,
 	},
 	dueDate: {
 		fontSize: 13,
-		fontWeight: "500",
+		fontFamily: fonts.bodyMedium,
 		color: colors.textTertiary,
 	},
 	right: {
@@ -120,17 +132,23 @@ const styles = StyleSheet.create({
 	},
 	amount: {
 		fontSize: 16,
-		fontWeight: "700",
+		fontFamily: fonts.heading,
 	},
 	badge: {
-		paddingHorizontal: 8,
-		paddingVertical: 3,
-		borderRadius: 4,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 6,
+		paddingHorizontal: spacing.sm + 2,
+		paddingVertical: 4,
+		borderRadius: radius.pill,
+	},
+	badgeDot: {
+		width: 6,
+		height: 6,
+		borderRadius: radius.full,
 	},
 	badgeText: {
-		fontSize: 10,
-		fontWeight: "700",
-		letterSpacing: 1,
-		textTransform: "uppercase",
+		fontSize: 11,
+		fontFamily: fonts.bodySemiBold,
 	},
 });
