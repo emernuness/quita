@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+	/* Neutrals (brand canônico) */
+	--color-background: #f4f6f4;
+	--color-surface: #ffffff;
+	--color-surface-2: #fafbfa;
+	--color-gray100: #f4f6f4;
+	--color-gray200: #e4e8e5;
+	--color-gray400: #9aa59c;
+	--color-gray600: #5a6560;
+	--color-border: #e4e8e5;
+	--color-border-strong: #1a2030;
+
+	/* Ink */
+	--color-ink: #1a2030;
+	--color-ink-2: #5a6560;
+	--color-ink-3: #9aa59c;
+
+	/* Brand · Primary */
+	--color-teal: #0a5248;
+	--color-teal-dark: #0a5248;
+	--color-teal-mid: #0e6b58;
+	--color-green: #3dc55c;
+	--color-green-light: #5dd67a;
+	--color-navy: #1a2030;
+	--color-black: #0d0d0d;
+
+	/* Semantic (oficial) */
+	--color-success: #2ea84a;
+	--color-success-bg: #dff5e8;
+	--color-success-fg: #115c28;
+
+	--color-warning: #c48e1c;
+	--color-warning-bg: #f9f0dc;
+	--color-warning-fg: #7a5810;
+
+	--color-danger: #b85430;
+	--color-danger-bg: #f9eae5;
+	--color-danger-fg: #7a2d14;
+
+	--color-info: #0e8c74;
+	--color-info-bg: #dff2ee;
+	--color-info-fg: #065848;
+
+	--color-neutral-bg: #f4f6f4;
+	--color-neutral-fg: #5a6560;
+	--color-neutral-dot: #9aa59c;
+
+	/* Category accent (info-bearing tints) */
+	--color-cat-income: #2ea84a;
+	--color-cat-expense: #c48e1c;
+	--color-cat-debt: #0a5248;
+	--color-cat-balance: #1a2030;
+	--color-cat-bank: #0e6b58;
+	--color-cat-overdue: #b85430;
+	--color-cat-housing: #a0522d;
+	--color-cat-personal: #7c5a89;
+	--color-cat-card: #c48e1c;
+	--color-cat-other: #5a6560;
+
+	--color-cat-income-soft: #dff5e8;
+	--color-cat-expense-soft: #f9f0dc;
+	--color-cat-debt-soft: #d5e1df;
+	--color-cat-balance-soft: #dfe1e6;
+	--color-cat-bank-soft: #dfece8;
+	--color-cat-overdue-soft: #f9eae5;
+	--color-cat-housing-soft: #ecd9c7;
+	--color-cat-personal-soft: #e2d6e6;
+	--color-cat-card-soft: #f9f0dc;
+	--color-cat-other-soft: #e4e8e5;
+
+	/* Radii (brand canônico) */
+	--radius-input: 4px;
+	--radius-button: 8px;
+	--radius-card: 12px;
+	--radius-modal: 16px;
+	--radius-page: 20px;
+	--radius-pill: 26px;
+
+	/* Shadows */
+	--shadow-card: 0 1px 3px rgb(15 23 25 / 0.05), 0 1px 2px rgb(15 23 25 / 0.03);
+	--shadow-card-hover: 0 4px 12px rgb(15 23 25 / 0.08), 0 2px 4px rgb(15 23 25 / 0.04);
+	--shadow-pop: 0 24px 64px -12px rgba(10, 82, 72, 0.18);
+
+	/* Spacing tokens (referência) */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 12px;
+	--spacing-lg: 16px;
+	--spacing-xl: 24px;
+	--spacing-2xl: 32px;
+	--spacing-3xl: 48px;
+}
+
+html,
+body {
+	background: var(--color-background);
+	color: var(--color-ink);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+button {
+	font-family: inherit;
+}
+
+/* Cursor pointer em elementos clicáveis (Tailwind v4 preflight remove default) */
+button:not(:disabled),
+a[href],
+[role="button"]:not([aria-disabled="true"]),
+[role="switch"],
+[role="tab"],
+summary,
+label[for] {
+	cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
+.tabular {
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum";
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+.no-scrollbar {
+	scrollbar-width: none;
+}
+
+.card-shadow {
+	box-shadow: var(--shadow-card);
+}
+.card-shadow-hover:hover {
+	box-shadow: var(--shadow-card-hover);
+}
+
+/* Tipografia canônica brand */
+.t-display {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+	color: var(--color-ink);
+}
+.t-h2 {
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--color-ink);
+}
+.t-h3 {
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--color-ink);
+}
+.t-body {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.6;
+	color: var(--color-ink);
+}
+.t-caption {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--color-ink-2);
+}
+.t-label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--color-ink-3);
+}
+.t-numeric {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--color-teal);
+}
