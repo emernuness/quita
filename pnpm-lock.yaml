@@ -303,6 +303,19 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@types/node@22.19.15)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.14(@types/node@22.19.15)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
 
+  packages/motor:
+    dependencies:
+      '@quita/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@types/node@22.19.15)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.14(@types/node@22.19.15)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
+
   packages/shared:
     dependencies:
       zod:
