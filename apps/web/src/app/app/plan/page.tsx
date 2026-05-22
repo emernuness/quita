@@ -1,147 +1,97 @@
 "use client";
 
-import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { Empty } from "@/components/Empty";
+import { KpiCard } from "@/components/KpiCard";
 import { Money } from "@/components/Money";
+import { MotorActionsList } from "@/components/MotorActionsList";
+import { MotorStateBadge, getStateLabel } from "@/components/MotorStateBadge";
 import { PageHeader } from "@/components/PageHeader";
-import { ProgressBar } from "@/components/ProgressBar";
-import { useDashboard } from "@/hooks/useDashboard";
-import { useDebts } from "@/hooks/useDebts";
-import { cn } from "@/lib/cn";
-import { useMemo } from "react";
+import { useMotorPlan, useRecalculateMotor } from "@/hooks/useMotorPlan";
+import { Banknote, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
 
 export default function PlanPage() {
-	const { data: dashboard } = useDashboard();
-	const { data: debts } = useDebts();
+	const { data, isLoading, isError, refetch } = useMotorPlan();
+	const recalculate = useRecalculateMotor();
 
-	const sorted = useMemo(() => {
-		const active = (debts ?? []).filter((d) => d.status !== "paid");
-		return [...active].sort((a, b) => a.totalAmount - b.totalAmount);
-	}, [debts]);
+	if (isLoading) {
+		return (
+			<>
+				<PageHeader title="Meu plano" subtitle="Carregando seu plano atual..." />
+				<Card className="p-10 text-center text-[var(--color-ink-3)]">Calculando…</Card>
+			</>
+		);
+	}
 
-	const monthlyAvailable = dashboard?.surplusForDebts ?? 0;
-	const monthsToClear =
-		monthlyAvailable > 0 ? Math.ceil((dashboard?.totalDebt ?? 0) / monthlyAvailable) : 0;
+	if (isError || !data) {
+		return (
+			<>
+				<PageHeader title="Meu plano" subtitle="Não foi possível carregar seu plano." />
+				<Card className="p-10 text-center">
+					<p className="text-[var(--color-ink-3)] mb-4">Tente recalcular manualmente.</p>
+					<Button onClick={() => refetch()}>Tentar novamente</Button>
+				</Card>
+			</>
+		);
+	}
 
 	return (
 		<>
-			<PageHeader title="Meu plano" subtitle="Gerado com base nas suas dívidas e na sua renda." />
+			<PageHeader title="Meu plano" subtitle={`Estado: ${getStateLabel(data.financialState)}`} />
 
-			<Card tone="navy" className="card-shadow p-7">
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-					<div>
-						<div className="text-[12px] font-semibold uppercase tracking-wider text-white/65">
-							Livre das dívidas em
-						</div>
-						<div className="tabular mt-3 text-[40px] font-bold leading-none">
-							{monthsToClear > 0
-								? `${monthsToClear} ${monthsToClear === 1 ? "mês" : "meses"}`
-								: "—"}
-						</div>
-						{monthlyAvailable <= 0 ? (
-							<p className="mt-3 max-w-md text-[13px] text-white/75">
-								Hoje, suas despesas estão acima do que entra. Vamos primeiro ajustar isso em
-								Transações.
-							</p>
-						) : (
-							<p className="mt-3 max-w-md text-[13px] text-white/75">
-								Se você direcionar{" "}
-								<span className="tabular font-semibold">
-									<Money value={monthlyAvailable} />
-								</span>
-								/mês para dívidas.
-							</p>
-						)}
-					</div>
-					<div>
-						<div className="text-[12px] font-semibold uppercase tracking-wider text-white/65">
-							Progresso geral
-						</div>
-						<div className="tabular mt-3 text-[40px] font-bold leading-none">
-							{dashboard?.progressPercent ?? 0}%
-						</div>
-						<div className="mt-4">
-							<ProgressBar tone="white" value={dashboard?.progressPercent ?? 0} />
-						</div>
-					</div>
-				</div>
-				<div className="mt-6">
-					<Badge tone="success" dot>
-						Estratégia: começar pela menor dívida
-					</Badge>
-				</div>
-			</Card>
-
-			<div className="mt-10">
-				<h2 className="text-[16px] font-bold tracking-tight text-[var(--color-ink)]">
-					Linha do tempo
-				</h2>
-				<p className="mt-1 text-[13px] text-[var(--color-ink-2)]">
-					Ordem sugerida para quitar suas dívidas — a menor primeiro para você sentir progresso
-					rápido.
-				</p>
-
-				{sorted.length === 0 ? (
-					<div className="mt-5">
-						<Empty title="Nada para planejar" description="Você não tem dívidas ativas." />
-					</div>
-				) : (
-					<ol className="mt-6 flex flex-col">
-						{sorted.map((d, i) => {
-							const remaining = d.totalAmount - d.amountPaid;
-							const isCurrent = i === 0;
-							return (
-								<li key={d.id} className="flex gap-5">
-									<div className="flex w-10 flex-col items-center">
-										<div
-											className={cn(
-												"flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-bold",
-												isCurrent
-													? "bg-[var(--color-teal)] text-white"
-													: "border border-[var(--color-border)] bg-white text-[var(--color-ink-2)]",
-											)}
-										>
-											{i + 1}
-										</div>
-										{i < sorted.length - 1 ? (
-											<div className="w-px flex-1 bg-[var(--color-border)]" />
-										) : null}
-									</div>
-									<div className="mb-6 flex-1">
-										<div className="flex items-center gap-2">
-											<div className="text-[15px] font-bold text-[var(--color-ink)]">
-												{d.creditor}
-											</div>
-											{isCurrent ? (
-												<Badge tone="warning" dot>
-													Próximo passo
-												</Badge>
-											) : null}
-										</div>
-										<div className="mt-1 text-[13px] text-[var(--color-ink-2)]">
-											Pagar{" "}
-											<span className="tabular font-semibold text-[var(--color-ink)]">
-												<Money value={remaining} />
-											</span>
-										</div>
-									</div>
-								</li>
-							);
-						})}
-					</ol>
-				)}
+			<div className="flex justify-end mb-4">
+				<Button
+					variant="ghost"
+					onClick={() => recalculate.mutate()}
+					disabled={recalculate.isPending}
+				>
+					<RefreshCw className="h-4 w-4" />
+					{recalculate.isPending ? "Recalculando…" : "Recalcular"}
+				</Button>
 			</div>
 
-			<Card className="mt-10 p-6">
-				<div className="text-[14px] font-bold tracking-tight text-[var(--color-ink)]">
-					Como o plano foi montado
-				</div>
-				<p className="mt-2 text-[13px] leading-relaxed text-[var(--color-ink-2)]">
-					Consideramos renda líquida, despesas fixas e a menor dívida primeiro para acelerar a
-					sensação de progresso. Quando você completa cada passo, o plano se ajusta automaticamente.
-				</p>
+			<Card tone="navy" className="card-shadow p-7 mb-6">
+				<MotorStateBadge state={data.financialState} mode={data.operationMode} />
+				<h2 className="mt-4 text-[20px] font-semibold leading-tight">{data.mainGoal}</h2>
 			</Card>
+
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-6">
+				<KpiCard
+					label="Renda líquida"
+					value={<Money value={data.incomeNetMonthly} />}
+					hint="Considerando frequência das fontes"
+					accent="income"
+					icon={Banknote}
+				/>
+				<KpiCard
+					label="Essenciais"
+					value={<Money value={data.essentialsTotal} />}
+					hint="Moradia, alimentação, saúde, etc."
+					accent="expense"
+					icon={Wallet}
+				/>
+				<KpiCard
+					label="Capacidade segura"
+					value={<Money value={data.safeCapacity} />}
+					hint="Quanto sobra para dívidas + metas"
+					accent={data.safeCapacity < 0 ? "overdue" : "balance"}
+					icon={ShieldCheck}
+				/>
+			</div>
+
+			{data.warnings.length > 0 && (
+				<Card className="p-5 mb-6 bg-[var(--color-warning-bg)] text-[var(--color-warning-fg)] border-[var(--color-warning)]">
+					<div className="text-[12px] uppercase tracking-wider font-semibold mb-2">Atenção</div>
+					<ul className="list-disc list-inside text-[14px] space-y-1">
+						{data.warnings.map((w, idx) => (
+							<li key={`${w.slice(0, 30)}-${idx}`}>{w}</li>
+						))}
+					</ul>
+				</Card>
+			)}
+
+			<h3 className="text-[16px] font-semibold mb-3 mt-2">Ações recomendadas</h3>
+			<MotorActionsList actions={data.actions} />
 		</>
 	);
 }

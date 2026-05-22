@@ -1,17 +1,12 @@
 import { Module } from "@nestjs/common";
 import { PrismaModule } from "../../prisma/prisma.module";
+import { AuthModule } from "../auth/auth.module";
 import { MotorOrchestratorService } from "./motor-orchestrator.service";
+import { MotorController } from "./motor.controller";
 
-/**
- * Spec: Fase 4 §3 — modulo NestJS que envolve @quita/motor (puro)
- * com side effects (Prisma, BullMQ, EventEmitter).
- *
- * Onda 2 entregou o motor puro em packages/motor/. Esta camada wrapa
- * com I/O: carrega contexto do DB, chama generateMonthlyPlan, persiste
- * MonthlyActionPlan + RecommendedAction[].
- */
 @Module({
-	imports: [PrismaModule],
+	imports: [PrismaModule, AuthModule],
+	controllers: [MotorController],
 	providers: [MotorOrchestratorService],
 	exports: [MotorOrchestratorService],
 })
