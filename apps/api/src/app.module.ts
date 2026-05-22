@@ -7,9 +7,13 @@ import { TransformInterceptor } from "./common/interceptors/transform.intercepto
 import { AuthModule } from "./modules/auth/auth.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DebtsModule } from "./modules/debts/debts.module";
+import { EmailModule } from "./modules/email/email.module";
 import { FinancialModule } from "./modules/financial/financial.module";
+import { MotorModule } from "./modules/motor/motor.module";
+import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
+import { SubscriptionModule } from "./modules/subscription/subscription.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queues/queue.module";
 
@@ -49,6 +53,10 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		DebtsModule,
 		DashboardModule,
 		ProfileModule,
+		MotorModule,
+		SubscriptionModule,
+		OcrModule,
+		EmailModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

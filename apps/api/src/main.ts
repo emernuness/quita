@@ -5,6 +5,8 @@ import helmet from "helmet";
 import { Logger } from "nestjs-pino";
 import { AppModule } from "./app.module";
 import { ACCESS_TOKEN_COOKIE } from "./modules/auth/constants";
+import { initPostHog } from "./observability/posthog";
+import { initSentry } from "./observability/sentry";
 
 function parseCorsOrigins(): string[] | true {
 	const raw = process.env.CORS_ORIGINS?.trim();
@@ -20,6 +22,8 @@ function parseCorsOrigins(): string[] | true {
 }
 
 async function bootstrap() {
+	initSentry();
+	initPostHog();
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
 	app.useLogger(app.get(Logger));
 
