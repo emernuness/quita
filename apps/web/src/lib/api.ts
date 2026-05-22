@@ -2,31 +2,18 @@ import type { ApiResponse } from "@quita/shared";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api";
-const TOKEN_KEY = "quita.accessToken";
 
+/**
+ * Axios client configurado para autenticacao por httpOnly cookies (ADR-0001).
+ * - `withCredentials: true` envia cookies em requisicoes cross-origin.
+ * - Tokens NAO ficam acessiveis ao JS — defesa contra XSS.
+ * - Server seta/limpa cookies em /auth/login, /auth/register, /auth/refresh, /auth/logout.
+ */
 export const api = axios.create({
 	baseURL: API_URL,
 	headers: { "Content-Type": "application/json" },
 	timeout: 15000,
-});
-
-export function getToken(): string | null {
-	if (typeof window === "undefined") return null;
-	return window.localStorage.getItem(TOKEN_KEY);
-}
-
-export function setToken(token: string | null): void {
-	if (typeof window === "undefined") return;
-	if (token) window.localStorage.setItem(TOKEN_KEY, token);
-	else window.localStorage.removeItem(TOKEN_KEY);
-}
-
-api.interceptors.request.use((config) => {
-	const token = getToken();
-	if (token) {
-		config.headers.Authorization = `Bearer ${token}`;
-	}
-	return config;
+	withCredentials: true,
 });
 
 function friendlyByStatus(status?: number): string {
@@ -82,7 +69,6 @@ api.interceptors.response.use(
 		const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/register");
 
 		if (status === 401 && !isAuthEndpoint && typeof window !== "undefined") {
-			setToken(null);
 			// hard redirect to login; lazy import store to avoid cycle
 			import("@/stores/auth").then(({ useAuthStore }) => {
 				useAuthStore.getState().logout();

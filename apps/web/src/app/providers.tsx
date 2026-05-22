@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const PUBLIC_PATHS = ["/login", "/register", "/forgot-password"];
 
 function AuthBoot() {
-	const loadToken = useAuthStore((s) => s.loadToken);
+	const loadSession = useAuthStore((s) => s.loadSession);
 	const pathname = usePathname();
 	useEffect(() => {
 		const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname?.startsWith(`${p}/`));
@@ -16,8 +16,8 @@ function AuthBoot() {
 			useAuthStore.setState({ isLoading: false });
 			return;
 		}
-		loadToken();
-	}, [loadToken, pathname]);
+		loadSession();
+	}, [loadSession, pathname]);
 	return null;
 }
 
