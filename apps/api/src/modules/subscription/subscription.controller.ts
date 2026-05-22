@@ -1,8 +1,28 @@
-import { Body, Controller, Headers, HttpCode, Post, Req, UseGuards } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Headers,
+	HttpCode,
+	Post,
+	type RawBodyRequest,
+	Req,
+	UnauthorizedException,
+	UseGuards,
+} from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import type { Request } from "express";
-import { CurrentUser } from "../../common";
+import { z } from "zod";
+import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { StripeService } from "./stripe.service";
+
+const checkoutSessionSchema = z.object({
+	priceId: z.string().min(1),
+	successUrl: z.string().url(),
+	cancelUrl: z.string().url(),
+});
+
+type CheckoutSessionBody = z.infer<typeof checkoutSessionSchema>;
 
 @Controller("subscription")
 export class SubscriptionController {
@@ -10,26 +30,37 @@ export class SubscriptionController {
 
 	@Post("checkout")
 	@UseGuards(JwtAuthGuard)
+	@Throttle({ default: { limit: 5, ttl: 60_000 } })
 	async checkout(
 		@CurrentUser("id") userId: string,
-		@Body() body: { priceId: string; successUrl: string; cancelUrl: string },
+		@CurrentUser("email") userEmail: string | undefined,
+		@Body(new ZodValidationPipe(checkoutSessionSchema)) body: CheckoutSessionBody,
 	) {
 		return this.stripe.createCheckoutSession({
 			userId,
-			priceId: body.priceId,
-			successUrl: body.successUrl,
-			cancelUrl: body.cancelUrl,
+			customerEmail: userEmail,
+			...body,
 		});
 	}
 
 	/**
 	 * Webhook publico (Stripe assina). Auth via header `stripe-signature`,
-	 * nao via JWT. NaoSubmeter a CSRF (rota out-of-band).
+	 * nao via JWT. Usa rawBody para validar assinatura — main.ts foi
+	 * configurado com { rawBody: true } no NestFactory.create.
 	 */
 	@Post("webhook")
 	@HttpCode(200)
-	async webhook(@Req() req: Request, @Headers("stripe-signature") signature: string) {
-		const raw = (req as Request & { rawBody?: Buffer }).rawBody ?? Buffer.from("");
+	async webhook(
+		@Req() req: RawBodyRequest<Request>,
+		@Headers("stripe-signature") signature: string,
+	) {
+		const raw = req.rawBody;
+		if (!raw) {
+			throw new UnauthorizedException("Webhook sem corpo bruto disponível.");
+		}
+		if (!signature) {
+			throw new UnauthorizedException("Webhook sem assinatura Stripe.");
+		}
 		await this.stripe.handleWebhook(raw, signature);
 		return { received: true };
 	}

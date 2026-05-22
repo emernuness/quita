@@ -9,6 +9,7 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DebtsModule } from "./modules/debts/debts.module";
 import { EmailModule } from "./modules/email/email.module";
 import { FinancialModule } from "./modules/financial/financial.module";
+import { HealthModule } from "./modules/health/health.module";
 import { MotorModule } from "./modules/motor/motor.module";
 import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
@@ -48,6 +49,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		]),
 		PrismaModule,
 		QueueModule,
+		HealthModule,
 		AuthModule,
 		OnboardingModule,
 		FinancialModule,

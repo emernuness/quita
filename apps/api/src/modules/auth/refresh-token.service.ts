@@ -20,6 +20,9 @@ export class RefreshTokenService {
 				"REFRESH_TOKEN_HMAC_SECRET nao configurado — defina no .env antes de iniciar a API.",
 			);
 		}
+		if (process.env.NODE_ENV === "production" && secret.length < 32) {
+			throw new Error("REFRESH_TOKEN_HMAC_SECRET deve ter no minimo 32 caracteres em producao.");
+		}
 		return secret;
 	}
 

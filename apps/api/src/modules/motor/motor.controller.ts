@@ -1,4 +1,5 @@
 import { Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { CurrentUser } from "../../common";
 import type { PrismaService } from "../../prisma/prisma.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
@@ -50,6 +51,7 @@ export class MotorController {
 	 * Forca um recalculo do motor (custoso — usar com parcimonia).
 	 */
 	@Post("recalculate")
+	@Throttle({ default: { limit: 3, ttl: 60_000 } })
 	async recalculate(@CurrentUser("id") userId: string) {
 		const result = await this.motor.recalculateForUser(userId, "manual_recalc");
 		return {

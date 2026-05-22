@@ -90,6 +90,7 @@ export class AuthController {
 	}
 
 	@Post("logout")
+	@Throttle({ auth: { limit: 10, ttl: 60_000 } })
 	async logout(
 		@Req() req: Request,
 		@Ip() ip: string,

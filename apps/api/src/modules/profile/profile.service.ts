@@ -8,6 +8,7 @@ import type {
 } from "@quita/shared";
 import * as bcrypt from "bcryptjs";
 import type { PrismaService } from "../../prisma/prisma.service";
+import { BCRYPT_ROUNDS } from "../auth/constants";
 
 @Injectable()
 export class ProfileService {
@@ -58,7 +59,7 @@ export class ProfileService {
 			throw new UnauthorizedException("Current password is incorrect");
 		}
 
-		const passwordHash = await bcrypt.hash(data.newPassword, 10);
+		const passwordHash = await bcrypt.hash(data.newPassword, BCRYPT_ROUNDS);
 
 		await this.prisma.user.update({
 			where: { id: userId },

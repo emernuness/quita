@@ -307,6 +307,7 @@ model User {
   passwordHash             String           @map("password_hash") @db.VarChar(255)
   avatarInitials           String?          @map("avatar_initials") @db.VarChar(5)
   googleId                 String?          @map("google_id") @db.VarChar(255)
+  stripeCustomerId         String?          @unique @map("stripe_customer_id") @db.VarChar(255)
   biometricFingerprint     Boolean?         @default(false) @map("biometric_fingerprint")
   biometricFace            Boolean?         @default(false) @map("biometric_face")
   discreteMode             Boolean?         @default(false) @map("discrete_mode")
@@ -331,7 +332,6 @@ model User {
   acceptedTermsVersion     String?          @map("accepted_terms_version") @db.VarChar(20)
   createdAt                DateTime         @default(now()) @map("created_at")
   updatedAt                DateTime         @updatedAt @map("updated_at")
-  deletedAt                DateTime?        @map("deleted_at")
 
   incomes                 Income[]
   expenses                Expense[]

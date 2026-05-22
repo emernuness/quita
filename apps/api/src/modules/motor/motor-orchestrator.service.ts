@@ -5,16 +5,20 @@ import {
 	type ClassifiedDebt,
 	type DebtCategoryDefaults,
 	type ExpenseCategory,
+	type FinancialState,
 	type MonthlyPlanDraft,
 	type MotorContext,
 	type MotorResult,
+	type OperationMode,
 	type ScoringWeights,
 	type TriggerEvent,
 	aggregateMonthlyIncome,
+	applySmoothingRule,
 	calculatePriorityBatch,
 	classifyDebt,
 	classifyExpense,
 	generateMonthlyPlan,
+	selectMode,
 } from "@quita/motor";
 import type { PrismaService } from "../../prisma/prisma.service";
 
@@ -219,6 +223,32 @@ export class MotorOrchestratorService {
 			);
 		}
 
+		// Aplicar smoothing rule (M-04 review): piora exige 2 meses consecutivos.
+		// Busca os 2 ultimos snapshots para alimentar lastState + lastRawState.
+		const snapshots = await this.prisma.financialStateSnapshot.findMany({
+			where: { userId },
+			orderBy: { capturedAt: "desc" },
+			take: 2,
+		});
+		const lastState = (snapshots[0]?.state as FinancialState | undefined) ?? null;
+		const lastRawState = (snapshots[1]?.state as FinancialState | undefined) ?? null;
+		const smoothed = applySmoothingRule({
+			rawState: result.data.financialState,
+			lastState,
+			lastRawState,
+		});
+		if (smoothed.smoothedState !== result.data.financialState) {
+			this.logger.log({
+				msg: "motor.smoothed",
+				userId,
+				rawState: result.data.financialState,
+				smoothedState: smoothed.smoothedState,
+				transition: smoothed.transitionType,
+			});
+			result.data.financialState = smoothed.smoothedState;
+			result.data.operationMode = selectMode(smoothed.smoothedState) as OperationMode;
+		}
+
 		const persisted = await this.persistPlan(userId, referenceMonth, result.data, classifiedDebts);
 
 		this.logger.log({
@@ -251,6 +281,7 @@ export class MotorOrchestratorService {
 		draft: MonthlyPlanDraft,
 		debts: ClassifiedDebt[],
 	): Promise<{ planId: string }> {
+		// Fix C-02 + H-07: tudo em transação atômica + createMany + Promise.all.
 		const fullDebts = await this.prisma.debt.findMany({
 			where: { id: { in: debts.map((d) => d.id) } },
 			select: { id: true, creditor: true },
@@ -274,47 +305,77 @@ export class MotorOrchestratorService {
 			generatedAt: new Date(),
 		};
 
-		const plan = await this.prisma.monthlyActionPlan.upsert({
-			where: { userId_referenceMonth: { userId, referenceMonth } },
-			update: planData,
-			create: { userId, referenceMonth, ...planData },
+		const planId = await this.prisma.$transaction(async (tx) => {
+			const plan = await tx.monthlyActionPlan.upsert({
+				where: { userId_referenceMonth: { userId, referenceMonth } },
+				update: planData,
+				create: { userId, referenceMonth, ...planData },
+			});
+
+			// DT-16: descarta acoes pendentes; preserva completed.
+			await tx.recommendedAction.deleteMany({
+				where: { planId: plan.id, status: { not: "completed" } },
+			});
+
+			if (draft.actions.length > 0) {
+				await tx.recommendedAction.createMany({
+					data: draft.actions.map((action) => ({
+						planId: plan.id,
+						order: action.order,
+						actionType: action.actionType as ActionType,
+						targetType: (action.targetDebtId ? "debt" : "general") as TargetType,
+						targetDebtId: action.targetDebtId,
+						targetLabel: action.targetDebtId
+							? (debtCreditorById.get(action.targetDebtId) ?? action.targetLabel)
+							: action.targetLabel,
+						amount: action.amount,
+						reason: action.reason,
+						dataConfidence: "medium" as const,
+						status: "pending" as ActionStatus,
+					})),
+				});
+			}
+
+			// Cache priorityScore + priorityReason nas Debts.
+			await Promise.all(
+				draft.priorities.map((p) =>
+					tx.debt.update({
+						where: { id: p.debtId },
+						data: { priorityScore: p.score, priorityReason: p.reason },
+					}),
+				),
+			);
+
+			return plan.id;
 		});
 
-		// DT-16: reconciliacao in-place — descarta acoes pendentes do mes
-		// anterior e cria as novas. Acoes completed sao preservadas.
-		await this.prisma.recommendedAction.deleteMany({
-			where: { planId: plan.id, status: { not: "completed" } },
+		// Snapshot do estado financeiro (alimenta smoothing-rule no proximo ciclo).
+		await this.persistFinancialStateSnapshot(userId, draft, debts);
+
+		return { planId };
+	}
+
+	/**
+	 * Persiste FinancialStateSnapshot do raw_state (sem smoothing) deste
+	 * ciclo. Usado por applySmoothingRule no proximo recálculo (M-04 review).
+	 */
+	private async persistFinancialStateSnapshot(
+		userId: string,
+		draft: MonthlyPlanDraft,
+		debts: ClassifiedDebt[],
+	): Promise<void> {
+		const debtsTotal = debts.reduce((acc, d) => acc + Math.max(0, d.totalAmount - d.amountPaid), 0);
+		await this.prisma.financialStateSnapshot.create({
+			data: {
+				userId,
+				state: draft.financialState,
+				mode: draft.operationMode,
+				incomeNetMonthly: draft.capacity.incomeNetMonthly,
+				essentialsTotal: draft.capacity.essentialsTotal,
+				debtsTotal,
+				safeCapacity: draft.capacity.safeCapacity,
+			},
 		});
-
-		for (const action of draft.actions) {
-			const targetLabel = action.targetDebtId
-				? (debtCreditorById.get(action.targetDebtId) ?? action.targetLabel)
-				: action.targetLabel;
-			await this.prisma.recommendedAction.create({
-				data: {
-					planId: plan.id,
-					order: action.order,
-					actionType: action.actionType as ActionType,
-					targetType: (action.targetDebtId ? "debt" : "general") as TargetType,
-					targetDebtId: action.targetDebtId,
-					targetLabel,
-					amount: action.amount,
-					reason: action.reason,
-					dataConfidence: "medium",
-					status: "pending" as ActionStatus,
-				},
-			});
-		}
-
-		// Cache priorityScore + priorityReason nas Debts (consulta hot path).
-		for (const p of draft.priorities) {
-			await this.prisma.debt.update({
-				where: { id: p.debtId },
-				data: { priorityScore: p.score, priorityReason: p.reason },
-			});
-		}
-
-		return { planId: plan.id };
 	}
 }
 
