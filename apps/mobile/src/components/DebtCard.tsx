@@ -38,14 +38,7 @@ function formatCurrency(value: number): string {
 		.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 }
 
-export function DebtCard({
-	creditor,
-	category,
-	amount,
-	status,
-	dueDate,
-	onPress,
-}: DebtCardProps) {
+export function DebtCard({ creditor, category, amount, status, dueDate, onPress }: DebtCardProps) {
 	const config = statusConfig[status];
 	const amountColor =
 		status === "settled"
@@ -71,21 +64,10 @@ export function DebtCard({
 					<Text style={styles.dueDate}>{dueDate}</Text>
 				</View>
 				<View style={styles.right}>
-					<Text style={[styles.amount, { color: amountColor }]}>
-						{formatCurrency(amount)}
-					</Text>
-					<View
-						style={[
-							styles.badge,
-							{ backgroundColor: config.badge.background },
-						]}
-					>
-						<View
-							style={[styles.badgeDot, { backgroundColor: config.badge.dot }]}
-						/>
-						<Text style={[styles.badgeText, { color: config.badge.color }]}>
-							{config.label}
-						</Text>
+					<Text style={[styles.amount, { color: amountColor }]}>{formatCurrency(amount)}</Text>
+					<View style={[styles.badge, { backgroundColor: config.badge.background }]}>
+						<View style={[styles.badgeDot, { backgroundColor: config.badge.dot }]} />
+						<Text style={[styles.badgeText, { color: config.badge.color }]}>{config.label}</Text>
 					</View>
 				</View>
 			</View>

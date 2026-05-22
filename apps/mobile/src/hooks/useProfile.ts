@@ -1,5 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../services/api";
 import type { ApiResponse, NotificationPreference, User } from "@quita/shared";
 import type {
 	ChangePasswordInput,
@@ -8,6 +6,8 @@ import type {
 	UpdateProfileInput,
 	UpdateSecurityInput,
 } from "@quita/shared";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { useAuthStore } from "../stores/auth";
 
 export function useProfile() {
@@ -25,10 +25,7 @@ export function useUpdateProfile() {
 
 	return useMutation({
 		mutationFn: async (input: UpdateProfileInput) => {
-			const { data } = await api.patch<ApiResponse<User>>(
-				"/profile",
-				input,
-			);
+			const { data } = await api.patch<ApiResponse<User>>("/profile", input);
 			return data.data;
 		},
 		onSuccess: (updatedUser) => {
@@ -59,10 +56,7 @@ export function useUpdateSecurity() {
 
 	return useMutation({
 		mutationFn: async (input: UpdateSecurityInput) => {
-			const { data } = await api.patch<ApiResponse<User>>(
-				"/profile/security",
-				input,
-			);
+			const { data } = await api.patch<ApiResponse<User>>("/profile/security", input);
 			return data.data;
 		},
 		onSuccess: () => {
@@ -76,10 +70,7 @@ export function useToggleDiscreteMode() {
 
 	return useMutation({
 		mutationFn: async (input: UpdateDiscreteModeInput) => {
-			const { data } = await api.patch<ApiResponse<User>>(
-				"/profile/discrete-mode",
-				input,
-			);
+			const { data } = await api.patch<ApiResponse<User>>("/profile/discrete-mode", input);
 			return data.data;
 		},
 		onSuccess: (updatedUser) => {
@@ -96,9 +87,7 @@ export function useNotificationPrefs() {
 	return useQuery({
 		queryKey: ["notificationPrefs"],
 		queryFn: async () => {
-			const { data } = await api.get<ApiResponse<NotificationPreference>>(
-				"/profile/notifications",
-			);
+			const { data } = await api.get<ApiResponse<NotificationPreference>>("/profile/notifications");
 			return data.data;
 		},
 	});

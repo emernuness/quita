@@ -4,7 +4,9 @@ import { DebtNature, DebtStatus } from "../enums/index.js";
 export const createDebtSchema = z.object({
 	categoryId: z.string().uuid(),
 	creditor: z.string().min(1),
-	nature: z.enum([DebtNature.INSTALLMENT, DebtNature.RECURRING, DebtNature.ONE_TIME]).default(DebtNature.ONE_TIME),
+	nature: z
+		.enum([DebtNature.INSTALLMENT, DebtNature.RECURRING, DebtNature.ONE_TIME])
+		.default(DebtNature.ONE_TIME),
 	totalAmount: z.number().positive(),
 	monthlyAmount: z.number().nonnegative().optional(),
 	overdueMonths: z.number().int().min(1).max(120).optional(),

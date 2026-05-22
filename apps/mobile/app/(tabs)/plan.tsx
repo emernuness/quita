@@ -46,33 +46,23 @@ export default function PlanScreen() {
 			>
 				{/* Title */}
 				<Text style={styles.title}>Meu plano</Text>
-				<Text style={styles.subtitle}>
-					Gerado com base nos seus dados.
-				</Text>
+				<Text style={styles.subtitle}>Gerado com base nos seus dados.</Text>
 
 				{/* Hero Card */}
 				<View style={styles.heroCard}>
 					<View style={styles.heroRow}>
 						<View style={styles.heroCol}>
-							<Text style={styles.heroLabel}>
-								Livre das dívidas em
-							</Text>
+							<Text style={styles.heroLabel}>Livre das dívidas em</Text>
 							<Text style={styles.heroBigText}>8 meses</Text>
 						</View>
 						<View style={styles.heroCol}>
-							<Text style={styles.heroLabel}>
-								Economia em juros
-							</Text>
-							<Text style={styles.heroGreenText}>
-								R$ 1.230
-							</Text>
+							<Text style={styles.heroLabel}>Economia em juros</Text>
+							<Text style={styles.heroGreenText}>R$ 1.230</Text>
 						</View>
 					</View>
 					<View style={styles.strategyPill}>
 						<View style={styles.strategyDot} />
-						<Text style={styles.strategyText}>
-							Estratégia: Começar pelo menor
-						</Text>
+						<Text style={styles.strategyText}>Estratégia: Começar pelo menor</Text>
 					</View>
 				</View>
 
@@ -88,22 +78,15 @@ export default function PlanScreen() {
 									style={[
 										styles.dot,
 										item.isCurrent && styles.dotCurrent,
-										item.isCompleted &&
-											styles.dotCompleted,
+										item.isCompleted && styles.dotCompleted,
 									]}
 								/>
-								{index < TIMELINE.length - 1 && (
-									<View style={styles.line} />
-								)}
+								{index < TIMELINE.length - 1 && <View style={styles.line} />}
 							</View>
 							{/* Content */}
 							<View style={styles.timelineContent}>
-								<Text style={styles.timelinePeriod}>
-									{item.period}
-								</Text>
-								<Text style={styles.timelineDescription}>
-									{item.description}
-								</Text>
+								<Text style={styles.timelinePeriod}>{item.period}</Text>
+								<Text style={styles.timelineDescription}>{item.description}</Text>
 							</View>
 						</View>
 					))}
@@ -111,11 +94,10 @@ export default function PlanScreen() {
 
 				{/* AI Explanation Card */}
 				<View style={styles.aiCard}>
-					<Text style={styles.aiCardTitle}>
-						Como o plano foi montado
-					</Text>
+					<Text style={styles.aiCardTitle}>Como o plano foi montado</Text>
 					<Text style={styles.aiCardText}>
-						Consideramos renda líquida, despesas fixas e urgência de vencimento. Se algum valor estiver incompleto, a previsão pode mudar.
+						Consideramos renda líquida, despesas fixas e urgência de vencimento. Se algum valor
+						estiver incompleto, a previsão pode mudar.
 					</Text>
 				</View>
 

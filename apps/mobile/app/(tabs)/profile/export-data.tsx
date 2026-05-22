@@ -1,10 +1,10 @@
+import { Button } from "@/components/Button";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { Button } from "@/components/Button";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 export default function ExportDataScreen() {
 	const router = useRouter();
@@ -27,48 +27,38 @@ export default function ExportDataScreen() {
 
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
-					Seus dados são seus. Baixe uma cópia completa, entenda o prazo de geração
-					e revise o que será incluído.
+					Seus dados são seus. Baixe uma cópia completa, entenda o prazo de geração e revise o que
+					será incluído.
 				</Text>
 
 				{/* Export Option: PDF */}
 				<Pressable
-					style={({ pressed }) => [
-						styles.optionCard,
-						pressed && { opacity: 0.85 },
-					]}
+					style={({ pressed }) => [styles.optionCard, pressed && { opacity: 0.85 }]}
 					onPress={() => {
 						/* TODO: export PDF */
 					}}
 				>
 					<Text style={styles.optionTitle}>Relatório em PDF</Text>
-					<Text style={styles.optionSubtitle}>
-						Resumo de dívidas, plano e progresso
-					</Text>
+					<Text style={styles.optionSubtitle}>Resumo de dívidas, plano e progresso</Text>
 				</Pressable>
 
 				{/* Export Option: CSV */}
 				<Pressable
-					style={({ pressed }) => [
-						styles.optionCard,
-						pressed && { opacity: 0.85 },
-					]}
+					style={({ pressed }) => [styles.optionCard, pressed && { opacity: 0.85 }]}
 					onPress={() => {
 						/* TODO: export CSV */
 					}}
 				>
 					<Text style={styles.optionTitle}>Planilha CSV</Text>
-					<Text style={styles.optionSubtitle}>
-						Todos os seus dados em formato editável
-					</Text>
+					<Text style={styles.optionSubtitle}>Todos os seus dados em formato editável</Text>
 				</Pressable>
 
 				{/* Danger Zone */}
 				<Text style={styles.dangerLabel}>Zona de perigo</Text>
 
 				<Text style={styles.dangerText}>
-					Ao excluir sua conta, todos os seus dados serão permanentemente apagados.
-					Antes disso, exporte uma cópia e revise o prazo legal de retenção.
+					Ao excluir sua conta, todos os seus dados serão permanentemente apagados. Antes disso,
+					exporte uma cópia e revise o prazo legal de retenção.
 				</Text>
 
 				<Button
@@ -81,17 +71,17 @@ export default function ExportDataScreen() {
 				/>
 
 				<Text style={styles.disclaimerText}>
-					Em conformidade com a LGPD (Lei Geral de Proteção de Dados), você tem
-					direito ao acesso e portabilidade dos seus dados a qualquer momento.
+					Em conformidade com a LGPD (Lei Geral de Proteção de Dados), você tem direito ao acesso e
+					portabilidade dos seus dados a qualquer momento.
 				</Text>
 
 				{/* Info Card */}
 				<View style={styles.infoCard}>
 					<Text style={styles.infoCardTitle}>Como funciona a exportação</Text>
 					<Text style={styles.infoCardText}>
-						Os arquivos podem levar alguns minutos para serem gerados. Você
-						receberá uma notificação quando estiver pronto.{"\n\n"}Inclui: dívidas,
-						receitas, despesas, histórico de pagamentos e plano atual.
+						Os arquivos podem levar alguns minutos para serem gerados. Você receberá uma notificação
+						quando estiver pronto.{"\n\n"}Inclui: dívidas, receitas, despesas, histórico de
+						pagamentos e plano atual.
 					</Text>
 				</View>
 			</ScrollView>

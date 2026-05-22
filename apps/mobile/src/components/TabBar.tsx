@@ -1,6 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, fonts, radius, spacing } from "../theme/tokens";
 
@@ -38,12 +38,7 @@ export function CustomTabBar({ state, navigation }: CustomTabBarProps) {
 	const insets = useSafeAreaInsets();
 
 	return (
-		<View
-			style={[
-				styles.wrapper,
-				{ paddingBottom: Math.max(insets.bottom, spacing.sm) },
-			]}
-		>
+		<View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
 			<View style={styles.container}>
 				{TABS.map((tab, index) => {
 					const isActive = state.index === index;
@@ -71,12 +66,7 @@ export function CustomTabBar({ state, navigation }: CustomTabBarProps) {
 								size={18}
 								color={isActive ? colors.brandTealDark : colors.textSecondary}
 							/>
-							<Text
-								style={[
-									styles.tabLabel,
-									isActive ? styles.tabLabelActive : undefined,
-								]}
-							>
+							<Text style={[styles.tabLabel, isActive ? styles.tabLabelActive : undefined]}>
 								{tab.label}
 							</Text>
 						</Pressable>

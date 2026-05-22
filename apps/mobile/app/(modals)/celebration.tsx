@@ -30,8 +30,7 @@ export default function CelebrationModal() {
 				<Text style={styles.subtitle}>Você quitou uma dívida!</Text>
 
 				<Text style={styles.description}>
-					Cada dívida quitada é um passo importante na sua jornada financeira.
-					Continue assim!
+					Cada dívida quitada é um passo importante na sua jornada financeira. Continue assim!
 				</Text>
 
 				<View style={styles.debtCard}>
@@ -67,11 +66,7 @@ export default function CelebrationModal() {
 				</View>
 
 				<View style={styles.buttonGroup}>
-					<Button
-						variant="primary"
-						label="Ver minhas dívidas"
-						onPress={() => router.back()}
-					/>
+					<Button variant="primary" label="Ver minhas dívidas" onPress={() => router.back()} />
 					<Button
 						variant="secondary"
 						label="Compartilhar conquista"

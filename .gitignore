@@ -41,3 +41,8 @@ Thumbs.db
 
 # Claude worktrees
 .claude/worktrees/
+
+# Compiled artifacts inside source dirs (should live in dist/)
+packages/*/src/**/*.js
+packages/*/src/**/*.d.ts
+packages/*/src/**/*.map

@@ -1,9 +1,9 @@
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 export default function SecurityScreen() {
 	const router = useRouter();
@@ -35,9 +35,7 @@ export default function SecurityScreen() {
 				<View style={styles.toggleRow}>
 					<View style={{ flex: 1 }}>
 						<Text style={styles.toggleTitle}>Desbloqueio com digital</Text>
-						<Text style={styles.toggleSubtitle}>
-							Usar impressão digital pra abrir o app
-						</Text>
+						<Text style={styles.toggleSubtitle}>Usar impressão digital pra abrir o app</Text>
 					</View>
 					<Switch
 						value={fingerprint}
@@ -51,9 +49,7 @@ export default function SecurityScreen() {
 				<View style={styles.toggleRow}>
 					<View style={{ flex: 1 }}>
 						<Text style={styles.toggleTitle}>Desbloqueio com rosto</Text>
-						<Text style={styles.toggleSubtitle}>
-							Usar reconhecimento facial
-						</Text>
+						<Text style={styles.toggleSubtitle}>Usar reconhecimento facial</Text>
 					</View>
 					<Switch
 						value={faceUnlock}
@@ -72,9 +68,7 @@ export default function SecurityScreen() {
 				>
 					<View style={{ flex: 1 }}>
 						<Text style={styles.toggleTitle}>Trocar senha</Text>
-						<Text style={styles.toggleSubtitle}>
-							Atualizar sua senha de acesso
-						</Text>
+						<Text style={styles.toggleSubtitle}>Atualizar sua senha de acesso</Text>
 					</View>
 					<Feather name="chevron-right" size={20} color={colors.textTertiary} />
 				</Pressable>
@@ -83,8 +77,8 @@ export default function SecurityScreen() {
 				<View style={styles.infoCard}>
 					<Text style={styles.infoCardTitle}>Visibilidade da segurança</Text>
 					<Text style={styles.infoCardText}>
-						Em breve, você poderá ver o último acesso, dispositivos conectados e
-						receber alertas de login suspeito.
+						Em breve, você poderá ver o último acesso, dispositivos conectados e receber alertas de
+						login suspeito.
 					</Text>
 				</View>
 			</ScrollView>

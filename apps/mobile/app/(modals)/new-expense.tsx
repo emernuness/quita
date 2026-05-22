@@ -149,19 +149,13 @@ export default function NewExpenseModal() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<Text style={styles.title}>Nova despesa</Text>
-					<Text style={styles.subtitle}>
-						Registre seus gastos fixos e recorrentes.
-					</Text>
+					<Text style={styles.subtitle}>Registre seus gastos fixos e recorrentes.</Text>
 
 					{/* Block 1 */}
 					<View style={styles.fieldsContainer}>
@@ -178,9 +172,7 @@ export default function NewExpenseModal() {
 								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
-							{errors.name ? (
-								<Text style={styles.errorText}>{errors.name}</Text>
-							) : null}
+							{errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
 						</View>
 
 						<View style={styles.fieldWrapper}>
@@ -189,10 +181,7 @@ export default function NewExpenseModal() {
 								{CATEGORY_OPTIONS.map((opt) => (
 									<Pressable
 										key={opt.key}
-										style={[
-											styles.toggleChip,
-											category === opt.key && styles.toggleChipSelected,
-										]}
+										style={[styles.toggleChip, category === opt.key && styles.toggleChipSelected]}
 										onPress={() => {
 											if (opt.key !== category) animateLayout();
 											setCategory(opt.key);
@@ -210,9 +199,7 @@ export default function NewExpenseModal() {
 									</Pressable>
 								))}
 							</View>
-							{errors.category ? (
-								<Text style={styles.errorText}>{errors.category}</Text>
-							) : null}
+							{errors.category ? <Text style={styles.errorText}>{errors.category}</Text> : null}
 						</View>
 					</View>
 
@@ -225,10 +212,7 @@ export default function NewExpenseModal() {
 									{TYPE_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[
-												styles.pill,
-												expenseType === opt.key && styles.pillSelected,
-											]}
+											style={[styles.pill, expenseType === opt.key && styles.pillSelected]}
 											onPress={() => setExpenseType(opt.key)}
 										>
 											<Text
@@ -254,9 +238,7 @@ export default function NewExpenseModal() {
 									placeholderTextColor={colors.textTertiary}
 									keyboardType="numeric"
 								/>
-								{errors.amount ? (
-									<Text style={styles.errorText}>{errors.amount}</Text>
-								) : null}
+								{errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
 							</View>
 						</View>
 					)}
@@ -265,9 +247,7 @@ export default function NewExpenseModal() {
 					{showBlock3 && (
 						<View style={styles.fieldsContainer}>
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>
-									Data de vencimento (se souber)
-								</Text>
+								<Text style={styles.fieldLabel}>Data de vencimento (se souber)</Text>
 								<Pressable
 									style={styles.datePickerTrigger}
 									onPress={() => {
@@ -275,22 +255,13 @@ export default function NewExpenseModal() {
 										clearError("dueDate");
 									}}
 								>
-									<Text
-										style={[
-											styles.datePickerText,
-											!dueDate && styles.datePickerPlaceholder,
-										]}
-									>
-										{dueDate
-											? formatDateDisplay(dueDate)
-											: "Toque para selecionar"}
+									<Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
+										{dueDate ? formatDateDisplay(dueDate) : "Toque para selecionar"}
 									</Text>
 									<Feather
 										name="calendar"
 										size={20}
-										color={
-											dueDate ? colors.textPrimary : colors.textSecondary
-										}
+										color={dueDate ? colors.textPrimary : colors.textSecondary}
 									/>
 								</Pressable>
 								{dueDate && (
@@ -320,16 +291,12 @@ export default function NewExpenseModal() {
 												onPress={() => setShowDatePicker(false)}
 												style={styles.datePickerDone}
 											>
-												<Text style={styles.datePickerDoneText}>
-													Confirmar
-												</Text>
+												<Text style={styles.datePickerDoneText}>Confirmar</Text>
 											</Pressable>
 										)}
 									</View>
 								)}
-								{errors.dueDate ? (
-									<Text style={styles.errorText}>{errors.dueDate}</Text>
-								) : null}
+								{errors.dueDate ? <Text style={styles.errorText}>{errors.dueDate}</Text> : null}
 							</View>
 						</View>
 					)}

@@ -167,19 +167,13 @@ export default function NewIncomeModal() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<Text style={styles.title}>Nova receita</Text>
-					<Text style={styles.subtitle}>
-						Quanto mais preciso, melhor o seu plano.
-					</Text>
+					<Text style={styles.subtitle}>Quanto mais preciso, melhor o seu plano.</Text>
 
 					{/* Block 1 */}
 					<View style={styles.fieldsContainer}>
@@ -196,9 +190,7 @@ export default function NewIncomeModal() {
 								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
-							{errors.name ? (
-								<Text style={styles.errorText}>{errors.name}</Text>
-							) : null}
+							{errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
 						</View>
 
 						<View style={styles.fieldWrapper}>
@@ -220,8 +212,7 @@ export default function NewIncomeModal() {
 										<Text
 											style={[
 												styles.naturePillLabel,
-												sourceCategory === opt.key &&
-													styles.naturePillLabelSelected,
+												sourceCategory === opt.key && styles.naturePillLabelSelected,
 											]}
 										>
 											{opt.label}
@@ -229,8 +220,7 @@ export default function NewIncomeModal() {
 										<Text
 											style={[
 												styles.naturePillSubtitle,
-												sourceCategory === opt.key &&
-													styles.naturePillSubtitleSelected,
+												sourceCategory === opt.key && styles.naturePillSubtitleSelected,
 											]}
 										>
 											{opt.subtitle}
@@ -250,17 +240,11 @@ export default function NewIncomeModal() {
 									{TYPE_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[
-												styles.pill,
-												incomeType === opt.key && styles.pillSelected,
-											]}
+											style={[styles.pill, incomeType === opt.key && styles.pillSelected]}
 											onPress={() => setIncomeType(opt.key)}
 										>
 											<Text
-												style={[
-													styles.pillText,
-													incomeType === opt.key && styles.pillTextSelected,
-												]}
+												style={[styles.pillText, incomeType === opt.key && styles.pillTextSelected]}
 											>
 												{opt.label}
 											</Text>
@@ -279,9 +263,7 @@ export default function NewIncomeModal() {
 									placeholderTextColor={colors.textTertiary}
 									keyboardType="numeric"
 								/>
-								{errors.amount ? (
-									<Text style={styles.errorText}>{errors.amount}</Text>
-								) : null}
+								{errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
 							</View>
 						</View>
 					)}
@@ -290,9 +272,7 @@ export default function NewIncomeModal() {
 					{showBlock3 && (
 						<View style={styles.fieldsContainer}>
 							<View style={styles.fieldWrapper}>
-								<Text style={styles.fieldLabel}>
-									Data de recebimento (se souber)
-								</Text>
+								<Text style={styles.fieldLabel}>Data de recebimento (se souber)</Text>
 								<Pressable
 									style={styles.datePickerTrigger}
 									onPress={() => {
@@ -300,22 +280,13 @@ export default function NewIncomeModal() {
 										clearError("dueDate");
 									}}
 								>
-									<Text
-										style={[
-											styles.datePickerText,
-											!dueDate && styles.datePickerPlaceholder,
-										]}
-									>
-										{dueDate
-											? formatDateDisplay(dueDate)
-											: "Toque para selecionar"}
+									<Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
+										{dueDate ? formatDateDisplay(dueDate) : "Toque para selecionar"}
 									</Text>
 									<Feather
 										name="calendar"
 										size={20}
-										color={
-											dueDate ? colors.textPrimary : colors.textSecondary
-										}
+										color={dueDate ? colors.textPrimary : colors.textSecondary}
 									/>
 								</Pressable>
 								{dueDate && (
@@ -345,16 +316,12 @@ export default function NewIncomeModal() {
 												onPress={() => setShowDatePicker(false)}
 												style={styles.datePickerDone}
 											>
-												<Text style={styles.datePickerDoneText}>
-													Confirmar
-												</Text>
+												<Text style={styles.datePickerDoneText}>Confirmar</Text>
 											</Pressable>
 										)}
 									</View>
 								)}
-								{errors.dueDate ? (
-									<Text style={styles.errorText}>{errors.dueDate}</Text>
-								) : null}
+								{errors.dueDate ? <Text style={styles.errorText}>{errors.dueDate}</Text> : null}
 							</View>
 
 							{incomeType !== "fixed" && (
@@ -390,9 +357,7 @@ export default function NewIncomeModal() {
 										<Text style={styles.errorText}>{errors.installments}</Text>
 									) : null}
 									{errors.installmentAmount ? (
-										<Text style={styles.errorText}>
-											{errors.installmentAmount}
-										</Text>
+										<Text style={styles.errorText}>{errors.installmentAmount}</Text>
 									) : null}
 									<Text style={styles.helperText}>
 										Para receitas parceladas, como vendas a prazo.

@@ -1,17 +1,13 @@
-import {
-	Injectable,
-	NotFoundException,
-	UnauthorizedException,
-} from "@nestjs/common";
-import * as bcrypt from "bcryptjs";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import type {
-	UpdateProfileInput,
 	ChangePasswordInput,
-	UpdateSecurityInput,
 	UpdateDiscreteModeInput,
 	UpdateNotificationPrefsInput,
+	UpdateProfileInput,
+	UpdateSecurityInput,
 } from "@quita/shared";
-import { PrismaService } from "../../prisma/prisma.service";
+import * as bcrypt from "bcryptjs";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class ProfileService {
@@ -113,10 +109,7 @@ export class ProfileService {
 		return prefs;
 	}
 
-	async updateNotificationPrefs(
-		userId: string,
-		data: UpdateNotificationPrefsInput,
-	) {
+	async updateNotificationPrefs(userId: string, data: UpdateNotificationPrefsInput) {
 		const prefs = await this.prisma.notificationPreference.upsert({
 			where: { userId },
 			create: {

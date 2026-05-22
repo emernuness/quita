@@ -20,8 +20,7 @@ import { validateWithZod } from "../../src/utils/validation";
 
 export default function CategoriesScreen() {
 	const router = useRouter();
-	const { data: categories, isLoading: isLoadingCategories } =
-		useDebtCategories();
+	const { data: categories, isLoading: isLoadingCategories } = useDebtCategories();
 	const saveCategories = useSaveCategories();
 	const [selected, setSelected] = useState<Set<string>>(new Set());
 	const [error, setError] = useState<string | null>(null);
@@ -47,9 +46,7 @@ export default function CategoriesScreen() {
 		if (!result.success) {
 			const categoryError =
 				result.errors.categoryIds ||
-				Object.entries(result.errors).find(([k]) =>
-					k.startsWith("categoryIds"),
-				)?.[1] ||
+				Object.entries(result.errors).find(([k]) => k.startsWith("categoryIds"))?.[1] ||
 				"Selecione pelo menos uma categoria";
 			setError(categoryError);
 			return;
@@ -73,8 +70,7 @@ export default function CategoriesScreen() {
 			onError: (err) => {
 				Alert.alert(
 					"Erro",
-					err.message ||
-						"Não foi possível salvar as categorias. Tente novamente.",
+					err.message || "Não foi possível salvar as categorias. Tente novamente.",
 				);
 			},
 		});
@@ -91,15 +87,9 @@ export default function CategoriesScreen() {
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}
 			>
-				<Text style={styles.stepIndicator}>
-					Passo 3 de 4 · escolha tudo que faz sentido hoje
-				</Text>
+				<Text style={styles.stepIndicator}>Passo 3 de 4 · escolha tudo que faz sentido hoje</Text>
 
-				<Pressable
-					style={styles.backButton}
-					onPress={() => router.back()}
-					hitSlop={12}
-				>
+				<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
@@ -109,16 +99,16 @@ export default function CategoriesScreen() {
 				<Text style={styles.title}>Pra quem você deve hoje?</Text>
 
 				<Text style={styles.subtitle}>
-					Selecione as categorias que representam suas dívidas atuais. Você vai
-					detalhar cada uma no próximo passo.
+					Selecione as categorias que representam suas dívidas atuais. Você vai detalhar cada uma no
+					próximo passo.
 				</Text>
 
 				<View style={styles.infoBox}>
 					<Text style={styles.infoTitle}>Por que separar por categoria?</Text>
 					<Text style={styles.infoText}>
-						Cada tipo de dívida tem uma estratégia diferente. Cartão cobra juros
-						altos, empréstimo pode ser renegociado, e dívida com pessoa
-						conhecida precisa de conversa. Separar ajuda a priorizar.
+						Cada tipo de dívida tem uma estratégia diferente. Cartão cobra juros altos, empréstimo
+						pode ser renegociado, e dívida com pessoa conhecida precisa de conversa. Separar ajuda a
+						priorizar.
 					</Text>
 				</View>
 
@@ -142,17 +132,12 @@ export default function CategoriesScreen() {
 									onPress={() => toggleCategory(id)}
 								>
 									<Feather
-										name={
-											icon as React.ComponentProps<typeof Feather>["name"]
-										}
+										name={icon as React.ComponentProps<typeof Feather>["name"]}
 										size={18}
 										color={isSelected ? colors.white : colors.textPrimary}
 									/>
 									<Text
-										style={[
-											styles.chipLabel,
-											isSelected && styles.chipTextSelected,
-										]}
+										style={[styles.chipLabel, isSelected && styles.chipTextSelected]}
 										numberOfLines={1}
 									>
 										{name}

@@ -1,14 +1,19 @@
 import { Body, Controller, Get, Patch, UseGuards } from "@nestjs/common";
 import {
-	updateProfileSchema,
+	type ChangePasswordInput,
+	type UpdateDiscreteModeInput,
+	type UpdateNotificationPrefsInput,
+	type UpdateProfileInput,
+	type UpdateSecurityInput,
 	changePasswordSchema,
-	updateSecuritySchema,
 	updateDiscreteModeSchema,
 	updateNotificationPrefsSchema,
+	updateProfileSchema,
+	updateSecuritySchema,
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { ProfileService } from "./profile.service";
+import type { ProfileService } from "./profile.service";
 
 @Controller("profile")
 @UseGuards(JwtAuthGuard)
@@ -23,7 +28,7 @@ export class ProfileController {
 	@Patch()
 	updateProfile(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(updateProfileSchema)) body: any,
+		@Body(new ZodValidationPipe(updateProfileSchema)) body: UpdateProfileInput,
 	) {
 		return this.profileService.updateProfile(userId, body);
 	}
@@ -31,7 +36,7 @@ export class ProfileController {
 	@Patch("password")
 	changePassword(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(changePasswordSchema)) body: any,
+		@Body(new ZodValidationPipe(changePasswordSchema)) body: ChangePasswordInput,
 	) {
 		return this.profileService.changePassword(userId, body);
 	}
@@ -39,7 +44,7 @@ export class ProfileController {
 	@Patch("security")
 	updateSecurity(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(updateSecuritySchema)) body: any,
+		@Body(new ZodValidationPipe(updateSecuritySchema)) body: UpdateSecurityInput,
 	) {
 		return this.profileService.updateSecurity(userId, body);
 	}
@@ -47,7 +52,7 @@ export class ProfileController {
 	@Patch("discrete-mode")
 	toggleDiscreteMode(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(updateDiscreteModeSchema)) body: any,
+		@Body(new ZodValidationPipe(updateDiscreteModeSchema)) body: UpdateDiscreteModeInput,
 	) {
 		return this.profileService.toggleDiscreteMode(userId, body);
 	}
@@ -60,7 +65,7 @@ export class ProfileController {
 	@Patch("notifications")
 	updateNotificationPrefs(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(updateNotificationPrefsSchema)) body: any,
+		@Body(new ZodValidationPipe(updateNotificationPrefsSchema)) body: UpdateNotificationPrefsInput,
 	) {
 		return this.profileService.updateNotificationPrefs(userId, body);
 	}

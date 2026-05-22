@@ -1,25 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import type {
-	OnboardingIncomeInput,
+	DebtNature as PrismaDebtNature,
+	DebtStatus as PrismaDebtStatus,
+	ExpenseCategory as PrismaExpenseCategory,
+	IncomeSource as PrismaIncomeSource,
+} from "@prisma/client";
+import type {
 	OnboardingDebtCategoriesInput,
 	OnboardingDebtInput,
 	OnboardingExpensesInput,
+	OnboardingIncomeInput,
 } from "@quita/shared";
-import type {
-	DebtNature as PrismaDebtNature,
-	DebtStatus as PrismaDebtStatus,
-	IncomeSource as PrismaIncomeSource,
-	ExpenseCategory as PrismaExpenseCategory,
-} from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class OnboardingService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async saveIncome(userId: string, data: OnboardingIncomeInput) {
-		const incomes: { name: string; amount: number; sourceCategory: string }[] =
-			[];
+		const incomes: { name: string; amount: number; sourceCategory: string }[] = [];
 
 		if (data.salary > 0) {
 			incomes.push({
@@ -65,10 +64,7 @@ export class OnboardingService {
 		return { step: 1 };
 	}
 
-	async saveCategories(
-		userId: string,
-		data: OnboardingDebtCategoriesInput,
-	) {
+	async saveCategories(userId: string, data: OnboardingDebtCategoriesInput) {
 		await this.prisma.user.update({
 			where: { id: userId },
 			data: { onboardingStep: 2 },

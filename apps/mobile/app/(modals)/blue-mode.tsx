@@ -32,8 +32,7 @@ export default function BlueModeModal() {
 					<Text style={styles.title}>Você está no azul!</Text>
 
 					<Text style={styles.subtitle}>
-						Todas as suas dívidas foram quitadas. Sua jornada financeira começa
-						agora.
+						Todas as suas dívidas foram quitadas. Sua jornada financeira começa agora.
 					</Text>
 
 					<View style={styles.card}>
@@ -45,9 +44,7 @@ export default function BlueModeModal() {
 										<Text style={styles.statValue}>{stat.value}</Text>
 										<Text style={styles.statLabel}>{stat.label}</Text>
 									</View>
-									{index < STATS.length - 1 && (
-										<View style={styles.statDivider} />
-									)}
+									{index < STATS.length - 1 && <View style={styles.statDivider} />}
 								</React.Fragment>
 							))}
 						</View>
@@ -56,30 +53,21 @@ export default function BlueModeModal() {
 					<View style={styles.nextStepCard}>
 						<Text style={styles.nextStepLabel}>Próximo passo</Text>
 						<Text style={styles.nextStepText}>
-							Agora que você saiu das dívidas, o próximo objetivo é construir
-							uma reserva de emergência. Recomendamos guardar o equivalente a 3
-							meses de despesas.
+							Agora que você saiu das dívidas, o próximo objetivo é construir uma reserva de
+							emergência. Recomendamos guardar o equivalente a 3 meses de despesas.
 						</Text>
 					</View>
 
 					<View style={styles.buttonGroup}>
 						<Pressable
-							style={({ pressed }) => [
-								styles.primaryButton,
-								pressed && styles.buttonPressed,
-							]}
+							style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
 							onPress={() => router.back()}
 						>
-							<Text style={styles.primaryButtonText}>
-								Criar reserva de emergência
-							</Text>
+							<Text style={styles.primaryButtonText}>Criar reserva de emergência</Text>
 						</Pressable>
 
 						<Pressable
-							style={({ pressed }) => [
-								styles.secondaryButton,
-								pressed && styles.buttonPressed,
-							]}
+							style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
 							onPress={() => router.back()}
 						>
 							<Text style={styles.secondaryButtonText}>Ir para o início</Text>

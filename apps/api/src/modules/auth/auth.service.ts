@@ -1,12 +1,8 @@
-import {
-	ConflictException,
-	Injectable,
-	UnauthorizedException,
-} from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcryptjs";
+import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import type { JwtService } from "@nestjs/jwt";
 import type { LoginInput, RegisterInput } from "@quita/shared";
-import { PrismaService } from "../../prisma/prisma.service";
+import * as bcrypt from "bcryptjs";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
@@ -57,10 +53,7 @@ export class AuthService {
 			throw new UnauthorizedException("E-mail ou senha incorretos.");
 		}
 
-		const passwordValid = await bcrypt.compare(
-			data.password,
-			user.passwordHash,
-		);
+		const passwordValid = await bcrypt.compare(data.password, user.passwordHash);
 
 		if (!passwordValid) {
 			throw new UnauthorizedException("E-mail ou senha incorretos.");

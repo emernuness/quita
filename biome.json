@@ -8,6 +8,11 @@
 		"indentStyle": "tab",
 		"lineWidth": 100
 	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -15,6 +20,16 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "dist", ".next", ".expo", ".turbo", ".claude", "prisma/migrations"]
+		"ignore": [
+			"node_modules",
+			"dist",
+			".next",
+			".expo",
+			".turbo",
+			".claude",
+			"prisma/migrations",
+			"apps/mobile",
+			"docs"
+		]
 	}
 }

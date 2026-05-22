@@ -78,22 +78,14 @@ export default function ProfileScreen() {
 				<View style={styles.menuCard}>
 					{MENU_ITEMS.map((item, index) => (
 						<View key={item.label}>
-							<Pressable
-								style={styles.menuItem}
-								onPress={() => handleMenuPress(item)}
-							>
+							<Pressable style={styles.menuItem} onPress={() => handleMenuPress(item)}>
 								<View style={styles.menuLeft}>
 									<Feather
 										name={item.icon}
 										size={20}
 										color={item.danger ? colors.dangerRed : colors.textPrimary}
 									/>
-									<Text
-										style={[
-											styles.menuLabel,
-											item.danger && styles.menuLabelDanger,
-										]}
-									>
+									<Text style={[styles.menuLabel, item.danger && styles.menuLabelDanger]}>
 										{item.label}
 									</Text>
 								</View>
@@ -123,8 +115,8 @@ export default function ProfileScreen() {
 						<Text style={styles.premiumPrice}>R$ 9,90/mês</Text>
 					</View>
 					<Text style={styles.premiumDescription}>
-						Desbloqueie simulações ilimitadas, plano personalizado pela IA, alertas
-						inteligentes e suporte prioritário.
+						Desbloqueie simulações ilimitadas, plano personalizado pela IA, alertas inteligentes e
+						suporte prioritário.
 					</Text>
 					<Button
 						variant="primary"

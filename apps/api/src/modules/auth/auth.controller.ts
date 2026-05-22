@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { loginSchema, registerSchema } from "@quita/shared";
+import { type LoginInput, type RegisterInput, loginSchema, registerSchema } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
-import { AuthService } from "./auth.service";
+import type { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 
 @Controller("auth")
@@ -9,12 +9,12 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post("register")
-	register(@Body(new ZodValidationPipe(registerSchema)) body: any) {
+	register(@Body(new ZodValidationPipe(registerSchema)) body: RegisterInput) {
 		return this.authService.register(body);
 	}
 
 	@Post("login")
-	login(@Body(new ZodValidationPipe(loginSchema)) body: any) {
+	login(@Body(new ZodValidationPipe(loginSchema)) body: LoginInput) {
 		return this.authService.login(body);
 	}
 

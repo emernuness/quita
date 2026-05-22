@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
 import { createPaymentSchema } from "@quita/shared";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
 	ActivityIndicator,
@@ -76,8 +76,7 @@ export default function PayDebtModal() {
 			}
 			createPayment.mutate(result.data, {
 				onSuccess: () => router.back(),
-				onError: () =>
-					Alert.alert("Erro", "Não foi possível confirmar o pagamento."),
+				onError: () => Alert.alert("Erro", "Não foi possível confirmar o pagamento."),
 			});
 		} else {
 			const parsedAmount = Number.parseInt(rawAmountPaid || "0", 10) / 100;
@@ -89,8 +88,7 @@ export default function PayDebtModal() {
 			}
 			createPayment.mutate(result.data, {
 				onSuccess: () => router.back(),
-				onError: () =>
-					Alert.alert("Erro", "Não foi possível confirmar o pagamento."),
+				onError: () => Alert.alert("Erro", "Não foi possível confirmar o pagamento."),
 			});
 		}
 	};
@@ -129,11 +127,7 @@ export default function PayDebtModal() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
@@ -141,8 +135,7 @@ export default function PayDebtModal() {
 					<Text style={styles.title}>Marcar como pago</Text>
 
 					<Text style={styles.subtitle}>
-						{debt?.creditor || "..."} —{" "}
-						{debt ? formatAmount(debt.totalAmount) : "..."}
+						{debt?.creditor || "..."} — {debt ? formatAmount(debt.totalAmount) : "..."}
 					</Text>
 
 					<View style={styles.optionsContainer}>
@@ -151,26 +144,16 @@ export default function PayDebtModal() {
 							return (
 								<Pressable
 									key={option.key}
-									style={[
-										styles.optionItem,
-										isSelected && styles.optionItemSelected,
-									]}
+									style={[styles.optionItem, isSelected && styles.optionItemSelected]}
 									onPress={() => setSelectedOption(option.key)}
 								>
 									<View style={styles.optionContent}>
-										<View
-											style={[
-												styles.radio,
-												isSelected && styles.radioSelected,
-											]}
-										>
+										<View style={[styles.radio, isSelected && styles.radioSelected]}>
 											{isSelected && <View style={styles.radioDot} />}
 										</View>
 										<View style={styles.optionTextContainer}>
 											<Text style={styles.optionTitle}>{option.title}</Text>
-											<Text style={styles.optionSubtitle}>
-												{option.subtitle}
-											</Text>
+											<Text style={styles.optionSubtitle}>{option.subtitle}</Text>
 										</View>
 									</View>
 								</Pressable>
@@ -178,8 +161,7 @@ export default function PayDebtModal() {
 						})}
 					</View>
 
-					{(selectedOption === "partial" ||
-						selectedOption === "renegotiated") && (
+					{(selectedOption === "partial" || selectedOption === "renegotiated") && (
 						<View style={styles.inputSection}>
 							<Text style={styles.label}>Quanto você pagou?</Text>
 							<TextInput
@@ -193,9 +175,7 @@ export default function PayDebtModal() {
 								placeholder="R$ 0,00"
 								placeholderTextColor={colors.textTertiary}
 							/>
-							{errors.amount ? (
-								<Text style={styles.errorText}>{errors.amount}</Text>
-							) : null}
+							{errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
 							<Text style={styles.helperText}>
 								O saldo restante será atualizado e a IA recalcula seu plano.
 							</Text>
@@ -212,34 +192,24 @@ export default function PayDebtModal() {
 
 					<View style={styles.infoBox}>
 						<View style={styles.infoHeader}>
-							<Feather
-								name="alert-circle"
-								size={16}
-								color={colors.textSecondary}
-							/>
+							<Feather name="alert-circle" size={16} color={colors.textSecondary} />
 							<Text style={styles.infoTitle}>Antes de confirmar</Text>
 						</View>
 						<Text style={styles.infoText}>
-							O pagamento ficará em revisão por 24h. Você pode cancelar a
-							marcação nesse período se precisar.
+							O pagamento ficará em revisão por 24h. Você pode cancelar a marcação nesse período se
+							precisar.
 						</Text>
 						<View style={styles.infoLinks}>
 							<Pressable
 								onPress={() =>
-									Alert.alert(
-										"Em breve",
-										"Essa funcionalidade estará disponível em breve.",
-									)
+									Alert.alert("Em breve", "Essa funcionalidade estará disponível em breve.")
 								}
 							>
 								<Text style={styles.infoLink}>Ver impacto no plano</Text>
 							</Pressable>
 							<Pressable
 								onPress={() =>
-									Alert.alert(
-										"Em breve",
-										"Essa funcionalidade estará disponível em breve.",
-									)
+									Alert.alert("Em breve", "Essa funcionalidade estará disponível em breve.")
 								}
 							>
 								<Text style={styles.infoLink}>Adicionar comprovante</Text>

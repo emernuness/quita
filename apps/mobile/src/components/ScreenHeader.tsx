@@ -1,6 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts, spacing } from "../theme/tokens";
 
 interface ScreenHeaderProps {
@@ -23,10 +23,7 @@ export function ScreenHeader({
 			{showBack ? (
 				<Pressable
 					onPress={onBack}
-					style={({ pressed }) => [
-						styles.backButton,
-						pressed ? { opacity: 0.6 } : undefined,
-					]}
+					style={({ pressed }) => [styles.backButton, pressed ? { opacity: 0.6 } : undefined]}
 				>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 					<Text style={styles.backLabel}>Voltar</Text>

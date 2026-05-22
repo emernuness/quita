@@ -1,20 +1,16 @@
-import {
-	ForbiddenException,
-	Injectable,
-	NotFoundException,
-} from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import type {
-	CreateIncomeInput,
-	UpdateIncomeInput,
-	CreateExpenseInput,
-	UpdateExpenseInput,
-} from "@quita/shared";
-import type {
+	ExpenseCategory as PrismaExpenseCategory,
 	FinancialType as PrismaFinancialType,
 	IncomeSource as PrismaIncomeSource,
-	ExpenseCategory as PrismaExpenseCategory,
 } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
+import type {
+	CreateExpenseInput,
+	CreateIncomeInput,
+	UpdateExpenseInput,
+	UpdateIncomeInput,
+} from "@quita/shared";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class FinancialService {
@@ -30,14 +26,8 @@ export class FinancialService {
 			}),
 		]);
 
-		const totalIncome = incomes.reduce(
-			(sum, i) => sum + i.amount.toNumber(),
-			0,
-		);
-		const totalExpenses = expenses.reduce(
-			(sum, e) => sum + e.amount.toNumber(),
-			0,
-		);
+		const totalIncome = incomes.reduce((sum, i) => sum + i.amount.toNumber(), 0);
+		const totalExpenses = expenses.reduce((sum, e) => sum + e.amount.toNumber(), 0);
 		const balance = totalIncome - totalExpenses;
 
 		return { totalIncome, totalExpenses, balance };
@@ -83,8 +73,7 @@ export class FinancialService {
 		const income = await this.prisma.income.findUnique({ where: { id } });
 
 		if (!income) throw new NotFoundException("Income not found");
-		if (income.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (income.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const updated = await this.prisma.income.update({
 			where: { id },
@@ -118,8 +107,7 @@ export class FinancialService {
 		const income = await this.prisma.income.findUnique({ where: { id } });
 
 		if (!income) throw new NotFoundException("Income not found");
-		if (income.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (income.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		await this.prisma.income.delete({ where: { id } });
 
@@ -166,8 +154,7 @@ export class FinancialService {
 		const expense = await this.prisma.expense.findUnique({ where: { id } });
 
 		if (!expense) throw new NotFoundException("Expense not found");
-		if (expense.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (expense.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const updated = await this.prisma.expense.update({
 			where: { id },
@@ -201,8 +188,7 @@ export class FinancialService {
 		const expense = await this.prisma.expense.findUnique({ where: { id } });
 
 		if (!expense) throw new NotFoundException("Expense not found");
-		if (expense.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (expense.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		await this.prisma.expense.delete({ where: { id } });
 

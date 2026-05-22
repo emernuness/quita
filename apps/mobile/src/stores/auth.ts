@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import * as SecureStore from "expo-secure-store";
-import { api } from "../services/api";
 import type { User } from "@quita/shared";
+import * as SecureStore from "expo-secure-store";
+import { create } from "zustand";
+import { api } from "../services/api";
 
 export type AuthUser = Pick<
 	User,
@@ -22,12 +22,7 @@ interface AuthState {
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	login: (email: string, password: string) => Promise<void>;
-	register: (
-		name: string,
-		email: string,
-		phone: string,
-		password: string,
-	) => Promise<void>;
+	register: (name: string, email: string, phone: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	loadToken: () => Promise<void>;
 	setUser: (user: AuthUser) => void;

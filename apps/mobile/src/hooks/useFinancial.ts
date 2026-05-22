@@ -1,5 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../services/api";
 import type { ApiResponse, Expense, Income } from "@quita/shared";
 import type {
 	CreateExpenseInput,
@@ -7,6 +5,8 @@ import type {
 	UpdateExpenseInput,
 	UpdateIncomeInput,
 } from "@quita/shared";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "../services/api";
 
 interface FinancialSummary {
 	totalIncome: number;
@@ -20,8 +20,7 @@ export function useIncomes() {
 	return useQuery({
 		queryKey: ["incomes"],
 		queryFn: async () => {
-			const { data } =
-				await api.get<ApiResponse<Income[]>>("/financial/incomes");
+			const { data } = await api.get<ApiResponse<Income[]>>("/financial/incomes");
 			return data.data;
 		},
 	});
@@ -32,10 +31,7 @@ export function useCreateIncome() {
 
 	return useMutation({
 		mutationFn: async (input: CreateIncomeInput) => {
-			const { data } = await api.post<ApiResponse<Income>>(
-				"/financial/incomes",
-				input,
-			);
+			const { data } = await api.post<ApiResponse<Income>>("/financial/incomes", input);
 			return data.data;
 		},
 		onSuccess: () => {
@@ -50,14 +46,8 @@ export function useUpdateIncome() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({
-			id,
-			...input
-		}: UpdateIncomeInput & { id: string }) => {
-			const { data } = await api.patch<ApiResponse<Income>>(
-				`/financial/incomes/${id}`,
-				input,
-			);
+		mutationFn: async ({ id, ...input }: UpdateIncomeInput & { id: string }) => {
+			const { data } = await api.patch<ApiResponse<Income>>(`/financial/incomes/${id}`, input);
 			return data.data;
 		},
 		onSuccess: () => {
@@ -89,8 +79,7 @@ export function useExpenses() {
 	return useQuery({
 		queryKey: ["expenses"],
 		queryFn: async () => {
-			const { data } =
-				await api.get<ApiResponse<Expense[]>>("/financial/expenses");
+			const { data } = await api.get<ApiResponse<Expense[]>>("/financial/expenses");
 			return data.data;
 		},
 	});
@@ -101,10 +90,7 @@ export function useCreateExpense() {
 
 	return useMutation({
 		mutationFn: async (input: CreateExpenseInput) => {
-			const { data } = await api.post<ApiResponse<Expense>>(
-				"/financial/expenses",
-				input,
-			);
+			const { data } = await api.post<ApiResponse<Expense>>("/financial/expenses", input);
 			return data.data;
 		},
 		onSuccess: () => {
@@ -119,14 +105,8 @@ export function useUpdateExpense() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({
-			id,
-			...input
-		}: UpdateExpenseInput & { id: string }) => {
-			const { data } = await api.patch<ApiResponse<Expense>>(
-				`/financial/expenses/${id}`,
-				input,
-			);
+		mutationFn: async ({ id, ...input }: UpdateExpenseInput & { id: string }) => {
+			const { data } = await api.patch<ApiResponse<Expense>>(`/financial/expenses/${id}`, input);
 			return data.data;
 		},
 		onSuccess: () => {
@@ -158,9 +138,7 @@ export function useFinancialSummary() {
 	return useQuery({
 		queryKey: ["financialSummary"],
 		queryFn: async () => {
-			const { data } = await api.get<ApiResponse<FinancialSummary>>(
-				"/financial/summary",
-			);
+			const { data } = await api.get<ApiResponse<FinancialSummary>>("/financial/summary");
 			return data.data;
 		},
 	});

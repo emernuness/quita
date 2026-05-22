@@ -1,21 +1,10 @@
-import React from "react";
-import {
-	Alert,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, spacing } from "@/theme/tokens";
-import {
-	useNotificationPrefs,
-	useUpdateNotificationPrefs,
-} from "../../../src/hooks/useProfile";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNotificationPrefs, useUpdateNotificationPrefs } from "../../../src/hooks/useProfile";
 
 type NotificationPrefKey =
 	| "dueDates"
@@ -82,8 +71,7 @@ export default function NotificationsScreen() {
 		updatePrefs.mutate(
 			{ [key]: !currentValue },
 			{
-				onError: () =>
-					Alert.alert("Erro", "Não foi possível atualizar a preferência."),
+				onError: () => Alert.alert("Erro", "Não foi possível atualizar a preferência."),
 			},
 		);
 	};
@@ -105,9 +93,7 @@ export default function NotificationsScreen() {
 				<Text style={styles.title}>Notificações</Text>
 
 				{/* Subtitle */}
-				<Text style={styles.subtitle}>
-					Escolha o que quer receber no celular.
-				</Text>
+				<Text style={styles.subtitle}>Escolha o que quer receber no celular.</Text>
 
 				{/* Toggle Rows */}
 				{NOTIFICATION_SETTINGS.map((item) => (

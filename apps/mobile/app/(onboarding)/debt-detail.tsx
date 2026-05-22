@@ -1,8 +1,8 @@
 import { Feather } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import type { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { onboardingDebtSchema } from "@quita/shared";
 import type { OnboardingDebtInput } from "@quita/shared";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import type { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -26,10 +26,7 @@ import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
 // --- Android LayoutAnimation enablement ---
-if (
-	Platform.OS === "android" &&
-	UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -81,7 +78,10 @@ const OVERDUE_PILLS = [1, 2, 3, 4, 5] as const;
 type CategoryInfo = { id: string; name: string; icon: string };
 
 function formatBRL(value: number): string {
-	return `R$ ${value.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+	return `R$ ${value
+		.toFixed(2)
+		.replace(".", ",")
+		.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 }
 
 /** Format Date → DD/MM/AAAA for display */
@@ -126,9 +126,7 @@ export default function DebtDetailScreen() {
 	const currentCategory = allCategories[categoryIndex];
 	const isLastCategory = categoryIndex === allCategories.length - 1;
 
-	const [collectedDebts, setCollectedDebts] = useState<OnboardingDebtInput[]>(
-		[],
-	);
+	const [collectedDebts, setCollectedDebts] = useState<OnboardingDebtInput[]>([]);
 	const debtsForCurrentCategory = useMemo(
 		() => collectedDebts.filter((d) => d.categoryId === currentCategory?.id),
 		[collectedDebts, currentCategory?.id],
@@ -151,9 +149,7 @@ export default function DebtDetailScreen() {
 
 	const isOverdue = status === "ATRASADA";
 	const effectiveOverdueMonths =
-		overdueMonths === -1
-			? Number.parseInt(overdueCustom, 10) || null
-			: overdueMonths;
+		overdueMonths === -1 ? Number.parseInt(overdueCustom, 10) || null : overdueMonths;
 
 	const showBlock2 = nature !== null;
 	const showBlock3 = nature === "one_time" || valorMensal.length > 0;
@@ -176,13 +172,7 @@ export default function DebtDetailScreen() {
 			}
 		}
 		return null;
-	}, [
-		valorMensal,
-		nature,
-		effectiveOverdueMonths,
-		totalParcelas,
-		parcelaAtual,
-	]);
+	}, [valorMensal, nature, effectiveOverdueMonths, totalParcelas, parcelaAtual]);
 
 	const resetForm = useCallback(() => {
 		setCredor("");
@@ -212,27 +202,15 @@ export default function DebtDetailScreen() {
 			creditor: credor.trim(),
 			nature: nature || ("one_time" as const),
 			totalAmount,
-			monthlyAmount:
-				nature !== "one_time" && monthlyAmount > 0 ? monthlyAmount : undefined,
-			overdueMonths:
-				isOverdue && effectiveOverdueMonths
-					? effectiveOverdueMonths
-					: undefined,
+			monthlyAmount: nature !== "one_time" && monthlyAmount > 0 ? monthlyAmount : undefined,
+			overdueMonths: isOverdue && effectiveOverdueMonths ? effectiveOverdueMonths : undefined,
 			totalInstallments:
-				nature === "installment" && parsedTotalParcelas > 0
-					? parsedTotalParcelas
-					: undefined,
+				nature === "installment" && parsedTotalParcelas > 0 ? parsedTotalParcelas : undefined,
 			currentInstallment:
-				nature === "installment" && parsedParcelaAtual > 0
-					? parsedParcelaAtual
-					: undefined,
+				nature === "installment" && parsedParcelaAtual > 0 ? parsedParcelaAtual : undefined,
 			hasInterest: juros != null ? JUROS_MAP[juros] : undefined,
 			dueDate: dueDateISO,
-			status: STATUS_MAP[status] as
-				| "on_time"
-				| "overdue"
-				| "renegotiated"
-				| "paid",
+			status: STATUS_MAP[status] as "on_time" | "overdue" | "renegotiated" | "paid",
 		};
 	}, [
 		credor,
@@ -262,8 +240,7 @@ export default function DebtDetailScreen() {
 			const tp = Number.parseInt(totalParcelas, 10);
 			const pa = Number.parseInt(parcelaAtual, 10);
 			if (tp > 0 && pa > 0 && pa > tp) {
-				formErrors.currentInstallment =
-					"Parcela atual não pode ser maior que o total";
+				formErrors.currentInstallment = "Parcela atual não pode ser maior que o total";
 			}
 		}
 		if (Object.keys(formErrors).length > 0) {
@@ -275,15 +252,7 @@ export default function DebtDetailScreen() {
 			return zodResult;
 		}
 		return { success: true as const, data: data as OnboardingDebtInput };
-	}, [
-		buildDebtData,
-		nature,
-		isOverdue,
-		overdueMonths,
-		overdueCustom,
-		totalParcelas,
-		parcelaAtual,
-	]);
+	}, [buildDebtData, nature, isOverdue, overdueMonths, overdueCustom, totalParcelas, parcelaAtual]);
 
 	const handleAddAnother = useCallback(() => {
 		const result = validateForm();
@@ -308,10 +277,7 @@ export default function DebtDetailScreen() {
 				saveDebts.mutate(allDebts, {
 					onSuccess: () => router.push("/(onboarding)/expenses"),
 					onError: (error) =>
-						Alert.alert(
-							"Erro",
-							error.message || "Não foi possível salvar as dívidas.",
-						),
+						Alert.alert("Erro", error.message || "Não foi possível salvar as dívidas."),
 				});
 			} else {
 				setCollectedDebts(allDebts);
@@ -323,10 +289,7 @@ export default function DebtDetailScreen() {
 				saveDebts.mutate(collectedDebts, {
 					onSuccess: () => router.push("/(onboarding)/expenses"),
 					onError: (error) =>
-						Alert.alert(
-							"Erro",
-							error.message || "Não foi possível salvar as dívidas.",
-						),
+						Alert.alert("Erro", error.message || "Não foi possível salvar as dívidas."),
 				});
 			} else {
 				setCategoryIndex((i) => i + 1);
@@ -350,9 +313,7 @@ export default function DebtDetailScreen() {
 	const handleRemoveDebt = useCallback(
 		(index: number) => {
 			setCollectedDebts((prev) => {
-				const inCat = prev.filter(
-					(d) => d.categoryId === currentCategory?.id,
-				);
+				const inCat = prev.filter((d) => d.categoryId === currentCategory?.id);
 				const toRemove = inCat[index];
 				if (!toRemove) return prev;
 				const gi = prev.indexOf(toRemove);
@@ -419,16 +380,13 @@ export default function DebtDetailScreen() {
 		return (
 			<SafeAreaView style={styles.safeArea}>
 				<View style={styles.emptyStateWrapper}>
-					<Text style={styles.emptyStateText}>
-						Nenhuma categoria selecionada.
-					</Text>
+					<Text style={styles.emptyStateText}>Nenhuma categoria selecionada.</Text>
 				</View>
 			</SafeAreaView>
 		);
 	}
 
-	const progress =
-		((categoryIndex + 1) / (allCategories.length + 1)) * 25 + 50;
+	const progress = ((categoryIndex + 1) / (allCategories.length + 1)) * 25 + 50;
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -447,26 +405,17 @@ export default function DebtDetailScreen() {
 					showsVerticalScrollIndicator={false}
 				>
 					<Text style={styles.stepIndicator}>
-						Categoria {categoryIndex + 1} de {allCategories.length} · você pode
-						editar depois
+						Categoria {categoryIndex + 1} de {allCategories.length} · você pode editar depois
 					</Text>
 
-					<Pressable
-						style={styles.backButton}
-						onPress={handleBack}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={handleBack} hitSlop={12}>
 						<Feather name="arrow-left" size={20} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<View style={styles.categoryLabel}>
 						<Feather
-							name={
-								currentCategory.icon as React.ComponentProps<
-									typeof Feather
-								>["name"]
-							}
+							name={currentCategory.icon as React.ComponentProps<typeof Feather>["name"]}
 							size={14}
 							color={colors.brandTealDark}
 						/>
@@ -482,19 +431,14 @@ export default function DebtDetailScreen() {
 								Dívidas adicionadas ({debtsForCurrentCategory.length})
 							</Text>
 							{debtsForCurrentCategory.map((debt, idx) => (
-								<View
-									key={`${debt.creditor}-${idx}`}
-									style={styles.addedDebtCard}
-								>
+								<View key={`${debt.creditor}-${idx}`} style={styles.addedDebtCard}>
 									<View style={styles.addedDebtInfo}>
 										<Text style={styles.addedDebtCreditor} numberOfLines={1}>
 											{debt.creditor}
 										</Text>
 										<Text style={styles.addedDebtAmount}>
 											{formatBRL(debt.totalAmount)}
-											{debt.monthlyAmount
-												? ` · ${formatBRL(debt.monthlyAmount)}/mês`
-												: ""}
+											{debt.monthlyAmount ? ` · ${formatBRL(debt.monthlyAmount)}/mês` : ""}
 										</Text>
 									</View>
 									<Pressable
@@ -524,9 +468,7 @@ export default function DebtDetailScreen() {
 								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
-							{errors.creditor ? (
-								<Text style={styles.errorText}>{errors.creditor}</Text>
-							) : null}
+							{errors.creditor ? <Text style={styles.errorText}>{errors.creditor}</Text> : null}
 						</View>
 
 						<View style={styles.fieldWrapper}>
@@ -535,10 +477,7 @@ export default function DebtDetailScreen() {
 								{NATURE_OPTIONS.map((opt) => (
 									<Pressable
 										key={opt.key}
-										style={[
-											styles.naturePill,
-											nature === opt.key && styles.naturePillSelected,
-										]}
+										style={[styles.naturePill, nature === opt.key && styles.naturePillSelected]}
 										onPress={() => {
 											if (opt.key !== nature) {
 												animateLayout();
@@ -561,8 +500,7 @@ export default function DebtDetailScreen() {
 										<Text
 											style={[
 												styles.naturePillSubtitle,
-												nature === opt.key &&
-													styles.naturePillSubtitleSelected,
+												nature === opt.key && styles.naturePillSubtitleSelected,
 											]}
 										>
 											{opt.subtitle}
@@ -570,9 +508,7 @@ export default function DebtDetailScreen() {
 									</Pressable>
 								))}
 							</View>
-							{errors.nature ? (
-								<Text style={styles.errorText}>{errors.nature}</Text>
-							) : null}
+							{errors.nature ? <Text style={styles.errorText}>{errors.nature}</Text> : null}
 						</View>
 					</View>
 
@@ -613,34 +549,23 @@ export default function DebtDetailScreen() {
 													style={[
 														styles.statusDot,
 														{
-															backgroundColor: selected
-																? badge.dot
-																: colors.gray400,
+															backgroundColor: selected ? badge.dot : colors.gray400,
 														},
 													]}
 												/>
-												<Text
-													style={[
-														styles.statusPillText,
-														selected && { color: badge.color },
-													]}
-												>
+												<Text style={[styles.statusPillText, selected && { color: badge.color }]}>
 													{opt.label}
 												</Text>
 											</Pressable>
 										);
 									})}
 								</View>
-								<Text style={styles.helperText}>
-									Se não souber, escolha a opção mais próxima.
-								</Text>
+								<Text style={styles.helperText}>Se não souber, escolha a opção mais próxima.</Text>
 							</View>
 
 							{isOverdue && (
 								<View style={styles.fieldWrapper}>
-									<Text style={styles.fieldLabel}>
-										Há quantos meses está atrasada?
-									</Text>
+									<Text style={styles.fieldLabel}>Há quantos meses está atrasada?</Text>
 									<View style={styles.overduePillRow}>
 										{OVERDUE_PILLS.map((n) => (
 											<Pressable
@@ -657,8 +582,7 @@ export default function DebtDetailScreen() {
 												<Text
 													style={[
 														styles.overduePillText,
-														overdueMonths === n &&
-															styles.overduePillTextSelected,
+														overdueMonths === n && styles.overduePillTextSelected,
 													]}
 												>
 													{n}
@@ -675,8 +599,7 @@ export default function DebtDetailScreen() {
 											<Text
 												style={[
 													styles.overduePillText,
-													overdueMonths === -1 &&
-														styles.overduePillTextSelected,
+													overdueMonths === -1 && styles.overduePillTextSelected,
 												]}
 											>
 												6+
@@ -698,9 +621,7 @@ export default function DebtDetailScreen() {
 										/>
 									)}
 									{errors.overdueMonths ? (
-										<Text style={styles.errorText}>
-											{errors.overdueMonths}
-										</Text>
+										<Text style={styles.errorText}>{errors.overdueMonths}</Text>
 									) : null}
 									<Text style={styles.helperText}>
 										Não precisa ser exato, uma estimativa já ajuda.
@@ -751,9 +672,7 @@ export default function DebtDetailScreen() {
 											/>
 										</View>
 										{errors.currentInstallment ? (
-											<Text style={styles.errorText}>
-												{errors.currentInstallment}
-											</Text>
+											<Text style={styles.errorText}>{errors.currentInstallment}</Text>
 										) : null}
 										<Text style={styles.helperText}>
 											Em qual parcela você está e quantas são no total.
@@ -773,9 +692,7 @@ export default function DebtDetailScreen() {
 										placeholderTextColor={colors.textTertiary}
 										keyboardType="numeric"
 									/>
-									<Text style={styles.helperText}>
-										Quanto essa conta custa por mês.
-									</Text>
+									<Text style={styles.helperText}>Quanto essa conta custa por mês.</Text>
 								</View>
 							)}
 						</View>
@@ -800,11 +717,7 @@ export default function DebtDetailScreen() {
 								{autoSuggestion && !valorTotal && (
 									<Pressable
 										onPress={() =>
-											setValorTotal(
-												maskCurrency(
-													String(Math.round(autoSuggestion * 100)),
-												),
-											)
+											setValorTotal(maskCurrency(String(Math.round(autoSuggestion * 100))))
 										}
 									>
 										<Text style={styles.autoSuggestion}>
@@ -818,9 +731,7 @@ export default function DebtDetailScreen() {
 								{errors.totalAmount ? (
 									<Text style={styles.errorText}>{errors.totalAmount}</Text>
 								) : null}
-								<Text style={styles.helperText}>
-									Quanto você deve hoje no total.
-								</Text>
+								<Text style={styles.helperText}>Quanto você deve hoje no total.</Text>
 							</View>
 
 							<View style={styles.fieldWrapper}>
@@ -829,10 +740,7 @@ export default function DebtDetailScreen() {
 									{JUROS_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt}
-											style={[
-												styles.pillButton,
-												juros === opt && styles.pillButtonSelected,
-											]}
+											style={[styles.pillButton, juros === opt && styles.pillButtonSelected]}
 											onPress={() => setJuros(opt)}
 										>
 											<Text
@@ -859,15 +767,8 @@ export default function DebtDetailScreen() {
 									accessibilityRole="button"
 									accessibilityLabel="Selecionar data de vencimento"
 								>
-									<Text
-										style={[
-											styles.datePickerText,
-											!dueDate && styles.datePickerPlaceholder,
-										]}
-									>
-										{dueDate
-											? formatDateDisplay(dueDate)
-											: "Toque para selecionar a data"}
+									<Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
+										{dueDate ? formatDateDisplay(dueDate) : "Toque para selecionar a data"}
 									</Text>
 									<Feather
 										name="calendar"
@@ -894,21 +795,14 @@ export default function DebtDetailScreen() {
 											minimumDate={new Date(2000, 0, 1)}
 										/>
 										{Platform.OS === "ios" && (
-											<Pressable
-												onPress={handleDateConfirm}
-												style={styles.datePickerDone}
-											>
-												<Text style={styles.datePickerDoneText}>
-													Confirmar
-												</Text>
+											<Pressable onPress={handleDateConfirm} style={styles.datePickerDone}>
+												<Text style={styles.datePickerDoneText}>Confirmar</Text>
 											</Pressable>
 										)}
 									</View>
 								)}
 
-								{errors.dueDate ? (
-									<Text style={styles.errorText}>{errors.dueDate}</Text>
-								) : null}
+								{errors.dueDate ? <Text style={styles.errorText}>{errors.dueDate}</Text> : null}
 							</View>
 						</View>
 					)}
@@ -930,8 +824,8 @@ export default function DebtDetailScreen() {
 
 							<View style={styles.infoCard}>
 								<Text style={styles.infoCardText}>
-									Você pode ter várias dívidas na mesma categoria. Ex: 3 cartões
-									de crédito diferentes.
+									Você pode ter várias dívidas na mesma categoria. Ex: 3 cartões de crédito
+									diferentes.
 								</Text>
 							</View>
 						</>

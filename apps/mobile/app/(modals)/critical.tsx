@@ -34,23 +34,17 @@ export default function CriticalModal() {
 				<Text style={styles.title}>Situação crítica</Text>
 
 				<Text style={styles.subtitle}>
-					Suas despesas são iguais ou maiores que sua renda. Não sobra dinheiro
-					para pagar dívidas.
+					Suas despesas são iguais ou maiores que sua renda. Não sobra dinheiro para pagar dívidas.
 				</Text>
 
 				<View style={styles.table}>
 					{SUMMARY_ROWS.map((row, index) => (
 						<View
 							key={row.label}
-							style={[
-								styles.tableRow,
-								index < SUMMARY_ROWS.length - 1 && styles.tableRowBorder,
-							]}
+							style={[styles.tableRow, index < SUMMARY_ROWS.length - 1 && styles.tableRowBorder]}
 						>
 							<Text style={styles.tableLabel}>{row.label}</Text>
-							<Text style={[styles.tableValue, { color: row.color }]}>
-								{row.value}
-							</Text>
+							<Text style={[styles.tableValue, { color: row.color }]}>{row.value}</Text>
 						</View>
 					))}
 				</View>
@@ -61,8 +55,7 @@ export default function CriticalModal() {
 						<Text style={styles.aiTitle}>Sugestão da IA</Text>
 					</View>
 					<Text style={styles.aiText}>
-						Com base nos seus dados, criamos um plano para equilibrar suas
-						finanças:
+						Com base nos seus dados, criamos um plano para equilibrar suas finanças:
 					</Text>
 					{AI_SUGGESTIONS.map((suggestion, index) => (
 						<View key={index} style={styles.aiBulletRow}>
@@ -73,16 +66,8 @@ export default function CriticalModal() {
 				</View>
 
 				<View style={styles.buttonGroup}>
-					<Button
-						variant="primary"
-						label="Revisar minhas despesas"
-						onPress={() => router.back()}
-					/>
-					<Button
-						variant="secondary"
-						label="Falar com suporte"
-						onPress={() => router.back()}
-					/>
+					<Button variant="primary" label="Revisar minhas despesas" onPress={() => router.back()} />
+					<Button variant="secondary" label="Falar com suporte" onPress={() => router.back()} />
 				</View>
 			</ScrollView>
 		</SafeAreaView>

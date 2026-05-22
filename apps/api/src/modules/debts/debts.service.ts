@@ -5,24 +5,28 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import type {
-	CreateDebtInput,
-	UpdateDebtInput,
-	CreatePaymentInput,
-} from "@quita/shared";
-import type {
+	Debt as PrismaDebt,
+	DebtCategory as PrismaDebtCategory,
 	DebtNature as PrismaDebtNature,
 	DebtStatus as PrismaDebtStatus,
+	Payment as PrismaPayment,
 	PaymentType as PrismaPaymentType,
 } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
 import type { Decimal } from "@prisma/client/runtime/library";
+import type { CreateDebtInput, CreatePaymentInput, UpdateDebtInput } from "@quita/shared";
+import type { PrismaService } from "../../prisma/prisma.service";
+
+type DebtWithRelations = PrismaDebt & {
+	category?: PrismaDebtCategory | null;
+	payments?: PrismaPayment[];
+};
 
 function decimalToNumber(val: Decimal | null | undefined): number | null {
 	if (val == null) return null;
 	return val.toNumber();
 }
 
-function serializeDebt(debt: any) {
+function serializeDebt(debt: DebtWithRelations) {
 	return {
 		...debt,
 		totalAmount: debt.totalAmount.toNumber(),
@@ -31,7 +35,7 @@ function serializeDebt(debt: any) {
 		interestSaved: decimalToNumber(debt.interestSaved),
 		...(debt.payments
 			? {
-					payments: debt.payments.map((p: any) => ({
+					payments: debt.payments.map((p) => ({
 						...p,
 						amount: p.amount.toNumber(),
 					})),
@@ -67,8 +71,7 @@ export class DebtsService {
 		});
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		return serializeDebt(debt);
 	}
@@ -105,8 +108,7 @@ export class DebtsService {
 		const debt = await this.prisma.debt.findUnique({ where: { id } });
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const updated = await this.prisma.debt.update({
 			where: { id },
@@ -149,26 +151,20 @@ export class DebtsService {
 		const debt = await this.prisma.debt.findUnique({ where: { id } });
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		await this.prisma.debt.delete({ where: { id } });
 
 		return { deleted: true };
 	}
 
-	async createPayment(
-		userId: string,
-		debtId: string,
-		data: CreatePaymentInput,
-	) {
+	async createPayment(userId: string, debtId: string, data: CreatePaymentInput) {
 		const debt = await this.prisma.debt.findUnique({
 			where: { id: debtId },
 		});
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const canUndoUntil = new Date();
 		canUndoUntil.setHours(canUndoUntil.getHours() + 24);
@@ -213,12 +209,10 @@ export class DebtsService {
 		});
 
 		if (!payment) throw new NotFoundException("Payment not found");
-		if (payment.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (payment.userId !== userId) throw new ForbiddenException("Not your resource");
 		if (payment.debtId !== debtId)
 			throw new BadRequestException("Payment does not belong to this debt");
-		if (payment.undone)
-			throw new BadRequestException("Payment already undone");
+		if (payment.undone) throw new BadRequestException("Payment already undone");
 		if (!payment.canUndoUntil || payment.canUndoUntil < new Date())
 			throw new BadRequestException("Undo window expired");
 
@@ -228,10 +222,7 @@ export class DebtsService {
 
 		if (!debt) throw new NotFoundException("Debt not found");
 
-		const newAmountPaid = Math.max(
-			0,
-			debt.amountPaid.toNumber() - payment.amount.toNumber(),
-		);
+		const newAmountPaid = Math.max(0, debt.amountPaid.toNumber() - payment.amount.toNumber());
 
 		await this.prisma.$transaction([
 			this.prisma.payment.update({

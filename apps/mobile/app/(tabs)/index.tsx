@@ -36,19 +36,13 @@ export default function HomeScreen() {
 				<View style={styles.header}>
 					<View>
 						<Text style={styles.greeting}>Oi, {firstName}!</Text>
-						<Text style={styles.subtitle}>
-							Vamos quitar mais uma?
-						</Text>
+						<Text style={styles.subtitle}>Vamos quitar mais uma?</Text>
 					</View>
 					<Pressable
 						style={styles.bellButton}
 						onPress={() => router.push("/(tabs)/profile/notifications")}
 					>
-						<Feather
-							name="bell"
-							size={24}
-							color={colors.textPrimary}
-						/>
+						<Feather name="bell" size={24} color={colors.textPrimary} />
 					</Pressable>
 				</View>
 
@@ -66,12 +60,16 @@ export default function HomeScreen() {
 				<View style={styles.balanceRow}>
 					<View style={[styles.balanceCard, { flex: 1 }]}>
 						<Text style={styles.label}>Entra</Text>
-						<Text style={styles.balanceAmountGreen}>{formatBRLCompact(data?.totalIncome ?? 0)}</Text>
+						<Text style={styles.balanceAmountGreen}>
+							{formatBRLCompact(data?.totalIncome ?? 0)}
+						</Text>
 					</View>
 					<View style={{ width: spacing.md }} />
 					<View style={[styles.balanceCard, { flex: 1 }]}>
 						<Text style={styles.label}>Sai em fixas</Text>
-						<Text style={styles.balanceAmountRed}>{formatBRLCompact(data?.totalExpenses ?? 0)}</Text>
+						<Text style={styles.balanceAmountRed}>
+							{formatBRLCompact(data?.totalExpenses ?? 0)}
+						</Text>
 					</View>
 				</View>
 
@@ -85,30 +83,26 @@ export default function HomeScreen() {
 				{data?.debts && data.debts.length > 0 && data.debts[0].status !== "paid" ? (
 					<View style={styles.actionCard}>
 						<View style={styles.actionHeader}>
-							<Text style={styles.actionLabel}>
-								Próxima ação recomendada
-							</Text>
+							<Text style={styles.actionLabel}>Próxima ação recomendada</Text>
 							<View style={styles.impactBadge}>
 								<View style={styles.impactBadgeDot} />
-								<Text style={styles.impactBadgeText}>
-									Prioridade
-								</Text>
+								<Text style={styles.impactBadgeText}>Prioridade</Text>
 							</View>
 						</View>
 						<Text style={styles.actionTitle}>
-							Pagar {formatBRL(data.debts[0].totalAmount - data.debts[0].amountPaid)} para {data.debts[0].creditor}
+							Pagar {formatBRL(data.debts[0].totalAmount - data.debts[0].amountPaid)} para{" "}
+							{data.debts[0].creditor}
 						</Text>
 						<Text style={styles.actionDescription}>
-							{data.debts[0].category?.name ?? "Dívida"} · Comece pela menor dívida para ganhar fôlego.
+							{data.debts[0].category?.name ?? "Dívida"} · Comece pela menor dívida para ganhar
+							fôlego.
 						</Text>
 						<View style={styles.actionButtons}>
 							<Pressable
 								style={styles.actionBtnPrimary}
 								onPress={() => router.push(`/(tabs)/debts/${data.debts[0].id}` as any)}
 							>
-								<Text style={styles.actionBtnPrimaryText}>
-									Ver detalhes
-								</Text>
+								<Text style={styles.actionBtnPrimaryText}>Ver detalhes</Text>
 							</Pressable>
 						</View>
 					</View>

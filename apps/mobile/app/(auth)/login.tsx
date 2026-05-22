@@ -1,4 +1,6 @@
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Feather } from "@expo/vector-icons";
+import { loginSchema } from "@quita/shared";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
@@ -14,8 +16,6 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
-import { loginSchema } from "@quita/shared";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { useAuthStore } from "../../src/stores/auth";
@@ -66,10 +66,7 @@ export default function LoginScreen() {
 		setLoading(true);
 		try {
 			await login(normalizedEmail, password);
-			await SecureStore.setItemAsync(
-				REMEMBER_FLAG_KEY,
-				rememberMe ? "1" : "0",
-			);
+			await SecureStore.setItemAsync(REMEMBER_FLAG_KEY, rememberMe ? "1" : "0");
 			if (rememberMe) {
 				await SecureStore.setItemAsync(REMEMBER_EMAIL_KEY, normalizedEmail);
 			} else {
@@ -79,9 +76,7 @@ export default function LoginScreen() {
 			router.replace("/");
 		} catch (error: unknown) {
 			const message =
-				error instanceof Error
-					? error.message
-					: "Verifique suas credenciais e tente novamente.";
+				error instanceof Error ? error.message : "Verifique suas credenciais e tente novamente.";
 			Alert.alert("Erro ao entrar", message);
 		} finally {
 			setLoading(false);
@@ -100,11 +95,7 @@ export default function LoginScreen() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
@@ -115,9 +106,7 @@ export default function LoginScreen() {
 							style={styles.logo}
 							resizeMode="contain"
 						/>
-						<Text style={styles.subtitle}>
-							Organize suas dívidas com segurança.
-						</Text>
+						<Text style={styles.subtitle}>Organize suas dívidas com segurança.</Text>
 					</View>
 
 					<Text style={styles.sectionTitle}>Entrar na sua conta</Text>
@@ -154,15 +143,8 @@ export default function LoginScreen() {
 							onPress={() => setRememberMe((v) => !v)}
 							hitSlop={8}
 						>
-							<View
-								style={[
-									styles.checkbox,
-									rememberMe && styles.checkboxChecked,
-								]}
-							>
-								{rememberMe && (
-									<Feather name="check" size={14} color={colors.white} />
-								)}
+							<View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+								{rememberMe && <Feather name="check" size={14} color={colors.white} />}
 							</View>
 							<Text style={styles.rememberLabel}>Lembrar de mim</Text>
 						</Pressable>
@@ -179,16 +161,8 @@ export default function LoginScreen() {
 					</View>
 
 					<Pressable
-						style={({ pressed }) => [
-							styles.googleButton,
-							pressed && { opacity: 0.8 },
-						]}
-						onPress={() =>
-							Alert.alert(
-								"Em breve",
-								"Login com Google estará disponível em breve.",
-							)
-						}
+						style={({ pressed }) => [styles.googleButton, pressed && { opacity: 0.8 }]}
+						onPress={() => Alert.alert("Em breve", "Login com Google estará disponível em breve.")}
 					>
 						<Text style={styles.googleButtonText}>G{"  "}Entrar com Google</Text>
 					</Pressable>

@@ -68,10 +68,7 @@ export default function IncomeScreen() {
 				router.push("/(onboarding)/categories");
 			},
 			onError: (error) => {
-				Alert.alert(
-					"Erro",
-					error.message || "Não foi possível salvar sua renda. Tente novamente.",
-				);
+				Alert.alert("Erro", error.message || "Não foi possível salvar sua renda. Tente novamente.");
 			},
 		});
 	}, [values, saveIncome, router]);
@@ -101,8 +98,8 @@ export default function IncomeScreen() {
 					<Text style={styles.title}>Quanto entra por mês?</Text>
 
 					<Text style={styles.subtitle}>
-						Some salário, renda extra e ajuda. Uma estimativa já basta para
-						montar um plano realista.
+						Some salário, renda extra e ajuda. Uma estimativa já basta para montar um plano
+						realista.
 					</Text>
 
 					<View style={styles.fieldsContainer}>
@@ -117,9 +114,7 @@ export default function IncomeScreen() {
 									placeholder="R$ 0,00"
 									placeholderTextColor={colors.textTertiary}
 								/>
-								{errors[key] ? (
-									<Text style={styles.errorText}>{errors[key]}</Text>
-								) : null}
+								{errors[key] ? <Text style={styles.errorText}>{errors[key]}</Text> : null}
 							</View>
 						))}
 					</View>
