@@ -10,6 +10,7 @@ import type { ConfidenceLevel } from "./types";
 export type ExpenseCategory =
 	| "housing"
 	| "utilities"
+	| "bills" // alias legado de utilities (mantido para compat com schema)
 	| "telecom"
 	| "food"
 	| "transport"
@@ -66,6 +67,15 @@ export const EXPENSE_CATEGORY_DEFAULTS: Record<ExpenseCategory, ExpenseDefaults>
 		isLegalObligation: false,
 	},
 	utilities: {
+		isEssential: true,
+		consequenceIfUnpaid: "service_cut",
+		canReduce: true,
+		canCancel: false,
+		isIncomeRelated: false,
+		isLegalObligation: false,
+	},
+	// Legacy alias — mesmas regras de utilities.
+	bills: {
 		isEssential: true,
 		consequenceIfUnpaid: "service_cut",
 		canReduce: true,

@@ -60,15 +60,17 @@ function decideState(input: StateClassifierInput): FinancialState {
 }
 
 function isInsolvent(c: CapacityBreakdown): boolean {
-	return c.incomeNetMonthly > 0 && c.incomeNetMonthly < c.minimumVital;
+	// Fix H-04 + conformidade com spec §17.1: renda zero ou abaixo do
+	// minimo vital regional => insolvencia pratica.
+	if (c.incomeNetMonthly <= 0) return true;
+	return c.incomeNetMonthly < c.minimumVital;
 }
 
 function isOverindebted(c: CapacityBreakdown, debtsMonthly: number): boolean {
 	if (c.incomeNetMonthly <= 0) return false;
-	// Capacidade pre-debito: o que sobra depois de essenciais + sazonais +
-	// proteccao + legals + reservas, mas ANTES de subtrair dividas.
-	const preDebtCapacity = c.safeCapacity + 0; // safeCapacity ja exclui dividas
-	void preDebtCapacity;
+	// TODO DT-20: implementar segunda condicao da spec §7.4 (simulacao
+	// de quitacao em 60 meses) quando simulator estiver disponivel sem
+	// causar dependencia ciclica.
 	return debtsMonthly > c.incomeNetMonthly * OVERINDEBTEDNESS_RATIO;
 }
 

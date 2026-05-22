@@ -27,7 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		super({
 			jwtFromRequest: extractFromCookie,
 			ignoreExpiration: false,
-			secretOrKey: process.env.JWT_SECRET || "dev-secret-change-in-production",
+			secretOrKey: (() => {
+				const s = process.env.JWT_SECRET;
+				if (!s) throw new Error("JWT_SECRET nao configurado.");
+				return s;
+			})(),
 		});
 	}
 

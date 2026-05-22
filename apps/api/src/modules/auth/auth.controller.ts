@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, Ip, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { type LoginInput, type RegisterInput, loginSchema, registerSchema } from "@quita/shared";
 import type { Request, Response } from "express";
 import { CurrentUser, ZodValidationPipe } from "../../common";
@@ -45,6 +46,7 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post("register")
+	@Throttle({ auth: { limit: 10, ttl: 60_000 } })
 	async register(
 		@Body(new ZodValidationPipe(registerSchema)) body: RegisterInput,
 		@Ip() ip: string,
@@ -57,6 +59,7 @@ export class AuthController {
 	}
 
 	@Post("login")
+	@Throttle({ auth: { limit: 10, ttl: 60_000 } })
 	async login(
 		@Body(new ZodValidationPipe(loginSchema)) body: LoginInput,
 		@Ip() ip: string,
@@ -69,6 +72,7 @@ export class AuthController {
 	}
 
 	@Post("refresh")
+	@Throttle({ auth: { limit: 10, ttl: 60_000 } })
 	async refresh(
 		@Req() req: Request,
 		@Ip() ip: string,

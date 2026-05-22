@@ -73,15 +73,11 @@ function simulateScenario(
 		month += 1;
 		const active = debts.filter((d) => d.remainingAmount > 0.01);
 
-		// Aplica juros mensais em todas as ativas
-		for (const d of active) {
-			const interest = d.remainingAmount * d.interestRateMonthly;
-			d.remainingAmount += interest;
-			totalInterestPaid += interest;
-		}
+		// Ordem correta de amortizacao (fix H-02):
+		// 1. Distribuir pagamento (paga parte que ja inclui juros do mes anterior)
+		// 2. Aplicar juros sobre o saldo residual
+		// Inverter a ordem inflava totalInterestPaid e estimatedMonths.
 
-		// Distribui pagamento: minimos obrigatorios primeiro, sobra vai
-		// para a divida priorizada pela strategy.
 		let budgetLeft = contribution;
 		for (const d of active) {
 			const minPay = Math.min(d.monthlyMinimum, d.remainingAmount);
@@ -97,6 +93,14 @@ function simulateScenario(
 				const extra = Math.min(budgetLeft, target.remainingAmount);
 				target.remainingAmount -= extra;
 			}
+		}
+
+		// Aplica juros sobre saldo residual (apos pagamento).
+		for (const d of active) {
+			if (d.remainingAmount <= 0.01) continue;
+			const interest = d.remainingAmount * d.interestRateMonthly;
+			d.remainingAmount += interest;
+			totalInterestPaid += interest;
 		}
 	}
 

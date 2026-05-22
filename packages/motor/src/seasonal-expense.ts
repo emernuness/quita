@@ -67,7 +67,8 @@ function monthsBetween(from: Date, to: Date): number {
 	const months = to.getMonth() - from.getMonth();
 	const total = years * 12 + months;
 	if (total <= 0) return 0;
-	// Ajusta para considerar dia do mes (>= = ja passou)
-	if (to.getDate() < from.getDate() && total > 0) return total - 1 + 1; // arredonda
+	// Se o dia da ocorrencia ja passou no proprio mes corrente, conta
+	// um mes a menos (fix L-01: condicional anterior era no-op).
+	if (to.getDate() < from.getDate()) return Math.max(0, total - 1);
 	return total;
 }

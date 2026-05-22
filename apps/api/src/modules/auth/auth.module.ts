@@ -12,9 +12,20 @@ import { RefreshTokenService } from "./refresh-token.service";
 @Module({
 	imports: [
 		PassportModule,
-		JwtModule.register({
-			secret: process.env.JWT_SECRET || "dev-secret-change-in-production",
-			signOptions: { expiresIn: `${ACCESS_TOKEN_TTL_SECONDS}s` },
+		JwtModule.registerAsync({
+			useFactory: () => {
+				const secret = process.env.JWT_SECRET;
+				if (!secret) {
+					throw new Error("JWT_SECRET nao configurado — defina no .env antes de iniciar a API.");
+				}
+				if (process.env.NODE_ENV === "production" && secret.length < 32) {
+					throw new Error("JWT_SECRET deve ter no minimo 32 caracteres em producao.");
+				}
+				return {
+					secret,
+					signOptions: { expiresIn: `${ACCESS_TOKEN_TTL_SECONDS}s` },
+				};
+			},
 		}),
 	],
 	controllers: [AuthController],

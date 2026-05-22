@@ -34,8 +34,15 @@ describe("classifyExpense", () => {
 		expect(r.consequenceIfUnpaid).toBe("legal_action");
 	});
 
-	it("EXPENSE_CATEGORY_DEFAULTS cobre todas as categorias", () => {
+	it("EXPENSE_CATEGORY_DEFAULTS cobre todas as categorias (incluindo legacy bills)", () => {
 		const categories = Object.keys(EXPENSE_CATEGORY_DEFAULTS);
-		expect(categories.length).toBe(14);
+		expect(categories.length).toBe(15);
+		expect(categories).toContain("bills"); // alias legado
+	});
+
+	it("bills (legacy) classifica igual a utilities", () => {
+		const bills = classifyExpense({ category: "bills" });
+		const utilities = classifyExpense({ category: "utilities" });
+		expect({ ...bills, category: "x" }).toEqual({ ...utilities, category: "x" });
 	});
 });
