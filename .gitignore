@@ -35,3 +35,9 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Obsidian vault config (per-machine)
+.obsidian/
+
+# Claude worktrees
+.claude/worktrees/
