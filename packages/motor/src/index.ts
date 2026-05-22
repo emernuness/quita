@@ -21,3 +21,40 @@ export {
 	selectStrategy,
 	type StrategySelectorInput,
 } from "./strategy-selector";
+export {
+	type ClassifiedExpense,
+	type ClassifyExpenseOptions,
+	type ConsequenceType,
+	type ExpenseCategory,
+	type ExpenseDefaults,
+	EXPENSE_CATEGORY_DEFAULTS,
+	classifyExpense,
+	type RawExpense,
+} from "./expense-classifier";
+export {
+	type ClassifiedDebtMeta,
+	type DebtCategoryDefaults,
+	type InterestClass,
+	type InterestRateReference,
+	type RateSource,
+	type RawDebt,
+	classifyDebt,
+} from "./debt-classifier";
+export {
+	type ExpenseFrequency,
+	type SeasonalExpenseInput,
+	type SeasonalProvisionResult,
+	calculateMonthlyProvision,
+} from "./seasonal-expense";
+export {
+	type EvaluateGoalInput,
+	type GoalInput,
+	type GoalProgress,
+	evaluateGoal,
+} from "./goal-tracker";
+export {
+	type SettlementEvaluationResult,
+	type SettlementProposalInput,
+	type SettlementRecommendation,
+	evaluateSettlement,
+} from "./settlement-validator";
