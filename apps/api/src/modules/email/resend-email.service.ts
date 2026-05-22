@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Resend } from "resend";
 
 export interface SendEmailInput {
 	to: string;
@@ -8,17 +9,22 @@ export interface SendEmailInput {
 }
 
 /**
- * Scaffold Resend (Onda 5). Em dev sem RESEND_API_KEY apenas loga.
+ * Resend transactional email. No-op se RESEND_API_KEY ausente.
  */
 @Injectable()
 export class ResendEmailService {
 	private readonly logger = new Logger(ResendEmailService.name);
-	private get isConfigured(): boolean {
-		return typeof process.env.RESEND_API_KEY === "string" && process.env.RESEND_API_KEY.length > 0;
+	private readonly client: Resend | null;
+	private readonly fromAddress: string;
+
+	constructor() {
+		const key = process.env.RESEND_API_KEY;
+		this.client = key ? new Resend(key) : null;
+		this.fromAddress = process.env.RESEND_FROM ?? "Quita <noreply@quita.com.br>";
 	}
 
 	async send(input: SendEmailInput): Promise<{ id: string | null }> {
-		if (!this.isConfigured) {
+		if (!this.client) {
 			this.logger.log({
 				msg: "email.skipped (RESEND_API_KEY ausente)",
 				to: input.to,
@@ -26,8 +32,25 @@ export class ResendEmailService {
 			});
 			return { id: null };
 		}
-		// TODO Onda 5: import Resend client + chamar resend.emails.send().
-		this.logger.log({ msg: "email.send", to: input.to, subject: input.subject });
-		return { id: null };
+
+		try {
+			const res = await this.client.emails.send({
+				from: this.fromAddress,
+				to: input.to,
+				subject: input.subject,
+				html: input.html,
+				text: input.text,
+			});
+			this.logger.log({
+				msg: "email.send",
+				to: input.to,
+				subject: input.subject,
+				id: res.data?.id,
+			});
+			return { id: res.data?.id ?? null };
+		} catch (err) {
+			this.logger.error("Falha ao enviar email via Resend", err as Error);
+			throw err;
+		}
 	}
 }

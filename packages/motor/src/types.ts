@@ -96,6 +96,8 @@ export interface CapacityBreakdown {
 export interface StateClassifierInput {
 	capacity: CapacityBreakdown;
 	debtsTotalMonthlyAmount: number;
+	/** Somatorio de (totalAmount - amountPaid) das dividas ativas. Spec §7.4 critério 60 meses. */
+	debtsTotalRemaining?: number;
 	hasCriticalRiskDebt: boolean;
 	diagnosisLevel: DiagnosisLevel;
 }

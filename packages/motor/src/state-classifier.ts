@@ -44,10 +44,11 @@ const TIGHT_BUDGET_RATIO = 0.15;
 const OVERINDEBTEDNESS_RATIO = 0.7;
 
 function decideState(input: StateClassifierInput): FinancialState {
-	const { capacity, debtsTotalMonthlyAmount, hasCriticalRiskDebt } = input;
+	const { capacity, debtsTotalMonthlyAmount, hasCriticalRiskDebt, debtsTotalRemaining = 0 } = input;
 
 	if (isInsolvent(capacity)) return "practical_insolvency";
-	if (isOverindebted(capacity, debtsTotalMonthlyAmount)) return "overindebtedness";
+	if (isOverindebted(capacity, debtsTotalMonthlyAmount, debtsTotalRemaining))
+		return "overindebtedness";
 	if (capacity.safeCapacity < 0) return "monthly_deficit";
 
 	const safeRatio =
@@ -66,12 +67,32 @@ function isInsolvent(c: CapacityBreakdown): boolean {
 	return c.incomeNetMonthly < c.minimumVital;
 }
 
-function isOverindebted(c: CapacityBreakdown, debtsMonthly: number): boolean {
+/**
+ * Spec Fase 3 §7.4: superendividamento (Lei 14.181/2021) tem 2 critérios
+ * alternativos — qualquer um caracteriza overindebtedness:
+ *
+ * 1. Parcelas mensais > 70% da renda líquida (critério rápido).
+ * 2. Dívidas não cabem em 60 meses pagando 100% da capacidade segura
+ *    (critério estrutural — quitação inviável sem ajuste).
+ *
+ * O segundo é checado apenas se o primeiro falha — evita custo de
+ * cálculo quando o primeiro já decide. `debtsTotalRemaining` somatório
+ * do restante (totalAmount - amountPaid) das dívidas ativas.
+ */
+const OVERINDEBT_HORIZON_MONTHS = 60;
+
+function isOverindebted(
+	c: CapacityBreakdown,
+	debtsMonthly: number,
+	debtsTotalRemaining: number,
+): boolean {
 	if (c.incomeNetMonthly <= 0) return false;
-	// TODO DT-20: implementar segunda condicao da spec §7.4 (simulacao
-	// de quitacao em 60 meses) quando simulator estiver disponivel sem
-	// causar dependencia ciclica.
-	return debtsMonthly > c.incomeNetMonthly * OVERINDEBTEDNESS_RATIO;
+	if (debtsMonthly > c.incomeNetMonthly * OVERINDEBTEDNESS_RATIO) return true;
+	// Critério estrutural: capacidade segura cobre a dívida em 60 meses?
+	if (c.safeCapacity > 0 && debtsTotalRemaining > c.safeCapacity * OVERINDEBT_HORIZON_MONTHS) {
+		return true;
+	}
+	return false;
 }
 
 function decideConfidence(input: StateClassifierInput): "high" | "medium" | "low" {

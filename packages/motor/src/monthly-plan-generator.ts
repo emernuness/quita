@@ -52,6 +52,7 @@ export interface MonthlyPlanGeneratorInput {
 	capacity: CapacityCalculatorInput;
 	debts: ClassifiedDebt[];
 	debtsTotalMonthlyAmount: number;
+	debtsTotalRemaining: number;
 	hasCriticalRiskDebt: boolean;
 	diagnosisLevel: DiagnosisLevel;
 	preferredStrategy: PreferredStrategy | null;
@@ -94,6 +95,7 @@ export function generateMonthlyPlan(
 	const stateResult = classifyState({
 		capacity,
 		debtsTotalMonthlyAmount: input.debtsTotalMonthlyAmount,
+		debtsTotalRemaining: input.debtsTotalRemaining,
 		hasCriticalRiskDebt: input.hasCriticalRiskDebt,
 		diagnosisLevel: input.diagnosisLevel,
 	});

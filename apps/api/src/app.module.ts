@@ -14,6 +14,7 @@ import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
 import { SubscriptionModule } from "./modules/subscription/subscription.module";
+import { UserModule } from "./modules/user/user.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queues/queue.module";
 
@@ -57,6 +58,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		SubscriptionModule,
 		OcrModule,
 		EmailModule,
+		UserModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

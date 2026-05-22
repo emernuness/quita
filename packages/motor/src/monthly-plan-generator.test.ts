@@ -41,6 +41,7 @@ function makeInput(overrides: Partial<MonthlyPlanGeneratorInput> = {}): MonthlyP
 		},
 		debts: [makeDebt()],
 		debtsTotalMonthlyAmount: 100,
+		debtsTotalRemaining: 1000,
 		hasCriticalRiskDebt: false,
 		diagnosisLevel: "basic",
 		preferredStrategy: null,

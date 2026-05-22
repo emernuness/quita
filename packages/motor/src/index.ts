@@ -72,3 +72,17 @@ export {
 	type RecommendedActionDraft,
 	generateMonthlyPlan,
 } from "./monthly-plan-generator";
+export {
+	type AggregateIncomeInput,
+	type AggregateIncomeOptions,
+	type IncomeContribution,
+	type IncomeFrequency,
+	type IncomeStability,
+	aggregateMonthlyIncome,
+} from "./income-aggregator";
+export {
+	type SmoothingInput,
+	type SmoothingResult,
+	applySmoothingRule,
+	stateRank,
+} from "./smoothing-rule";

@@ -44,6 +44,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Generate Prisma client
         run: pnpm db:generate
+      - name: Apply Prisma migrations
+        run: pnpm --filter @quita/api exec prisma migrate deploy
       - name: Typecheck
         run: pnpm typecheck
       - name: Lint
