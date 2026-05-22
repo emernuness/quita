@@ -1,7 +1,10 @@
 import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { Logger } from "nestjs-pino";
 import { AppModule } from "./app.module";
+import { ACCESS_TOKEN_COOKIE } from "./modules/auth/constants";
 
 function parseCorsOrigins(): string[] | true {
 	const raw = process.env.CORS_ORIGINS?.trim();
@@ -17,7 +20,8 @@ function parseCorsOrigins(): string[] | true {
 }
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, { bufferLogs: true });
+	app.useLogger(app.get(Logger));
 
 	app.setGlobalPrefix("api");
 	app.use(cookieParser());
@@ -35,6 +39,17 @@ async function bootstrap() {
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 		exposedHeaders: ["X-Request-Id"],
 	});
+
+	if (process.env.NODE_ENV !== "production") {
+		const swaggerConfig = new DocumentBuilder()
+			.setTitle("Quita API")
+			.setDescription("Motor de decisão financeira para pessoas endividadas")
+			.setVersion("1.0")
+			.addCookieAuth(ACCESS_TOKEN_COOKIE)
+			.build();
+		const swaggerDoc = SwaggerModule.createDocument(app, swaggerConfig);
+		SwaggerModule.setup("api/docs", app, swaggerDoc);
+	}
 
 	const port = Number(process.env.PORT ?? 3000);
 	await app.listen(port);
