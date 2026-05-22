@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 const PUBLIC_PATHS = ["/login", "/register", "/forgot-password"];
 
@@ -35,6 +36,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 		<QueryClientProvider client={client}>
 			<AuthBoot />
 			{children}
+			<Toaster position="top-right" richColors closeButton />
 		</QueryClientProvider>
 	);
 }
