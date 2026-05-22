@@ -58,3 +58,17 @@ export {
 	type SettlementRecommendation,
 	evaluateSettlement,
 } from "./settlement-validator";
+export {
+	type SimulationInput,
+	type SimulationResult,
+	type SimulationScenario,
+	type SimulationStrategy,
+	type SimulatorDebt,
+	runSimulation,
+} from "./simulator";
+export {
+	type MonthlyPlanDraft,
+	type MonthlyPlanGeneratorInput,
+	type RecommendedActionDraft,
+	generateMonthlyPlan,
+} from "./monthly-plan-generator";
