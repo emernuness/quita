@@ -1,23 +1,20 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Param,
-	Patch,
-	Post,
-	UseGuards,
-} from "@nestjs/common";
-import {
-	createIncomeSchema,
-	updateIncomeSchema,
+	type CreateExpenseInput,
+	type CreateIncomeInput,
+	type UpdateExpenseInput,
+	type UpdateIncomeInput,
 	createExpenseSchema,
+	createIncomeSchema,
 	updateExpenseSchema,
+	updateIncomeSchema,
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { FinancialService } from "./financial.service";
+import type { FinancialService } from "./financial.service";
 
+@ApiTags("financial")
 @Controller("financial")
 @UseGuards(JwtAuthGuard)
 export class FinancialController {
@@ -38,7 +35,7 @@ export class FinancialController {
 	@Post("incomes")
 	createIncome(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(createIncomeSchema)) body: any,
+		@Body(new ZodValidationPipe(createIncomeSchema)) body: CreateIncomeInput,
 	) {
 		return this.financialService.createIncome(userId, body);
 	}
@@ -47,16 +44,13 @@ export class FinancialController {
 	updateIncome(
 		@CurrentUser("id") userId: string,
 		@Param("id") id: string,
-		@Body(new ZodValidationPipe(updateIncomeSchema)) body: any,
+		@Body(new ZodValidationPipe(updateIncomeSchema)) body: UpdateIncomeInput,
 	) {
 		return this.financialService.updateIncome(userId, id, body);
 	}
 
 	@Delete("incomes/:id")
-	deleteIncome(
-		@CurrentUser("id") userId: string,
-		@Param("id") id: string,
-	) {
+	deleteIncome(@CurrentUser("id") userId: string, @Param("id") id: string) {
 		return this.financialService.deleteIncome(userId, id);
 	}
 
@@ -70,7 +64,7 @@ export class FinancialController {
 	@Post("expenses")
 	createExpense(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(createExpenseSchema)) body: any,
+		@Body(new ZodValidationPipe(createExpenseSchema)) body: CreateExpenseInput,
 	) {
 		return this.financialService.createExpense(userId, body);
 	}
@@ -79,16 +73,13 @@ export class FinancialController {
 	updateExpense(
 		@CurrentUser("id") userId: string,
 		@Param("id") id: string,
-		@Body(new ZodValidationPipe(updateExpenseSchema)) body: any,
+		@Body(new ZodValidationPipe(updateExpenseSchema)) body: UpdateExpenseInput,
 	) {
 		return this.financialService.updateExpense(userId, id, body);
 	}
 
 	@Delete("expenses/:id")
-	deleteExpense(
-		@CurrentUser("id") userId: string,
-		@Param("id") id: string,
-	) {
+	deleteExpense(@CurrentUser("id") userId: string, @Param("id") id: string) {
 		return this.financialService.deleteExpense(userId, id);
 	}
 }

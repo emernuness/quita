@@ -1,5 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../services/api";
 import type { ApiResponse } from "@quita/shared";
 import type {
 	OnboardingDebtCategoriesInput,
@@ -7,15 +5,14 @@ import type {
 	OnboardingExpensesInput,
 	OnboardingIncomeInput,
 } from "@quita/shared";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { useAuthStore } from "../stores/auth";
 
 export function useSaveIncome() {
 	return useMutation({
 		mutationFn: async (input: OnboardingIncomeInput) => {
-			const { data } = await api.post<ApiResponse<{ step: number }>>(
-				"/onboarding/income",
-				input,
-			);
+			const { data } = await api.post<ApiResponse<{ step: number }>>("/onboarding/income", input);
 			return data.data;
 		},
 		onSuccess: (result) => {
@@ -44,10 +41,7 @@ export function useSaveCategories() {
 export function useSaveDebts() {
 	return useMutation({
 		mutationFn: async (debts: OnboardingDebtInput[]) => {
-			const { data } = await api.post<ApiResponse<{ step: number }>>(
-				"/onboarding/debts",
-				debts,
-			);
+			const { data } = await api.post<ApiResponse<{ step: number }>>("/onboarding/debts", debts);
 			return data.data;
 		},
 		onSuccess: (result) => {
@@ -60,10 +54,7 @@ export function useSaveDebts() {
 export function useSaveExpenses() {
 	return useMutation({
 		mutationFn: async (input: OnboardingExpensesInput) => {
-			const { data } = await api.post<ApiResponse<{ step: number }>>(
-				"/onboarding/expenses",
-				input,
-			);
+			const { data } = await api.post<ApiResponse<{ step: number }>>("/onboarding/expenses", input);
 			return data.data;
 		},
 		onSuccess: (result) => {
@@ -78,9 +69,7 @@ export function useCompleteOnboarding() {
 
 	return useMutation<{ completed: boolean }, Error, void>({
 		mutationFn: async () => {
-			const { data } = await api.post<ApiResponse<{ completed: boolean }>>(
-				"/onboarding/complete",
-			);
+			const { data } = await api.post<ApiResponse<{ completed: boolean }>>("/onboarding/complete");
 			return data.data;
 		},
 		onSuccess: () => {

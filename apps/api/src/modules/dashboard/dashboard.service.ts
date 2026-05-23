@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class DashboardService {
@@ -16,33 +16,22 @@ export class DashboardService {
 			this.prisma.debt.findMany({
 				where: { userId },
 				include: { category: true },
-				orderBy: { priorityOrder: "asc" },
+				orderBy: [{ priorityScore: { sort: "desc", nulls: "last" } }, { createdAt: "asc" }],
 			}),
 		]);
 
-		const totalIncome = incomes.reduce(
-			(sum, i) => sum + i.amount.toNumber(),
-			0,
-		);
-		const totalExpenses = expenses.reduce(
-			(sum, e) => sum + e.amount.toNumber(),
-			0,
-		);
+		const totalIncome = incomes.reduce((sum, i) => sum + i.amount.toNumber(), 0);
+		const totalExpenses = expenses.reduce((sum, e) => sum + e.amount.toNumber(), 0);
 		const monthlyBalance = totalIncome - totalExpenses;
 		const surplusForDebts = Math.max(0, monthlyBalance);
 
 		const debtsCount = debts.length;
 		const paidDebtsCount = debts.filter((d) => d.status === "paid").length;
-		const progressPercent =
-			debtsCount > 0 ? (paidDebtsCount / debtsCount) * 100 : 0;
+		const progressPercent = debtsCount > 0 ? (paidDebtsCount / debtsCount) * 100 : 0;
 
 		const totalDebt = debts
 			.filter((d) => d.status !== "paid")
-			.reduce(
-				(sum, d) =>
-					sum + (d.totalAmount.toNumber() - d.amountPaid.toNumber()),
-				0,
-			);
+			.reduce((sum, d) => sum + (d.totalAmount.toNumber() - d.amountPaid.toNumber()), 0);
 
 		const topDebts = debts.slice(0, 5).map((d) => ({
 			...d,

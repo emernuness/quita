@@ -1,3 +1,7 @@
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { registerSchema } from "@quita/shared";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
 	Alert,
@@ -10,15 +14,11 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { useAuthStore } from "../../src/stores/auth";
-import { validateWithZod } from "../../src/utils/validation";
-import { registerSchema } from "@quita/shared";
 import { maskPhone, unmaskPhone } from "../../src/utils/masks";
+import { validateWithZod } from "../../src/utils/validation";
 
 export default function RegisterScreen() {
 	const router = useRouter();
@@ -97,9 +97,7 @@ export default function RegisterScreen() {
 				);
 			} else {
 				const message =
-					error instanceof Error
-						? error.message
-						: "Verifique seus dados e tente novamente.";
+					error instanceof Error ? error.message : "Verifique seus dados e tente novamente.";
 				Alert.alert("Erro ao criar conta", message);
 			}
 		} finally {
@@ -120,11 +118,7 @@ export default function RegisterScreen() {
 					showsVerticalScrollIndicator={false}
 				>
 					{/* Back Button */}
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
@@ -133,9 +127,7 @@ export default function RegisterScreen() {
 					<Text style={styles.stepLabel}>Crie sua conta</Text>
 
 					{/* Title */}
-					<Text style={styles.title}>
-						Vamos começar com seus dados
-					</Text>
+					<Text style={styles.title}>Vamos começar com seus dados</Text>
 
 					{/* Form */}
 					<View style={styles.form}>
@@ -206,26 +198,17 @@ export default function RegisterScreen() {
 
 					{/* Google Button */}
 					<Pressable
-						style={({ pressed }) => [
-							styles.googleButton,
-							pressed && { opacity: 0.8 },
-						]}
+						style={({ pressed }) => [styles.googleButton, pressed && { opacity: 0.8 }]}
 						onPress={() => Alert.alert("Em breve", "Login com Google estará disponível em breve.")}
 					>
-						<Text style={styles.googleButtonText}>
-							G{"  "}Continuar com Google
-						</Text>
+						<Text style={styles.googleButtonText}>G{"  "}Continuar com Google</Text>
 					</Pressable>
 
 					{/* Spacer */}
 					<View style={styles.spacer} />
 
 					{/* Primary Button */}
-					<Button
-						label="Criar conta"
-						loading={loading}
-						onPress={handleRegister}
-					/>
+					<Button label="Criar conta" loading={loading} onPress={handleRegister} />
 
 					{/* Bottom Text */}
 					<View style={styles.bottomTextContainer}>

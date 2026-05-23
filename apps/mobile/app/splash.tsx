@@ -1,16 +1,9 @@
-import { useRouter } from "expo-router";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
-import {
-	Animated,
-	Image,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-} from "react-native";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Animated, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 const BG_IMAGES = [
 	"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1080&q=80&auto=format&fit=crop",
@@ -25,9 +18,7 @@ const HOLD_MS = 4200;
 
 export default function SplashScreen() {
 	const router = useRouter();
-	const opacities = useRef(
-		BG_IMAGES.map((_, i) => new Animated.Value(i === 0 ? 1 : 0)),
-	).current;
+	const opacities = useRef(BG_IMAGES.map((_, i) => new Animated.Value(i === 0 ? 1 : 0))).current;
 	const activeIdx = useRef(0);
 
 	useEffect(() => {
@@ -67,18 +58,11 @@ export default function SplashScreen() {
 				/>
 			))}
 
-			<View
-				pointerEvents="none"
-				style={[StyleSheet.absoluteFillObject, styles.tealOverlay]}
-			/>
+			<View pointerEvents="none" style={[StyleSheet.absoluteFillObject, styles.tealOverlay]} />
 
 			<LinearGradient
 				pointerEvents="none"
-				colors={[
-					"rgba(10,82,72,0.55)",
-					"rgba(10,82,72,0.05)",
-					"rgba(13,13,13,0.85)",
-				]}
+				colors={["rgba(10,82,72,0.55)", "rgba(10,82,72,0.05)", "rgba(13,13,13,0.85)"]}
 				locations={[0, 0.45, 1]}
 				style={StyleSheet.absoluteFillObject}
 			/>
@@ -106,19 +90,13 @@ export default function SplashScreen() {
 
 				<View style={styles.bottomContainer}>
 					<Pressable
-						style={({ pressed }) => [
-							styles.primaryButton,
-							pressed && styles.primaryButtonPressed,
-						]}
+						style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
 						onPress={() => router.push("/(auth)/register")}
 					>
 						<Text style={styles.primaryButtonText}>Começar agora</Text>
 					</Pressable>
 
-					<Pressable
-						style={styles.linkButton}
-						onPress={() => router.push("/(auth)/login")}
-					>
+					<Pressable style={styles.linkButton} onPress={() => router.push("/(auth)/login")}>
 						<Text style={styles.linkText}>Já tenho conta</Text>
 					</Pressable>
 				</View>

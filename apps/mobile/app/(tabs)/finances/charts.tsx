@@ -53,19 +53,14 @@ export default function ChartsScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				{/* Back Button */}
-				<Pressable
-					style={styles.backButton}
-					onPress={() => router.back()}
-				>
+				<Pressable style={styles.backButton} onPress={() => router.back()}>
 					<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
 				{/* Title */}
 				<Text style={styles.title}>Gráficos e relatórios</Text>
-				<Text style={styles.subtitle}>
-					Entenda seus padrões de gasto e progresso
-				</Text>
+				<Text style={styles.subtitle}>Entenda seus padrões de gasto e progresso</Text>
 
 				{/* Despesas por categoria */}
 				<View style={styles.card}>

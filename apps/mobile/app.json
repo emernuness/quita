@@ -1,34 +1,34 @@
 {
-  "expo": {
-    "name": "Quita",
-    "slug": "quita",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/brand/icon-01.png",
-    "scheme": "quita",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/brand/logo-01.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F4F6F4"
-    },
-    "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.quita.app"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/brand/icon-01.png",
-        "backgroundColor": "#0A5248"
-      },
-      "package": "com.quita.app"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      "expo-font",
-      "@react-native-community/datetimepicker"
-    ]
-  }
+	"expo": {
+		"name": "Quita",
+		"slug": "quita",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/brand/icon-01.png",
+		"scheme": "quita",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"image": "./assets/brand/logo-01.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#F4F6F4"
+		},
+		"ios": {
+			"supportsTablet": false,
+			"bundleIdentifier": "com.quita.app"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/brand/icon-01.png",
+				"backgroundColor": "#0A5248"
+			},
+			"package": "com.quita.app"
+		},
+		"plugins": [
+			"expo-router",
+			"expo-secure-store",
+			"expo-font",
+			"@react-native-community/datetimepicker"
+		]
+	}
 }

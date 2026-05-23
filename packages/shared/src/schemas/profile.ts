@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+const BR_PHONE_REGEX = /^(\+?55)?\d{10,11}$/;
+
 export const updateProfileSchema = z.object({
 	name: z.string().min(2).optional(),
-	phone: z.string().optional(),
+	phone: z.string().regex(BR_PHONE_REGEX, "Telefone brasileiro inválido").optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 

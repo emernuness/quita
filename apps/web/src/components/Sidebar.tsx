@@ -3,15 +3,23 @@
 import { cn } from "@/lib/cn";
 import { useAuthStore } from "@/stores/auth";
 import {
+	AlertOctagon,
 	ArrowLeftRight,
 	ChevronLeft,
 	ChevronRight,
 	CreditCard,
+	FileCheck,
+	FileImage,
 	LayoutDashboard,
+	LifeBuoy,
 	LogOut,
 	type LucideIcon,
 	Map as MapIcon,
+	PiggyBank,
 	Plus,
+	Shield,
+	Sparkles,
+	Target,
 	UserCircle,
 } from "lucide-react";
 import Image from "next/image";
@@ -30,6 +38,7 @@ interface NavItem {
 
 const items: NavItem[] = [
 	{ href: "/app", label: "Dashboard", icon: LayoutDashboard, match: /^\/app\/?$/ },
+	{ href: "/app/espelho", label: "Espelho", icon: Sparkles, match: /^\/app\/espelho/ },
 	{
 		href: "/app/transactions",
 		label: "Transações",
@@ -38,6 +47,40 @@ const items: NavItem[] = [
 	},
 	{ href: "/app/debts", label: "Dívidas", icon: CreditCard, match: /^\/app\/(debts|finances)/ },
 	{ href: "/app/plan", label: "Plano", icon: MapIcon, match: /^\/app\/plan/ },
+	{ href: "/app/objetivos", label: "Metas", icon: Target, match: /^\/app\/objetivos/ },
+	{ href: "/app/reserva", label: "Reserva", icon: PiggyBank, match: /^\/app\/reserva/ },
+	{ href: "/app/refinar", label: "Refinar", icon: Sparkles, match: /^\/app\/refinar/ },
+	{
+		href: "/app/avaliar-acordo",
+		label: "Avaliar acordo",
+		icon: FileCheck,
+		match: /^\/app\/avaliar-acordo/,
+	},
+	{
+		href: "/app/ocr/quota",
+		label: "Ler proposta",
+		icon: FileImage,
+		match: /^\/app\/ocr/,
+	},
+	{
+		href: "/app/modo-protecao",
+		label: "Modo proteção",
+		icon: Shield,
+		match: /^\/app\/modo-protecao/,
+	},
+	{
+		href: "/app/modo-sobrevivencia",
+		label: "Modo sobrevivência",
+		icon: LifeBuoy,
+		match: /^\/app\/modo-sobrevivencia/,
+	},
+	{
+		href: "/app/modo-crise",
+		label: "Modo crise",
+		icon: AlertOctagon,
+		match: /^\/app\/modo-crise/,
+	},
+	{ href: "/app/apoio", label: "Apoio", icon: LifeBuoy, match: /^\/app\/apoio/ },
 	{ href: "/app/profile", label: "Perfil", icon: UserCircle, match: /^\/app\/profile/ },
 ];
 

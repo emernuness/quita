@@ -1,22 +1,18 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Param,
-	Patch,
-	Post,
-	UseGuards,
-} from "@nestjs/common";
-import {
+	type CreateDebtInput,
+	type CreatePaymentInput,
+	type UpdateDebtInput,
 	createDebtSchema,
-	updateDebtSchema,
 	createPaymentSchema,
+	updateDebtSchema,
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { DebtsService } from "./debts.service";
+import type { DebtsService } from "./debts.service";
 
+@ApiTags("debts")
 @Controller("debts")
 @UseGuards(JwtAuthGuard)
 export class DebtsController {
@@ -33,17 +29,14 @@ export class DebtsController {
 	}
 
 	@Get(":id")
-	getDebt(
-		@CurrentUser("id") userId: string,
-		@Param("id") id: string,
-	) {
+	getDebt(@CurrentUser("id") userId: string, @Param("id") id: string) {
 		return this.debtsService.getDebt(userId, id);
 	}
 
 	@Post()
 	createDebt(
 		@CurrentUser("id") userId: string,
-		@Body(new ZodValidationPipe(createDebtSchema)) body: any,
+		@Body(new ZodValidationPipe(createDebtSchema)) body: CreateDebtInput,
 	) {
 		return this.debtsService.createDebt(userId, body);
 	}
@@ -52,16 +45,13 @@ export class DebtsController {
 	updateDebt(
 		@CurrentUser("id") userId: string,
 		@Param("id") id: string,
-		@Body(new ZodValidationPipe(updateDebtSchema)) body: any,
+		@Body(new ZodValidationPipe(updateDebtSchema)) body: UpdateDebtInput,
 	) {
 		return this.debtsService.updateDebt(userId, id, body);
 	}
 
 	@Delete(":id")
-	deleteDebt(
-		@CurrentUser("id") userId: string,
-		@Param("id") id: string,
-	) {
+	deleteDebt(@CurrentUser("id") userId: string, @Param("id") id: string) {
 		return this.debtsService.deleteDebt(userId, id);
 	}
 
@@ -69,7 +59,7 @@ export class DebtsController {
 	createPayment(
 		@CurrentUser("id") userId: string,
 		@Param("id") debtId: string,
-		@Body(new ZodValidationPipe(createPaymentSchema)) body: any,
+		@Body(new ZodValidationPipe(createPaymentSchema)) body: CreatePaymentInput,
 	) {
 		return this.debtsService.createPayment(userId, debtId, body);
 	}

@@ -1,6 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface ActionCardProps {
@@ -13,10 +13,7 @@ export function ActionCard({ title, description, onPress }: ActionCardProps) {
 	return (
 		<Pressable
 			onPress={onPress}
-			style={({ pressed }) => [
-				styles.container,
-				pressed && onPress ? { opacity: 0.9 } : undefined,
-			]}
+			style={({ pressed }) => [styles.container, pressed && onPress ? { opacity: 0.9 } : undefined]}
 		>
 			<View style={styles.content}>
 				<Text style={styles.title}>{title}</Text>

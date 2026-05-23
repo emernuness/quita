@@ -15,10 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../../src/components";
-import {
-	useCompleteOnboarding,
-	useSaveExpenses,
-} from "../../src/hooks/useOnboarding";
+import { useCompleteOnboarding, useSaveExpenses } from "../../src/hooks/useOnboarding";
 import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
@@ -67,10 +64,7 @@ export default function ExpensesScreen() {
 			completeOnboarding.mutate(undefined, {
 				onSuccess: () => router.replace("/"),
 				onError: (error) =>
-					Alert.alert(
-						"Erro",
-						error.message || "Não foi possível finalizar. Tente novamente.",
-					),
+					Alert.alert("Erro", error.message || "Não foi possível finalizar. Tente novamente."),
 			});
 			return;
 		}
@@ -104,19 +98,12 @@ export default function ExpensesScreen() {
 						router.replace("/");
 					},
 					onError: (error) => {
-						Alert.alert(
-							"Erro",
-							error.message ||
-								"Não foi possível finalizar. Tente novamente.",
-						);
+						Alert.alert("Erro", error.message || "Não foi possível finalizar. Tente novamente.");
 					},
 				});
 			},
 			onError: (error) => {
-				Alert.alert(
-					"Erro",
-					error.message || "Não foi possível salvar. Tente novamente.",
-				);
+				Alert.alert("Erro", error.message || "Não foi possível salvar. Tente novamente.");
 			},
 		});
 	}, [values, saveExpenses, completeOnboarding, router, expensesSaved]);
@@ -147,11 +134,7 @@ export default function ExpensesScreen() {
 						Passo 4 de 4 · se não souber algum valor, deixe zerado
 					</Text>
 
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
@@ -161,8 +144,7 @@ export default function ExpensesScreen() {
 					<Text style={styles.title}>Suas contas fixas do mês</Text>
 
 					<Text style={styles.subtitle}>
-						Esses gastos ajudam a entender quanto sobra para negociar dívidas com
-						segurança.
+						Esses gastos ajudam a entender quanto sobra para negociar dívidas com segurança.
 					</Text>
 
 					<View style={styles.fieldsContainer}>
@@ -179,9 +161,7 @@ export default function ExpensesScreen() {
 										placeholder="R$ 0,00"
 										placeholderTextColor={colors.textTertiary}
 									/>
-									{fieldError ? (
-										<Text style={styles.errorText}>{fieldError}</Text>
-									) : null}
+									{fieldError ? <Text style={styles.errorText}>{fieldError}</Text> : null}
 								</View>
 							);
 						})}

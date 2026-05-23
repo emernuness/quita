@@ -44,16 +44,8 @@ export default function PaymentConfirmedModal() {
 				</View>
 
 				<View style={styles.buttonGroup}>
-					<Button
-						variant="primary"
-						label="Ver impacto no plano"
-						onPress={() => router.back()}
-					/>
-					<Button
-						variant="secondary"
-						label="Anexar comprovante"
-						onPress={() => router.back()}
-					/>
+					<Button variant="primary" label="Ver impacto no plano" onPress={() => router.back()} />
+					<Button variant="secondary" label="Anexar comprovante" onPress={() => router.back()} />
 				</View>
 			</ScrollView>
 		</SafeAreaView>

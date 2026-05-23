@@ -1,10 +1,10 @@
+import { Button } from "@/components/Button";
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { Button } from "@/components/Button";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
 
 const INFO_ITEMS = [
 	"Formatos disponíveis: PDF e CSV.",
@@ -32,8 +32,8 @@ export default function ExportRequestedScreen() {
 
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
-					Seu arquivo está sendo preparado. Você receberá uma notificação quando
-					estiver pronto para download.
+					Seu arquivo está sendo preparado. Você receberá uma notificação quando estiver pronto para
+					download.
 				</Text>
 
 				{/* Info card */}

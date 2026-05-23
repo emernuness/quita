@@ -1,3 +1,7 @@
+import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { forgotPasswordSchema } from "@quita/shared";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
 	KeyboardAvoidingView,
@@ -9,13 +13,9 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { colors, fonts, radius, spacing } from "@/theme/tokens";
 import { Button } from "../../src/components/Button";
 import { Input } from "../../src/components/Input";
 import { validateWithZod } from "../../src/utils/validation";
-import { forgotPasswordSchema } from "@quita/shared";
 
 export default function ForgotPasswordScreen() {
 	const router = useRouter();
@@ -45,11 +45,7 @@ export default function ForgotPasswordScreen() {
 					showsVerticalScrollIndicator={false}
 				>
 					{/* Back Button */}
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={16} color={colors.textPrimary} />
 						<Text style={styles.backButtonText}>Voltar</Text>
 					</Pressable>
@@ -67,8 +63,8 @@ export default function ForgotPasswordScreen() {
 
 					{/* Description */}
 					<Text style={styles.description}>
-						Sem problema. Informe o e-mail ou telefone que você usou no cadastro
-						e enviaremos um código para você criar uma nova senha com segurança.
+						Sem problema. Informe o e-mail ou telefone que você usou no cadastro e enviaremos um
+						código para você criar uma nova senha com segurança.
 					</Text>
 
 					{/* Input */}
@@ -87,12 +83,9 @@ export default function ForgotPasswordScreen() {
 
 					{/* Info Box */}
 					<View style={styles.infoBox}>
-						<Text style={styles.infoTitle}>
-							Por que confirmamos esse dado?
-						</Text>
+						<Text style={styles.infoTitle}>Por que confirmamos esse dado?</Text>
 						<Text style={styles.infoText}>
-							Isso evita acesso indevido e permite recuperar sua conta com mais
-							rapidez.
+							Isso evita acesso indevido e permite recuperar sua conta com mais rapidez.
 						</Text>
 					</View>
 

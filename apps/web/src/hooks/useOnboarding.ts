@@ -3,10 +3,12 @@
 import { apiPost } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import type {
+	OnboardingConcernInput,
 	OnboardingDebtCategoriesInput,
 	OnboardingDebtInput,
 	OnboardingExpensesInput,
 	OnboardingIncomeInput,
+	OnboardingLocationInput,
 } from "@quita/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -44,6 +46,20 @@ export function useSaveExpenses() {
 		mutationFn: (input: OnboardingExpensesInput) =>
 			apiPost<{ step: number }, OnboardingExpensesInput>("/onboarding/expenses", input),
 		onSuccess: (r) => patchUserStep(r.step),
+	});
+}
+
+export function useSaveLocation() {
+	return useMutation({
+		mutationFn: (input: OnboardingLocationInput) =>
+			apiPost<{ saved: boolean }, OnboardingLocationInput>("/onboarding/location", input),
+	});
+}
+
+export function useSaveConcern() {
+	return useMutation({
+		mutationFn: (input: OnboardingConcernInput) =>
+			apiPost<{ saved: boolean }, OnboardingConcernInput>("/onboarding/concern", input),
 	});
 }
 

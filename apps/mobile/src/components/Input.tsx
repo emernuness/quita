@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-	StyleSheet,
-	Text,
-	TextInput,
-	View,
-	type KeyboardTypeOptions,
-} from "react-native";
+import { type KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface InputProps {

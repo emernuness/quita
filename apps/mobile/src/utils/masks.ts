@@ -33,11 +33,7 @@ export function maskCurrency(raw: string): string {
 /** Parse masked currency to number: "R$ 1.234,56" → 1234.56 */
 export function unmaskCurrency(masked: string): number {
 	if (!masked) return 0;
-	const cleaned = masked
-		.replace("R$", "")
-		.replace(/\s/g, "")
-		.replace(/\./g, "")
-		.replace(",", ".");
+	const cleaned = masked.replace("R$", "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
 	const value = Number.parseFloat(cleaned);
 	return Number.isNaN(value) ? 0 : value;
 }
@@ -60,13 +56,13 @@ export function unmaskDate(masked: string): string | undefined {
 	const d = Number.parseInt(day, 10);
 	const m = Number.parseInt(month, 10);
 	const y = Number.parseInt(year, 10);
-	if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > 2100)
-		return undefined;
+	if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > 2100) return undefined;
 	const date = new Date(Number(year), Number(month) - 1, Number(day));
 	if (
 		date.getFullYear() !== Number(year) ||
 		date.getMonth() !== Number(month) - 1 ||
 		date.getDate() !== Number(day)
-	) return undefined;
+	)
+		return undefined;
 	return `${year}-${month}-${day}`;
 }

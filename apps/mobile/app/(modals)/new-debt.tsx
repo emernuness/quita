@@ -26,10 +26,7 @@ import { colors, fonts, radius, spacing } from "../../src/theme/tokens";
 import { maskCurrency, unmaskCurrency } from "../../src/utils/masks";
 import { validateWithZod } from "../../src/utils/validation";
 
-if (
-	Platform.OS === "android" &&
-	UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -102,9 +99,7 @@ export default function NewDebtModal() {
 	const createDebt = useCreateDebt();
 	const { data: categories, isLoading: categoriesLoading } = useDebtCategories();
 
-	const [selectedCategory, setSelectedCategory] = useState<DebtCategory | null>(
-		null,
-	);
+	const [selectedCategory, setSelectedCategory] = useState<DebtCategory | null>(null);
 	const [credor, setCredor] = useState("");
 	const [nature, setNature] = useState<NatureKey | null>(null);
 	const [status, setStatus] = useState<DebtStatusLabel>("ATRASADA");
@@ -121,9 +116,7 @@ export default function NewDebtModal() {
 
 	const isOverdue = status === "ATRASADA";
 	const effectiveOverdueMonths =
-		overdueMonths === -1
-			? Number.parseInt(overdueCustom, 10) || null
-			: overdueMonths;
+		overdueMonths === -1 ? Number.parseInt(overdueCustom, 10) || null : overdueMonths;
 
 	const showBlock2 = nature !== null;
 	const showBlock3 = nature === "one_time" || valorMensal.length > 0;
@@ -146,13 +139,7 @@ export default function NewDebtModal() {
 			}
 		}
 		return null;
-	}, [
-		valorMensal,
-		nature,
-		effectiveOverdueMonths,
-		totalParcelas,
-		parcelaAtual,
-	]);
+	}, [valorMensal, nature, effectiveOverdueMonths, totalParcelas, parcelaAtual]);
 
 	const clearError = useCallback((field: string) => {
 		setErrors((prev) => {
@@ -184,7 +171,10 @@ export default function NewDebtModal() {
 	);
 
 	const formatBRL = (v: number) =>
-		`R$ ${v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+		`R$ ${v
+			.toFixed(2)
+			.replace(".", ",")
+			.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
 	const handleSave = useCallback(() => {
 		const formErrors: Record<string, string> = {};
@@ -198,8 +188,7 @@ export default function NewDebtModal() {
 			const tp = Number.parseInt(totalParcelas, 10);
 			const pa = Number.parseInt(parcelaAtual, 10);
 			if (tp > 0 && pa > 0 && pa > tp) {
-				formErrors.currentInstallment =
-					"Parcela atual não pode ser maior que o total";
+				formErrors.currentInstallment = "Parcela atual não pode ser maior que o total";
 			}
 		}
 		if (Object.keys(formErrors).length > 0) {
@@ -217,14 +206,10 @@ export default function NewDebtModal() {
 			creditor: credor.trim(),
 			nature: nature || "one_time",
 			totalAmount,
-			monthlyAmount:
-				nature !== "one_time" && monthlyAmount > 0 ? monthlyAmount : undefined,
-			overdueMonths:
-				isOverdue && effectiveOverdueMonths ? effectiveOverdueMonths : undefined,
-			totalInstallments:
-				nature === "installment" && parsedTP > 0 ? parsedTP : undefined,
-			currentInstallment:
-				nature === "installment" && parsedPA > 0 ? parsedPA : undefined,
+			monthlyAmount: nature !== "one_time" && monthlyAmount > 0 ? monthlyAmount : undefined,
+			overdueMonths: isOverdue && effectiveOverdueMonths ? effectiveOverdueMonths : undefined,
+			totalInstallments: nature === "installment" && parsedTP > 0 ? parsedTP : undefined,
+			currentInstallment: nature === "installment" && parsedPA > 0 ? parsedPA : undefined,
 			hasInterest: juros != null ? JUROS_MAP[juros] : undefined,
 			dueDate: dueDate ? formatDateISO(dueDate) : undefined,
 			status: STATUS_MAP[status] as CreateDebtInput["status"],
@@ -238,8 +223,7 @@ export default function NewDebtModal() {
 
 		createDebt.mutate(data, {
 			onSuccess: () => router.back(),
-			onError: (error) =>
-				Alert.alert("Erro", error.message || "Não foi possível salvar a dívida."),
+			onError: (error) => Alert.alert("Erro", error.message || "Não foi possível salvar a dívida."),
 		});
 	}, [
 		selectedCategory,
@@ -272,19 +256,13 @@ export default function NewDebtModal() {
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}
 				>
-					<Pressable
-						style={styles.backButton}
-						onPress={() => router.back()}
-						hitSlop={12}
-					>
+					<Pressable style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
 						<Feather name="arrow-left" size={18} color={colors.textPrimary} />
 						<Text style={styles.backText}>Voltar</Text>
 					</Pressable>
 
 					<Text style={styles.title}>Nova dívida</Text>
-					<Text style={styles.subtitle}>
-						Adicione uma dívida à sua lista.
-					</Text>
+					<Text style={styles.subtitle}>Adicione uma dívida à sua lista.</Text>
 
 					{/* Categoria */}
 					<View style={styles.fieldWrapper}>
@@ -303,8 +281,7 @@ export default function NewDebtModal() {
 										key={cat.id}
 										style={[
 											styles.categoryChip,
-											selectedCategory?.id === cat.id &&
-												styles.categoryChipSelected,
+											selectedCategory?.id === cat.id && styles.categoryChipSelected,
 										]}
 										onPress={() => {
 											setSelectedCategory(cat);
@@ -314,8 +291,7 @@ export default function NewDebtModal() {
 										<Text
 											style={[
 												styles.categoryChipText,
-												selectedCategory?.id === cat.id &&
-													styles.categoryChipTextSelected,
+												selectedCategory?.id === cat.id && styles.categoryChipTextSelected,
 											]}
 										>
 											{cat.name}
@@ -324,9 +300,7 @@ export default function NewDebtModal() {
 								))}
 							</ScrollView>
 						)}
-						{errors.categoryId ? (
-							<Text style={styles.errorText}>{errors.categoryId}</Text>
-						) : null}
+						{errors.categoryId ? <Text style={styles.errorText}>{errors.categoryId}</Text> : null}
 					</View>
 
 					{/* Block 1: Credor + Natureza */}
@@ -344,9 +318,7 @@ export default function NewDebtModal() {
 								placeholderTextColor={colors.textTertiary}
 								maxLength={100}
 							/>
-							{errors.creditor ? (
-								<Text style={styles.errorText}>{errors.creditor}</Text>
-							) : null}
+							{errors.creditor ? <Text style={styles.errorText}>{errors.creditor}</Text> : null}
 						</View>
 
 						<View style={styles.fieldWrapper}>
@@ -355,10 +327,7 @@ export default function NewDebtModal() {
 								{NATURE_OPTIONS.map((opt) => (
 									<Pressable
 										key={opt.key}
-										style={[
-											styles.naturePill,
-											nature === opt.key && styles.naturePillSelected,
-										]}
+										style={[styles.naturePill, nature === opt.key && styles.naturePillSelected]}
 										onPress={() => {
 											if (opt.key !== nature) {
 												animateLayout();
@@ -381,8 +350,7 @@ export default function NewDebtModal() {
 										<Text
 											style={[
 												styles.naturePillSubtitle,
-												nature === opt.key &&
-													styles.naturePillSubtitleSelected,
+												nature === opt.key && styles.naturePillSubtitleSelected,
 											]}
 										>
 											{opt.subtitle}
@@ -390,9 +358,7 @@ export default function NewDebtModal() {
 									</Pressable>
 								))}
 							</View>
-							{errors.nature ? (
-								<Text style={styles.errorText}>{errors.nature}</Text>
-							) : null}
+							{errors.nature ? <Text style={styles.errorText}>{errors.nature}</Text> : null}
 						</View>
 					</View>
 
@@ -405,10 +371,7 @@ export default function NewDebtModal() {
 									{STATUS_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[
-												styles.pill,
-												status === opt.key && styles.pillSelected,
-											]}
+											style={[styles.pill, status === opt.key && styles.pillSelected]}
 											onPress={() => {
 												setStatus(opt.key);
 												if (opt.key !== "ATRASADA") {
@@ -418,10 +381,7 @@ export default function NewDebtModal() {
 											}}
 										>
 											<Text
-												style={[
-													styles.pillText,
-													status === opt.key && styles.pillTextSelected,
-												]}
+												style={[styles.pillText, status === opt.key && styles.pillTextSelected]}
 											>
 												{opt.label}
 											</Text>
@@ -449,8 +409,7 @@ export default function NewDebtModal() {
 												<Text
 													style={[
 														styles.overduePillText,
-														overdueMonths === n &&
-															styles.overduePillTextSelected,
+														overdueMonths === n && styles.overduePillTextSelected,
 													]}
 												>
 													{n}
@@ -467,8 +426,7 @@ export default function NewDebtModal() {
 											<Text
 												style={[
 													styles.overduePillText,
-													overdueMonths === -1 &&
-														styles.overduePillTextSelected,
+													overdueMonths === -1 && styles.overduePillTextSelected,
 												]}
 											>
 												6+
@@ -490,9 +448,7 @@ export default function NewDebtModal() {
 										/>
 									)}
 									{errors.overdueMonths ? (
-										<Text style={styles.errorText}>
-											{errors.overdueMonths}
-										</Text>
+										<Text style={styles.errorText}>{errors.overdueMonths}</Text>
 									) : null}
 								</View>
 							)}
@@ -540,9 +496,7 @@ export default function NewDebtModal() {
 											/>
 										</View>
 										{errors.currentInstallment ? (
-											<Text style={styles.errorText}>
-												{errors.currentInstallment}
-											</Text>
+											<Text style={styles.errorText}>{errors.currentInstallment}</Text>
 										) : null}
 									</View>
 								</>
@@ -583,14 +537,10 @@ export default function NewDebtModal() {
 								{autoSuggestion && !valorTotal && (
 									<Pressable
 										onPress={() =>
-											setValorTotal(
-												maskCurrency(String(Math.round(autoSuggestion * 100))),
-											)
+											setValorTotal(maskCurrency(String(Math.round(autoSuggestion * 100))))
 										}
 									>
-										<Text style={styles.autoSuggestion}>
-											Usar {formatBRL(autoSuggestion)}?
-										</Text>
+										<Text style={styles.autoSuggestion}>Usar {formatBRL(autoSuggestion)}?</Text>
 									</Pressable>
 								)}
 								{errors.totalAmount ? (
@@ -604,18 +554,10 @@ export default function NewDebtModal() {
 									{JUROS_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[
-												styles.pill,
-												juros === opt.key && styles.pillSelected,
-											]}
+											style={[styles.pill, juros === opt.key && styles.pillSelected]}
 											onPress={() => setJuros(opt.key)}
 										>
-											<Text
-												style={[
-													styles.pillText,
-													juros === opt.key && styles.pillTextSelected,
-												]}
-											>
+											<Text style={[styles.pillText, juros === opt.key && styles.pillTextSelected]}>
 												{opt.label}
 											</Text>
 										</Pressable>
@@ -632,22 +574,13 @@ export default function NewDebtModal() {
 										clearError("dueDate");
 									}}
 								>
-									<Text
-										style={[
-											styles.datePickerText,
-											!dueDate && styles.datePickerPlaceholder,
-										]}
-									>
-										{dueDate
-											? formatDateDisplay(dueDate)
-											: "Toque para selecionar"}
+									<Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
+										{dueDate ? formatDateDisplay(dueDate) : "Toque para selecionar"}
 									</Text>
 									<Feather
 										name="calendar"
 										size={20}
-										color={
-											dueDate ? colors.textPrimary : colors.textSecondary
-										}
+										color={dueDate ? colors.textPrimary : colors.textSecondary}
 									/>
 								</Pressable>
 								{dueDate && (
@@ -677,16 +610,12 @@ export default function NewDebtModal() {
 												onPress={() => setShowDatePicker(false)}
 												style={styles.datePickerDone}
 											>
-												<Text style={styles.datePickerDoneText}>
-													Confirmar
-												</Text>
+												<Text style={styles.datePickerDoneText}>Confirmar</Text>
 											</Pressable>
 										)}
 									</View>
 								)}
-								{errors.dueDate ? (
-									<Text style={styles.errorText}>{errors.dueDate}</Text>
-								) : null}
+								{errors.dueDate ? <Text style={styles.errorText}>{errors.dueDate}</Text> : null}
 							</View>
 						</View>
 					)}

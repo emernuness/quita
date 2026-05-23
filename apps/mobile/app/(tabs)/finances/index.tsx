@@ -152,7 +152,9 @@ export default function FinancesScreen() {
 		(dateStr: string | null): boolean => {
 			if (!dateStr) return true;
 			const d = new Date(dateStr);
-			return d.getMonth() === selectedMonth.getMonth() && d.getFullYear() === selectedMonth.getFullYear();
+			return (
+				d.getMonth() === selectedMonth.getMonth() && d.getFullYear() === selectedMonth.getFullYear()
+			);
 		},
 		[selectedMonth],
 	);
@@ -296,7 +298,11 @@ export default function FinancesScreen() {
 
 	return (
 		<SafeAreaView style={styles.safe} edges={["top"]}>
-			<ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+			<ScrollView
+				style={styles.scroll}
+				contentContainerStyle={styles.content}
+				showsVerticalScrollIndicator={false}
+			>
 				{/* Header */}
 				<View style={styles.headerRow}>
 					<View style={styles.headerLeft}>
@@ -381,7 +387,10 @@ export default function FinancesScreen() {
 										}}
 									>
 										<Text
-											style={[styles.filterPillText, typeFilter === opt.key && styles.filterPillTextSelected]}
+											style={[
+												styles.filterPillText,
+												typeFilter === opt.key && styles.filterPillTextSelected,
+											]}
 										>
 											{opt.label}
 										</Text>
@@ -398,7 +407,10 @@ export default function FinancesScreen() {
 									{STATUS_FILTER_OPTIONS.map((opt) => (
 										<Pressable
 											key={opt.key}
-											style={[styles.filterPill, statusFilter === opt.key && styles.filterPillSelected]}
+											style={[
+												styles.filterPill,
+												statusFilter === opt.key && styles.filterPillSelected,
+											]}
 											onPress={() => setStatusFilter(statusFilter === opt.key ? null : opt.key)}
 										>
 											<Text
@@ -425,7 +437,12 @@ export default function FinancesScreen() {
 										style={[styles.filterPill, sortBy === opt.key && styles.filterPillSelected]}
 										onPress={() => setSortBy(opt.key)}
 									>
-										<Text style={[styles.filterPillText, sortBy === opt.key && styles.filterPillTextSelected]}>
+										<Text
+											style={[
+												styles.filterPillText,
+												sortBy === opt.key && styles.filterPillTextSelected,
+											]}
+										>
 											{opt.label}
 										</Text>
 									</Pressable>
@@ -461,7 +478,9 @@ export default function FinancesScreen() {
 				) : totalItems === 0 ? (
 					<View style={styles.emptyContainer}>
 						<Text style={styles.emptyText}>
-							{activeFilterCount > 0 ? "Nenhum item encontrado com esses filtros" : "Nenhum item cadastrado"}
+							{activeFilterCount > 0
+								? "Nenhum item encontrado com esses filtros"
+								: "Nenhum item cadastrado"}
 						</Text>
 					</View>
 				) : (
@@ -523,7 +542,12 @@ const styles = StyleSheet.create({
 	},
 	headerLeft: { flex: 1 },
 	title: { fontFamily: fonts.heading, fontSize: 28, color: colors.textPrimary, lineHeight: 34 },
-	subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.textSecondary, marginTop: spacing.xs },
+	subtitle: {
+		fontFamily: fonts.body,
+		fontSize: 14,
+		color: colors.textSecondary,
+		marginTop: spacing.xs,
+	},
 	headerButtons: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs },
 	filterHeaderButton: {
 		borderRadius: radius.pill,
@@ -536,7 +560,11 @@ const styles = StyleSheet.create({
 		borderColor: colors.border,
 		backgroundColor: colors.surface,
 	},
-	filterHeaderButtonText: { fontFamily: fonts.bodySemiBold, fontSize: 12, color: colors.textSecondary },
+	filterHeaderButtonText: {
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 12,
+		color: colors.textSecondary,
+	},
 	headerButton: {
 		backgroundColor: colors.brandTealDark,
 		borderRadius: radius.pill,
@@ -658,7 +686,12 @@ const styles = StyleSheet.create({
 		borderTopColor: colors.border,
 	},
 	itemLeft: { flex: 1, marginRight: spacing.sm },
-	itemName: { fontFamily: fonts.bodySemiBold, fontSize: 15, color: colors.textPrimary, marginBottom: 2 },
+	itemName: {
+		fontFamily: fonts.bodySemiBold,
+		fontSize: 15,
+		color: colors.textPrimary,
+		marginBottom: 2,
+	},
 	itemDetail: { fontFamily: fonts.body, fontSize: 12, color: colors.textSecondary },
 	itemRight: { alignItems: "flex-end" },
 	itemAmount: { fontFamily: fonts.bodySemiBold, fontSize: 15, marginBottom: 2 },

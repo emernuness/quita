@@ -1,6 +1,6 @@
 "use client";
 
-import { apiGet, apiPost, getToken, setToken } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 import type { User } from "@quita/shared";
 import { create } from "zustand";
 
@@ -17,65 +17,62 @@ export type AuthUser = Pick<
 	| "discreteMode"
 >;
 
+/**
+ * Backend responde apenas { user } no body — token vai em httpOnly cookie
+ * (ADR-0001). Logout chama /auth/logout para revogar refresh + limpar cookies.
+ */
 interface AuthResponse {
 	user: AuthUser;
-	accessToken: string;
 }
 
 interface AuthState {
 	user: AuthUser | null;
-	token: string | null;
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	login: (email: string, password: string) => Promise<AuthUser>;
 	register: (name: string, email: string, phone: string, password: string) => Promise<AuthUser>;
 	logout: () => Promise<void>;
-	loadToken: () => Promise<void>;
+	loadSession: () => Promise<void>;
 	setUser: (user: AuthUser) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
 	user: null,
-	token: null,
 	isAuthenticated: false,
 	isLoading: true,
 
 	login: async (email, password) => {
-		const { user, accessToken } = await apiPost<AuthResponse>("/auth/login", { email, password });
-		setToken(accessToken);
-		set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
+		const { user } = await apiPost<AuthResponse>("/auth/login", { email, password });
+		set({ user, isAuthenticated: true, isLoading: false });
 		return user;
 	},
 
 	register: async (name, email, phone, password) => {
-		const { user, accessToken } = await apiPost<AuthResponse>("/auth/register", {
+		const { user } = await apiPost<AuthResponse>("/auth/register", {
 			name,
 			email,
 			phone,
 			password,
 		});
-		setToken(accessToken);
-		set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
+		set({ user, isAuthenticated: true, isLoading: false });
 		return user;
 	},
 
 	logout: async () => {
-		setToken(null);
-		set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+		try {
+			await apiPost("/auth/logout");
+		} catch {
+			// Ignora — servidor pode estar fora; cookies serao limpos no proximo login.
+		}
+		set({ user: null, isAuthenticated: false, isLoading: false });
 	},
 
-	loadToken: async () => {
+	loadSession: async () => {
 		try {
-			const token = getToken();
-			if (!token) {
-				set({ isLoading: false });
-				return;
-			}
 			const user = await apiGet<AuthUser>("/auth/me");
-			set({ user, token, isAuthenticated: true, isLoading: false });
+			set({ user, isAuthenticated: true, isLoading: false });
 		} catch {
-			setToken(null);
-			set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+			set({ user: null, isAuthenticated: false, isLoading: false });
 		}
 	},
 

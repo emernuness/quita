@@ -25,10 +25,7 @@ function CustomTabBar({
 	navigation,
 }: {
 	state: { routes: { key: string; name: string }[]; index: number };
-	descriptors: Record<
-		string,
-		{ options: { title?: string; tabBarLabel?: string } }
-	>;
+	descriptors: Record<string, { options: { title?: string; tabBarLabel?: string } }>;
 	navigation: {
 		emit: (args: {
 			type: string;
@@ -41,63 +38,42 @@ function CustomTabBar({
 	return (
 		<View style={styles.tabBarWrapper}>
 			<View style={styles.tabBarContainer}>
-				{state.routes.map(
-					(
-						route: { key: string; name: string },
-						index: number,
-					) => {
-						const tab = TABS.find((t) => t.name === route.name);
-						if (!tab) return null;
+				{state.routes.map((route: { key: string; name: string }, index: number) => {
+					const tab = TABS.find((t) => t.name === route.name);
+					if (!tab) return null;
 
-						const isFocused = state.index === index;
+					const isFocused = state.index === index;
 
-						const onPress = () => {
-							const event = navigation.emit({
-								type: "tabPress",
-								target: route.key,
-								canPreventDefault: true,
-							});
+					const onPress = () => {
+						const event = navigation.emit({
+							type: "tabPress",
+							target: route.key,
+							canPreventDefault: true,
+						});
 
-							if (!isFocused && !event.defaultPrevented) {
-								navigation.navigate(route.name);
-							}
-						};
+						if (!isFocused && !event.defaultPrevented) {
+							navigation.navigate(route.name);
+						}
+					};
 
-						return (
-							<Pressable
-								key={route.key}
-								onPress={onPress}
-								style={[
-									styles.tabItem,
-									isFocused && styles.tabItemActive,
-								]}
-								accessibilityRole="button"
-								accessibilityState={
-									isFocused ? { selected: true } : {}
-								}
-								accessibilityLabel={tab.title}
-							>
-								<Feather
-									name={tab.icon}
-									size={20}
-									color={
-										isFocused
-											? colors.brandTealDark
-											: colors.textTertiary
-									}
-								/>
-								<Text
-									style={[
-										styles.tabLabel,
-										isFocused && styles.tabLabelActive,
-									]}
-								>
-									{tab.title}
-								</Text>
-							</Pressable>
-						);
-					},
-				)}
+					return (
+						<Pressable
+							key={route.key}
+							onPress={onPress}
+							style={[styles.tabItem, isFocused && styles.tabItemActive]}
+							accessibilityRole="button"
+							accessibilityState={isFocused ? { selected: true } : {}}
+							accessibilityLabel={tab.title}
+						>
+							<Feather
+								name={tab.icon}
+								size={20}
+								color={isFocused ? colors.brandTealDark : colors.textTertiary}
+							/>
+							<Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>{tab.title}</Text>
+						</Pressable>
+					);
+				})}
 			</View>
 		</View>
 	);

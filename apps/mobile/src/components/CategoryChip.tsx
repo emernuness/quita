@@ -1,6 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 interface CategoryChipProps {
@@ -10,12 +10,7 @@ interface CategoryChipProps {
 	onPress?: () => void;
 }
 
-export function CategoryChip({
-	icon,
-	label,
-	selected = false,
-	onPress,
-}: CategoryChipProps) {
+export function CategoryChip({ icon, label, selected = false, onPress }: CategoryChipProps) {
 	return (
 		<Pressable
 			onPress={onPress}
@@ -25,17 +20,8 @@ export function CategoryChip({
 				pressed && onPress ? { opacity: 0.85 } : undefined,
 			]}
 		>
-			<Feather
-				name={icon}
-				size={16}
-				color={selected ? colors.white : colors.textPrimary}
-			/>
-			<Text
-				style={[
-					styles.label,
-					selected ? styles.labelSelected : styles.labelUnselected,
-				]}
-			>
+			<Feather name={icon} size={16} color={selected ? colors.white : colors.textPrimary} />
+			<Text style={[styles.label, selected ? styles.labelSelected : styles.labelUnselected]}>
 				{label}
 			</Text>
 		</Pressable>

@@ -14,6 +14,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
 	ref,
 ) {
 	const inputId = id ?? rest.name;
+	const messageId = inputId ? `${inputId}-msg` : undefined;
 	return (
 		<label htmlFor={inputId} className="block">
 			{label ? (
@@ -24,6 +25,8 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
 			<input
 				ref={ref}
 				id={inputId}
+				aria-invalid={error ? true : undefined}
+				aria-describedby={error || hint ? messageId : undefined}
 				{...rest}
 				className={cn(
 					"h-12 w-full rounded-[4px] border bg-white px-4 text-[15px] text-[var(--color-ink)]",
@@ -35,9 +38,17 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
 				)}
 			/>
 			{error ? (
-				<span className="mt-1 block text-[12px] text-[var(--color-danger)]">{error}</span>
+				<span
+					id={messageId}
+					className="mt-1 block text-[12px] text-[var(--color-danger)]"
+					role="alert"
+				>
+					{error}
+				</span>
 			) : hint ? (
-				<span className="mt-1 block text-[12px] text-[var(--color-ink-3)]">{hint}</span>
+				<span id={messageId} className="mt-1 block text-[12px] text-[var(--color-ink-3)]">
+					{hint}
+				</span>
 			) : null}
 		</label>
 	);

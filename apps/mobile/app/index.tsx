@@ -1,14 +1,21 @@
-import { Redirect } from "expo-router";
-import { useAuthStore } from "../src/stores/auth";
-import { ActivityIndicator, View } from "react-native";
 import { colors } from "@/theme/tokens";
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import { useAuthStore } from "../src/stores/auth";
 
 export default function Index() {
 	const { isAuthenticated, isLoading, user } = useAuthStore();
 
 	if (isLoading) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+			<View
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					alignItems: "center",
+					backgroundColor: colors.background,
+				}}
+			>
 				<ActivityIndicator size="large" color={colors.textPrimary} />
 			</View>
 		);

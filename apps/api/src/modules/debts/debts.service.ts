@@ -5,24 +5,29 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import type {
-	CreateDebtInput,
-	UpdateDebtInput,
-	CreatePaymentInput,
-} from "@quita/shared";
-import type {
+	Debt as PrismaDebt,
+	DebtCategory as PrismaDebtCategory,
 	DebtNature as PrismaDebtNature,
 	DebtStatus as PrismaDebtStatus,
+	Payment as PrismaPayment,
 	PaymentType as PrismaPaymentType,
 } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
 import type { Decimal } from "@prisma/client/runtime/library";
+import type { CreateDebtInput, CreatePaymentInput, UpdateDebtInput } from "@quita/shared";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
+
+type DebtWithRelations = PrismaDebt & {
+	category?: PrismaDebtCategory | null;
+	payments?: PrismaPayment[];
+};
 
 function decimalToNumber(val: Decimal | null | undefined): number | null {
 	if (val == null) return null;
 	return val.toNumber();
 }
 
-function serializeDebt(debt: any) {
+function serializeDebt(debt: DebtWithRelations) {
 	return {
 		...debt,
 		totalAmount: debt.totalAmount.toNumber(),
@@ -31,7 +36,7 @@ function serializeDebt(debt: any) {
 		interestSaved: decimalToNumber(debt.interestSaved),
 		...(debt.payments
 			? {
-					payments: debt.payments.map((p: any) => ({
+					payments: debt.payments.map((p) => ({
 						...p,
 						amount: p.amount.toNumber(),
 					})),
@@ -42,13 +47,16 @@ function serializeDebt(debt: any) {
 
 @Injectable()
 export class DebtsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	async listDebts(userId: string) {
 		const debts = await this.prisma.debt.findMany({
 			where: { userId },
 			include: { category: true },
-			orderBy: { priorityOrder: "asc" },
+			orderBy: [{ priorityScore: { sort: "desc", nulls: "last" } }, { createdAt: "asc" }],
 		});
 
 		return debts.map(serializeDebt);
@@ -67,18 +75,12 @@ export class DebtsService {
 		});
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		return serializeDebt(debt);
 	}
 
 	async createDebt(userId: string, data: CreateDebtInput) {
-		const maxOrder = await this.prisma.debt.aggregate({
-			where: { userId },
-			_max: { priorityOrder: true },
-		});
-
 		const debt = await this.prisma.debt.create({
 			data: {
 				userId,
@@ -87,17 +89,26 @@ export class DebtsService {
 				nature: (data.nature as PrismaDebtNature) ?? "one_time",
 				totalAmount: data.totalAmount,
 				monthlyAmount: data.monthlyAmount ?? undefined,
-				overdueMonths: data.overdueMonths ?? undefined,
+				daysOverdue: data.daysOverdue ?? 0,
 				totalInstallments: data.totalInstallments ?? undefined,
 				currentInstallment: data.currentInstallment ?? undefined,
+				installmentsPaid: data.installmentsPaid ?? undefined,
+				installmentsOverdue: data.installmentsOverdue ?? undefined,
 				hasInterest: data.hasInterest,
 				dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
 				status: (data.status as PrismaDebtStatus) ?? "on_time",
-				priorityOrder: (maxOrder._max.priorityOrder ?? 0) + 1,
+				affectsSurvival: data.affectsSurvival,
+				affectsIncome: data.affectsIncome,
+				hasLegalRisk: data.hasLegalRisk,
+				hasCollateral: data.hasCollateral,
+				collateralType: data.collateralType ?? undefined,
+				interestRateMonthly: data.interestRateMonthly ?? undefined,
+				dataConfidence: data.dataConfidence ?? undefined,
 			},
 			include: { category: true },
 		});
 
+		await this.motorTrigger.enqueue(userId, "debt_added");
 		return serializeDebt(debt);
 	}
 
@@ -105,8 +116,7 @@ export class DebtsService {
 		const debt = await this.prisma.debt.findUnique({ where: { id } });
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const updated = await this.prisma.debt.update({
 			where: { id },
@@ -122,8 +132,8 @@ export class DebtsService {
 				...(data.monthlyAmount !== undefined && {
 					monthlyAmount: data.monthlyAmount,
 				}),
-				...(data.overdueMonths !== undefined && {
-					overdueMonths: data.overdueMonths,
+				...(data.daysOverdue !== undefined && {
+					daysOverdue: data.daysOverdue,
 				}),
 				...(data.totalInstallments !== undefined && {
 					totalInstallments: data.totalInstallments,
@@ -142,6 +152,7 @@ export class DebtsService {
 			include: { category: true },
 		});
 
+		await this.motorTrigger.enqueue(userId, "debt_updated");
 		return serializeDebt(updated);
 	}
 
@@ -149,26 +160,21 @@ export class DebtsService {
 		const debt = await this.prisma.debt.findUnique({ where: { id } });
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		await this.prisma.debt.delete({ where: { id } });
 
+		await this.motorTrigger.enqueue(userId, "debt_removed");
 		return { deleted: true };
 	}
 
-	async createPayment(
-		userId: string,
-		debtId: string,
-		data: CreatePaymentInput,
-	) {
+	async createPayment(userId: string, debtId: string, data: CreatePaymentInput) {
 		const debt = await this.prisma.debt.findUnique({
 			where: { id: debtId },
 		});
 
 		if (!debt) throw new NotFoundException("Debt not found");
-		if (debt.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (debt.userId !== userId) throw new ForbiddenException("Not your resource");
 
 		const canUndoUntil = new Date();
 		canUndoUntil.setHours(canUndoUntil.getHours() + 24);
@@ -201,6 +207,7 @@ export class DebtsService {
 			}),
 		]);
 
+		await this.motorTrigger.enqueue(userId, "payment_recorded");
 		return {
 			...payment,
 			amount: payment.amount.toNumber(),
@@ -213,12 +220,10 @@ export class DebtsService {
 		});
 
 		if (!payment) throw new NotFoundException("Payment not found");
-		if (payment.userId !== userId)
-			throw new ForbiddenException("Not your resource");
+		if (payment.userId !== userId) throw new ForbiddenException("Not your resource");
 		if (payment.debtId !== debtId)
 			throw new BadRequestException("Payment does not belong to this debt");
-		if (payment.undone)
-			throw new BadRequestException("Payment already undone");
+		if (payment.undone) throw new BadRequestException("Payment already undone");
 		if (!payment.canUndoUntil || payment.canUndoUntil < new Date())
 			throw new BadRequestException("Undo window expired");
 
@@ -228,10 +233,7 @@ export class DebtsService {
 
 		if (!debt) throw new NotFoundException("Debt not found");
 
-		const newAmountPaid = Math.max(
-			0,
-			debt.amountPaid.toNumber() - payment.amount.toNumber(),
-		);
+		const newAmountPaid = Math.max(0, debt.amountPaid.toNumber() - payment.amount.toNumber());
 
 		await this.prisma.$transaction([
 			this.prisma.payment.update({
@@ -250,6 +252,7 @@ export class DebtsService {
 			}),
 		]);
 
+		await this.motorTrigger.enqueue(userId, "payment_reverted");
 		return { undone: true };
 	}
 

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-	ActivityIndicator,
-	Pressable,
-	StyleSheet,
-	Text,
-	type ViewStyle,
-} from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, type ViewStyle } from "react-native";
 import { colors, fonts, radius, spacing } from "../theme/tokens";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";

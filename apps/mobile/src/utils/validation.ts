@@ -1,4 +1,4 @@
-import type { ZodSchema, ZodIssue } from "zod";
+import type { ZodIssue, ZodSchema } from "zod";
 
 /**
  * Validate data with a Zod schema and return field-level errors
@@ -44,6 +44,9 @@ function translateZodError(issue: ZodIssue): string {
 	if (message.includes("Invalid date")) return "Data inválida";
 	if (message.includes("Invalid uuid")) return "Identificador inválido";
 	if (message.includes("String must contain at least"))
-		return message.replace(/String must contain at least (\d+) character\(s\)/, "Mínimo de $1 caracteres");
+		return message.replace(
+			/String must contain at least (\d+) character\(s\)/,
+			"Mínimo de $1 caracteres",
+		);
 	return message;
 }

@@ -1,17 +1,9 @@
-import React, { useState } from "react";
-import {
-	Alert,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, spacing } from "@/theme/tokens";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useToggleDiscreteMode } from "../../../src/hooks/useProfile";
 import { useAuthStore } from "../../../src/stores/auth";
 
@@ -52,17 +44,14 @@ export default function DiscreteModeScreen() {
 
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
-					Esconda os valores das telas com um toque. Ninguém vai ver quanto você
-					deve.
+					Esconda os valores das telas com um toque. Ninguém vai ver quanto você deve.
 				</Text>
 
 				{/* Preview Section */}
 				<Text style={styles.previewLabel}>Como fica</Text>
 				<View style={styles.previewCard}>
 					<Text style={styles.previewCardLabel}>Total de dívidas</Text>
-					<Text style={styles.previewCardValue}>
-						{enabled ? "R$ •••••" : "R$ 12.800,00"}
-					</Text>
+					<Text style={styles.previewCardValue}>{enabled ? "R$ •••••" : "R$ 12.800,00"}</Text>
 					<Text style={styles.previewCardLink}>Toque para revelar</Text>
 				</View>
 
@@ -70,9 +59,7 @@ export default function DiscreteModeScreen() {
 				<View style={styles.toggleRow}>
 					<View style={{ flex: 1 }}>
 						<Text style={styles.toggleTitle}>Ativar modo discreto</Text>
-						<Text style={styles.toggleSubtitle}>
-							Oculta todos os valores
-						</Text>
+						<Text style={styles.toggleSubtitle}>Oculta todos os valores</Text>
 					</View>
 					<Switch
 						value={enabled}
@@ -87,8 +74,8 @@ export default function DiscreteModeScreen() {
 				<View style={styles.infoCard}>
 					<Text style={styles.infoCardTitle}>Quando usar</Text>
 					<Text style={styles.infoCardText}>
-						Ideal para quando você precisa abrir o app em público, no trabalho ou
-						perto de outras pessoas. Ative e desative a qualquer momento.
+						Ideal para quando você precisa abrir o app em público, no trabalho ou perto de outras
+						pessoas. Ative e desative a qualquer momento.
 					</Text>
 				</View>
 			</ScrollView>

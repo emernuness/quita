@@ -92,20 +92,14 @@ export default function DebtDetailScreen() {
 		{
 			label: "Juros/multa",
 			value: debt.hasInterest ? "Sim" : "Não",
-			valueColor: debt.hasInterest
-				? colors.brandTealDark
-				: colors.textPrimary,
+			valueColor: debt.hasInterest ? colors.brandTealDark : colors.textPrimary,
 			isLink: debt.hasInterest,
 		},
 		{ label: "Vencimento", value: debt.dueDate },
 	];
 
 	const statusVariant: keyof typeof badges =
-		debt.status === "Atrasada"
-			? "danger"
-			: debt.status === "Em dia"
-				? "success"
-				: "neutral";
+		debt.status === "Atrasada" ? "danger" : debt.status === "Em dia" ? "success" : "neutral";
 	const statusBadge = badges[statusVariant];
 
 	return (
@@ -116,15 +110,8 @@ export default function DebtDetailScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				{/* Back Button */}
-				<Pressable
-					style={styles.backButton}
-					onPress={() => router.back()}
-				>
-					<Feather
-						name="arrow-left"
-						size={18}
-						color={colors.textPrimary}
-					/>
+				<Pressable style={styles.backButton} onPress={() => router.back()}>
+					<Feather name="arrow-left" size={18} color={colors.textPrimary} />
 					<Text style={styles.backText}>Voltar</Text>
 				</Pressable>
 
@@ -135,18 +122,8 @@ export default function DebtDetailScreen() {
 				<Text style={styles.creditor}>{debt.creditor}</Text>
 
 				{/* Status pill */}
-				<View
-					style={[
-						styles.statusPill,
-						{ backgroundColor: statusBadge.background },
-					]}
-				>
-					<View
-						style={[
-							styles.statusDot,
-							{ backgroundColor: statusBadge.dot },
-						]}
-					/>
+				<View style={[styles.statusPill, { backgroundColor: statusBadge.background }]}>
+					<View style={[styles.statusDot, { backgroundColor: statusBadge.dot }]} />
 					<Text style={[styles.statusText, { color: statusBadge.color }]}>
 						{debt.status === "Atrasada"
 							? `Atrasada há ${debt.monthsLate} meses`
@@ -161,26 +138,18 @@ export default function DebtDetailScreen() {
 					{infoRows.map((row, index) => (
 						<View key={row.label}>
 							<View style={styles.infoRow}>
-								<Text style={styles.infoLabel}>
-									{row.label}
-								</Text>
+								<Text style={styles.infoLabel}>{row.label}</Text>
 								<Text
 									style={[
 										styles.infoValue,
-										row.valueColor
-											? { color: row.valueColor }
-											: undefined,
-										row.isLink
-											? { textDecorationLine: "underline" as const }
-											: undefined,
+										row.valueColor ? { color: row.valueColor } : undefined,
+										row.isLink ? { textDecorationLine: "underline" as const } : undefined,
 									]}
 								>
 									{row.value}
 								</Text>
 							</View>
-							{index < infoRows.length - 1 && (
-								<View style={styles.separator} />
-							)}
+							{index < infoRows.length - 1 && <View style={styles.separator} />}
 						</View>
 					))}
 				</View>
@@ -189,27 +158,16 @@ export default function DebtDetailScreen() {
 				<View style={styles.tipCard}>
 					<Text style={styles.tipLabel}>Dica da IA</Text>
 					<Text style={styles.tipText}>{debt.tip}</Text>
-					{debt.tipLink ? (
-						<Text style={styles.tipLink}>
-							{debt.tipLink}
-						</Text>
-					) : null}
+					{debt.tipLink ? <Text style={styles.tipLink}>{debt.tipLink}</Text> : null}
 				</View>
 
 				{/* Action Buttons */}
-				<Pressable
-					style={styles.primaryButton}
-					onPress={() => router.push("/(modals)/pay-debt")}
-				>
-					<Text style={styles.primaryButtonText}>
-						Marcar como pago
-					</Text>
+				<Pressable style={styles.primaryButton} onPress={() => router.push("/(modals)/pay-debt")}>
+					<Text style={styles.primaryButtonText}>Marcar como pago</Text>
 				</Pressable>
 
 				<Pressable style={styles.secondaryButton}>
-					<Text style={styles.secondaryButtonText}>
-						Editar dívida
-					</Text>
+					<Text style={styles.secondaryButtonText}>Editar dívida</Text>
 				</Pressable>
 
 				<View style={{ height: 120 }} />
