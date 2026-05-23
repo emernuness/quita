@@ -4,11 +4,8 @@ import type { Queue } from "bullmq";
 import { MOTOR_SCHEDULED_QUEUE } from "./queue.constants";
 
 /**
- * Registra os schedulers BullMQ (jobs recorrentes) no boot da aplicacao.
- *
- * Spec Fase 4 §7.6 — schedulers:
- * - monthly-rollover: cron 0 3 1 * *  (todo dia 1, 03:00 UTC)
- * - data-retention-cleanup: cron 0 4 * * *  (todo dia, 04:00 UTC)
+ * Registra schedulers BullMQ no boot.
+ * Spec Fase 4 §7.6 — 6 crons cobrindo todos processors recorrentes.
  */
 @Injectable()
 export class QueueSchedulerService implements OnModuleInit {
@@ -19,7 +16,11 @@ export class QueueSchedulerService implements OnModuleInit {
 	async onModuleInit(): Promise<void> {
 		await this.addRepeatable("monthly-rollover", "0 3 1 * *");
 		await this.addRepeatable("data-retention-cleanup", "0 4 * * *");
-		this.logger.log({ msg: "queue_schedulers.registered" });
+		await this.addRepeatable("ocr-cleanup", "0 5 * * *");
+		await this.addRepeatable("data-freshness-review", "0 6 * * 1");
+		await this.addRepeatable("interest-rate-update", "0 2 5 * *");
+		await this.addRepeatable("settlement-revalidation", "0 7 * * 2");
+		this.logger.log({ msg: "queue_schedulers.registered", count: 6 });
 	}
 
 	private async addRepeatable(name: string, pattern: string): Promise<void> {

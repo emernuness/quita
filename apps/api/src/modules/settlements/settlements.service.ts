@@ -3,6 +3,7 @@ import type { ConfidenceLevel, FinancialState } from "@prisma/client";
 import { type SettlementProposalInput, evaluateSettlement } from "@quita/motor";
 import { PrismaService } from "../../prisma/prisma.service";
 import { type OcrExtractedSettlement, OcrService } from "../ocr/ocr.service";
+import { R2StorageService } from "../storage/r2-storage.service";
 
 export interface EvaluateSettlementInput {
 	debtId: string;
@@ -24,6 +25,7 @@ export class SettlementsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly ocr: OcrService,
+		private readonly storage: R2StorageService,
 	) {}
 
 	async evaluate(userId: string, input: EvaluateSettlementInput) {
@@ -46,6 +48,20 @@ export class SettlementsService {
 			throw new ForbiddenException("Recurso disponível apenas para o plano Premium.");
 		}
 
+		// Upload da imagem para R2 antes de chamar OCR (audit + retencao Bridge §3).
+		let ocrImageUrl: string | undefined;
+		if (this.storage.isConfigured) {
+			const imageBuffer = Buffer.from(input.imageBase64.replace(/^data:.+;base64,/, ""), "base64");
+			const uploaded = await this.storage.upload({
+				keyPrefix: `ocr/${userId}`,
+				contentType: "image/png",
+				body: imageBuffer,
+			});
+			if (uploaded) {
+				ocrImageUrl = uploaded.publicUrl ?? uploaded.key;
+			}
+		}
+
 		const extracted = (await this.ocr.extract({
 			imageBase64: input.imageBase64,
 			type: "settlement_proposal",
@@ -61,6 +77,7 @@ export class SettlementsService {
 
 		return this.runEvaluation(userId, evalInput, {
 			usedOcr: true,
+			ocrImageUrl,
 			ocrExtractedData: extracted as unknown as Record<string, unknown>,
 			ocrConfidence: extracted.confidence,
 		});

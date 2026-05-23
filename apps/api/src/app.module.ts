@@ -18,6 +18,7 @@ import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
+import { StorageModule } from "./modules/storage/storage.module";
 import { SubscriptionModule } from "./modules/subscription/subscription.module";
 import { SupportModule } from "./modules/support/support.module";
 import { UserModule } from "./modules/user/user.module";
@@ -71,6 +72,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		GoalsModule,
 		EmergencyReserveModule,
 		BehaviorProfileModule,
+		StorageModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },
