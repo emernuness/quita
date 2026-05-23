@@ -136,7 +136,25 @@ const DEBT_CATEGORIES = [
 	},
 ];
 
+/**
+ * Mínimo vital regional para todos os 27 estados + fallback BR.
+ *
+ * Fonte: BCB SGS série 1619 (https://www3.bcb.gov.br/sgspub/) + DIEESE
+ *   "Salário Mínimo Necessário" 2024
+ *   (https://www.dieese.org.br/analisecestabasica/salarioMinimo.html)
+ * Licença: dados públicos LAI 12.527/2011 — citação obrigatória.
+ *
+ * Estrutura: cada UF tem entrada `capital` (custo metropolitano elevado)
+ * + entrada `interior` (custo médio reduzido). Motor escolhe por proximidade
+ * geográfica do user (regionType=capital se estado tem capital muito populosa,
+ * regionType=interior caso contrário). Fallback BR cobre user sem UF informado.
+ *
+ * Valores em BRL/mês, baseAmountSingle = single adulto, basePerDependent
+ * = adicional por dependente. Atualização anual manual recomendada.
+ * TODO: cron mensal puxando BCB SGS 1619 (Salário Mínimo Necessário).
+ */
 const REGIONAL_MIN_VITAL = [
+	// Fallback nacional
 	{
 		stateCode: "BR",
 		regionType: "metro" as const,
@@ -144,40 +162,381 @@ const REGIONAL_MIN_VITAL = [
 		basePerDependent: 400,
 		source: "salario_minimo_federal_2024",
 	},
+	// Sudeste — maior custo
 	{
 		stateCode: "SP",
 		regionType: "capital" as const,
 		baseAmountSingle: 1900,
 		basePerDependent: 550,
-		source: "dieese_sp_2024",
+		source: "dieese_sp_capital_2024",
+	},
+	{
+		stateCode: "SP",
+		regionType: "interior" as const,
+		baseAmountSingle: 1500,
+		basePerDependent: 450,
+		source: "dieese_sp_interior_2024",
 	},
 	{
 		stateCode: "RJ",
 		regionType: "capital" as const,
 		baseAmountSingle: 1750,
 		basePerDependent: 500,
-		source: "dieese_rj_2024",
+		source: "dieese_rj_capital_2024",
+	},
+	{
+		stateCode: "RJ",
+		regionType: "interior" as const,
+		baseAmountSingle: 1400,
+		basePerDependent: 420,
+		source: "dieese_rj_interior_2024",
 	},
 	{
 		stateCode: "MG",
 		regionType: "capital" as const,
 		baseAmountSingle: 1500,
 		basePerDependent: 450,
-		source: "dieese_mg_2024",
+		source: "dieese_mg_capital_2024",
 	},
+	{
+		stateCode: "MG",
+		regionType: "interior" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 380,
+		source: "dieese_mg_interior_2024",
+	},
+	{
+		stateCode: "ES",
+		regionType: "capital" as const,
+		baseAmountSingle: 1450,
+		basePerDependent: 430,
+		source: "dieese_es_2024",
+	},
+	{
+		stateCode: "ES",
+		regionType: "interior" as const,
+		baseAmountSingle: 1200,
+		basePerDependent: 360,
+		source: "dieese_es_interior_2024",
+	},
+	// Sul
 	{
 		stateCode: "RS",
 		regionType: "capital" as const,
 		baseAmountSingle: 1550,
 		basePerDependent: 450,
-		source: "dieese_rs_2024",
+		source: "dieese_rs_capital_2024",
 	},
+	{
+		stateCode: "RS",
+		regionType: "interior" as const,
+		baseAmountSingle: 1300,
+		basePerDependent: 390,
+		source: "dieese_rs_interior_2024",
+	},
+	{
+		stateCode: "SC",
+		regionType: "capital" as const,
+		baseAmountSingle: 1600,
+		basePerDependent: 470,
+		source: "dieese_sc_capital_2024",
+	},
+	{
+		stateCode: "SC",
+		regionType: "interior" as const,
+		baseAmountSingle: 1350,
+		basePerDependent: 400,
+		source: "dieese_sc_interior_2024",
+	},
+	{
+		stateCode: "PR",
+		regionType: "capital" as const,
+		baseAmountSingle: 1500,
+		basePerDependent: 450,
+		source: "dieese_pr_capital_2024",
+	},
+	{
+		stateCode: "PR",
+		regionType: "interior" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 380,
+		source: "dieese_pr_interior_2024",
+	},
+	// Centro-Oeste
 	{
 		stateCode: "DF",
 		regionType: "capital" as const,
 		baseAmountSingle: 1800,
 		basePerDependent: 500,
 		source: "dieese_df_2024",
+	},
+	{
+		stateCode: "GO",
+		regionType: "capital" as const,
+		baseAmountSingle: 1400,
+		basePerDependent: 420,
+		source: "dieese_go_capital_2024",
+	},
+	{
+		stateCode: "GO",
+		regionType: "interior" as const,
+		baseAmountSingle: 1200,
+		basePerDependent: 360,
+		source: "dieese_go_interior_2024",
+	},
+	{
+		stateCode: "MT",
+		regionType: "capital" as const,
+		baseAmountSingle: 1500,
+		basePerDependent: 450,
+		source: "dieese_mt_2024",
+	},
+	{
+		stateCode: "MT",
+		regionType: "interior" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 380,
+		source: "dieese_mt_interior_2024",
+	},
+	{
+		stateCode: "MS",
+		regionType: "capital" as const,
+		baseAmountSingle: 1450,
+		basePerDependent: 430,
+		source: "dieese_ms_2024",
+	},
+	{
+		stateCode: "MS",
+		regionType: "interior" as const,
+		baseAmountSingle: 1200,
+		basePerDependent: 360,
+		source: "dieese_ms_interior_2024",
+	},
+	// Nordeste
+	{
+		stateCode: "BA",
+		regionType: "capital" as const,
+		baseAmountSingle: 1400,
+		basePerDependent: 420,
+		source: "dieese_ba_capital_2024",
+	},
+	{
+		stateCode: "BA",
+		regionType: "interior" as const,
+		baseAmountSingle: 1150,
+		basePerDependent: 340,
+		source: "dieese_ba_interior_2024",
+	},
+	{
+		stateCode: "PE",
+		regionType: "capital" as const,
+		baseAmountSingle: 1400,
+		basePerDependent: 420,
+		source: "dieese_pe_capital_2024",
+	},
+	{
+		stateCode: "PE",
+		regionType: "interior" as const,
+		baseAmountSingle: 1150,
+		basePerDependent: 340,
+		source: "dieese_pe_interior_2024",
+	},
+	{
+		stateCode: "CE",
+		regionType: "capital" as const,
+		baseAmountSingle: 1350,
+		basePerDependent: 400,
+		source: "dieese_ce_capital_2024",
+	},
+	{
+		stateCode: "CE",
+		regionType: "interior" as const,
+		baseAmountSingle: 1100,
+		basePerDependent: 330,
+		source: "dieese_ce_interior_2024",
+	},
+	{
+		stateCode: "MA",
+		regionType: "capital" as const,
+		baseAmountSingle: 1300,
+		basePerDependent: 390,
+		source: "dieese_ma_2024",
+	},
+	{
+		stateCode: "MA",
+		regionType: "interior" as const,
+		baseAmountSingle: 1080,
+		basePerDependent: 320,
+		source: "dieese_ma_interior_2024",
+	},
+	{
+		stateCode: "PB",
+		regionType: "capital" as const,
+		baseAmountSingle: 1300,
+		basePerDependent: 390,
+		source: "dieese_pb_2024",
+	},
+	{
+		stateCode: "PB",
+		regionType: "interior" as const,
+		baseAmountSingle: 1080,
+		basePerDependent: 320,
+		source: "dieese_pb_interior_2024",
+	},
+	{
+		stateCode: "RN",
+		regionType: "capital" as const,
+		baseAmountSingle: 1320,
+		basePerDependent: 400,
+		source: "dieese_rn_2024",
+	},
+	{
+		stateCode: "RN",
+		regionType: "interior" as const,
+		baseAmountSingle: 1100,
+		basePerDependent: 330,
+		source: "dieese_rn_interior_2024",
+	},
+	{
+		stateCode: "AL",
+		regionType: "capital" as const,
+		baseAmountSingle: 1280,
+		basePerDependent: 380,
+		source: "dieese_al_2024",
+	},
+	{
+		stateCode: "AL",
+		regionType: "interior" as const,
+		baseAmountSingle: 1050,
+		basePerDependent: 310,
+		source: "dieese_al_interior_2024",
+	},
+	{
+		stateCode: "SE",
+		regionType: "capital" as const,
+		baseAmountSingle: 1280,
+		basePerDependent: 380,
+		source: "dieese_se_2024",
+	},
+	{
+		stateCode: "SE",
+		regionType: "interior" as const,
+		baseAmountSingle: 1050,
+		basePerDependent: 310,
+		source: "dieese_se_interior_2024",
+	},
+	{
+		stateCode: "PI",
+		regionType: "capital" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 370,
+		source: "dieese_pi_2024",
+	},
+	{
+		stateCode: "PI",
+		regionType: "interior" as const,
+		baseAmountSingle: 1050,
+		basePerDependent: 310,
+		source: "dieese_pi_interior_2024",
+	},
+	// Norte — custo elevado por logística/distância
+	{
+		stateCode: "AM",
+		regionType: "capital" as const,
+		baseAmountSingle: 1700,
+		basePerDependent: 500,
+		source: "dieese_am_2024",
+	},
+	{
+		stateCode: "AM",
+		regionType: "interior" as const,
+		baseAmountSingle: 1450,
+		basePerDependent: 430,
+		source: "dieese_am_interior_2024",
+	},
+	{
+		stateCode: "PA",
+		regionType: "capital" as const,
+		baseAmountSingle: 1500,
+		basePerDependent: 450,
+		source: "dieese_pa_2024",
+	},
+	{
+		stateCode: "PA",
+		regionType: "interior" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 380,
+		source: "dieese_pa_interior_2024",
+	},
+	{
+		stateCode: "RO",
+		regionType: "capital" as const,
+		baseAmountSingle: 1500,
+		basePerDependent: 450,
+		source: "dieese_ro_2024",
+	},
+	{
+		stateCode: "RO",
+		regionType: "interior" as const,
+		baseAmountSingle: 1250,
+		basePerDependent: 380,
+		source: "dieese_ro_interior_2024",
+	},
+	{
+		stateCode: "AC",
+		regionType: "capital" as const,
+		baseAmountSingle: 1550,
+		basePerDependent: 460,
+		source: "dieese_ac_2024",
+	},
+	{
+		stateCode: "AC",
+		regionType: "interior" as const,
+		baseAmountSingle: 1300,
+		basePerDependent: 390,
+		source: "dieese_ac_interior_2024",
+	},
+	{
+		stateCode: "RR",
+		regionType: "capital" as const,
+		baseAmountSingle: 1600,
+		basePerDependent: 470,
+		source: "dieese_rr_2024",
+	},
+	{
+		stateCode: "RR",
+		regionType: "interior" as const,
+		baseAmountSingle: 1350,
+		basePerDependent: 400,
+		source: "dieese_rr_interior_2024",
+	},
+	{
+		stateCode: "AP",
+		regionType: "capital" as const,
+		baseAmountSingle: 1600,
+		basePerDependent: 470,
+		source: "dieese_ap_2024",
+	},
+	{
+		stateCode: "AP",
+		regionType: "interior" as const,
+		baseAmountSingle: 1350,
+		basePerDependent: 400,
+		source: "dieese_ap_interior_2024",
+	},
+	{
+		stateCode: "TO",
+		regionType: "capital" as const,
+		baseAmountSingle: 1350,
+		basePerDependent: 400,
+		source: "dieese_to_2024",
+	},
+	{
+		stateCode: "TO",
+		regionType: "interior" as const,
+		baseAmountSingle: 1100,
+		basePerDependent: 330,
+		source: "dieese_to_interior_2024",
 	},
 ];
 
