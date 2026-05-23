@@ -64,7 +64,7 @@ export function NotificationBell() {
 			</button>
 
 			{open ? (
-				<div className="absolute right-0 z-50 mt-2 w-[360px] overflow-hidden rounded-[12px] border border-[var(--color-border)] bg-white shadow-lg">
+				<div className="absolute right-0 z-50 mt-2 w-[min(90vw,360px)] overflow-hidden rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg">
 					<div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
 						<div className="text-[14px] font-semibold">Notificações</div>
 						{count > 0 ? (

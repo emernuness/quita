@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind 4 dark mode: ativa via classe .dark no html (escolhida em useTheme hook). */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
 	--font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
@@ -101,6 +104,63 @@ body {
 	color: var(--color-ink);
 	font-family: var(--font-sans);
 	-webkit-font-smoothing: antialiased;
+}
+
+/* Dark mode tokens. Aplicados quando html tem class="dark".
+   Mantém estrutura semântica — só inverte valores. Componentes que
+   usam var(--color-*) ganham dark automaticamente. */
+html.dark {
+	--color-background: #0d1117;
+	--color-surface: #161b22;
+	--color-surface-2: #1a2030;
+	--color-gray100: #1a2030;
+	--color-gray200: #2a3040;
+	--color-gray400: #6a7580;
+	--color-gray600: #9aa59c;
+	--color-border: #2a3040;
+	--color-border-strong: #e4e8e5;
+
+	--color-ink: #f4f6f4;
+	--color-ink-2: #c0c8cc;
+	--color-ink-3: #9aa59c;
+
+	--color-success-bg: #1d3a26;
+	--color-success-fg: #6fdc8c;
+
+	--color-warning-bg: #3a2f10;
+	--color-warning-fg: #f0c674;
+
+	--color-danger-bg: #3a1d14;
+	--color-danger-fg: #f08070;
+
+	--color-info-bg: #0e3a30;
+	--color-info-fg: #5cc4a8;
+
+	--color-neutral-bg: #1a2030;
+	--color-neutral-fg: #c0c8cc;
+}
+
+/* Focus visible global — a11y WCAG 2.4.7 */
+:focus-visible {
+	outline: 2px solid var(--color-teal);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+/* Skip link a11y */
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 8px;
+	z-index: 9999;
+	padding: 8px 16px;
+	background: var(--color-teal);
+	color: white;
+	border-radius: 8px;
+	font-weight: 600;
+}
+.skip-link:focus {
+	left: 8px;
 }
 
 * {

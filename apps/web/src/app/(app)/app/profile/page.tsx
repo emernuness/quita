@@ -4,6 +4,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { PageHeader } from "@/components/PageHeader";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { maskPhone, onlyDigits } from "@/lib/masks";
 import { type FormEvent, useEffect, useState } from "react";
@@ -65,6 +66,18 @@ export default function ProfileAccountPage() {
 						</div>
 					) : null}
 				</form>
+			</Card>
+
+			<Card className="p-6 mt-6">
+				<div className="flex items-start justify-between gap-4 flex-wrap">
+					<div>
+						<h2 className="text-[16px] font-semibold mb-1">Aparência</h2>
+						<p className="text-[13px] text-[var(--color-ink-2)]">
+							Tema claro, escuro ou seguir preferência do sistema.
+						</p>
+					</div>
+					<ThemeToggle />
+				</div>
 			</Card>
 		</>
 	);
