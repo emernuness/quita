@@ -9,6 +9,7 @@ import { useCreateIncome } from "@/hooks/useFinancial";
 import { unmaskBRL } from "@/lib/masks";
 import { type CreateIncomeInput, FinancialType, IncomeSource } from "@quita/shared";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function NewIncomeModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 	const create = useCreateIncome();
@@ -37,6 +38,7 @@ export function NewIncomeModal({ open, onClose }: { open: boolean; onClose: () =
 		};
 		try {
 			await create.mutateAsync(payload);
+			toast.success("Receita adicionada");
 			setName("");
 			setAmount("");
 			setDueDate("");

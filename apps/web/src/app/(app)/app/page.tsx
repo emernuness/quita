@@ -9,6 +9,7 @@ import { KpiCard } from "@/components/KpiCard";
 import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/PageHeader";
 import { ProgressBar } from "@/components/ProgressBar";
+import { SkeletonCard, SkeletonList } from "@/components/Skeleton";
 import { NewDebtModal } from "@/components/modals/NewDebtModal";
 import { useDashboard } from "@/hooks/useDashboard";
 import { useDebts } from "@/hooks/useDebts";
@@ -62,7 +63,14 @@ export default function DashboardPage() {
 
 	if (isLoading || !data) {
 		return (
-			<div className="py-20 text-center text-[14px] text-[var(--color-ink-2)]">Carregando…</div>
+			<div className="space-y-4">
+				<SkeletonCard lines={3} />
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<SkeletonCard lines={4} />
+					<SkeletonCard lines={4} />
+				</div>
+				<SkeletonList count={3} />
+			</div>
 		);
 	}
 

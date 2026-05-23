@@ -9,6 +9,7 @@ import { useCreateExpense } from "@/hooks/useFinancial";
 import { unmaskBRL } from "@/lib/masks";
 import { type CreateExpenseInput, ExpenseCategory, FinancialType } from "@quita/shared";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function NewExpenseModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 	const create = useCreateExpense();
@@ -37,6 +38,7 @@ export function NewExpenseModal({ open, onClose }: { open: boolean; onClose: () 
 		};
 		try {
 			await create.mutateAsync(payload);
+			toast.success("Despesa adicionada");
 			setName("");
 			setAmount("");
 			setDueDate("");

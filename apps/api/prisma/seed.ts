@@ -610,13 +610,75 @@ const SUPPORT_CHANNELS = [
 		displayOrder: 3,
 	},
 	{
+		slug: "cvv_188",
+		name: "CVV — Centro de Valorização da Vida (188)",
+		channelType: "ngo" as const,
+		scope: "federal" as const,
+		phone: "188",
+		url: "https://cvv.org.br/",
+		description:
+			"Apoio emocional 24h gratuito por telefone, chat e e-mail. Para quando a pressão financeira afeta a saúde mental.",
+		displayOrder: 4,
+	},
+	{
+		slug: "cras_busca_cep",
+		name: "CRAS (Centro de Referência de Assistência Social)",
+		channelType: "federal_gov" as const,
+		scope: "municipal" as const,
+		url: "https://aplicacoes.mds.gov.br/sagirmps/ferramentas/nucleo/grupo.php?id_grupo=70",
+		description:
+			"Apoio socioassistencial gratuito da prefeitura. Auxilia em situações de vulnerabilidade. Busque o CRAS mais próximo do seu CEP.",
+		displayOrder: 5,
+	},
+	{
+		slug: "defensoria_publica_uf",
+		name: "Defensoria Pública (sua UF)",
+		channelType: "defensoria" as const,
+		scope: "state" as const,
+		url: "https://www.anadep.org.br/wtk/pagina/encontre_sua_defensoria",
+		description:
+			"Assistência jurídica gratuita para superendividamento (Lei 14.181/2021), renegociação judicial e proteção contra cobrança abusiva.",
+		displayOrder: 6,
+	},
+	{
+		slug: "idec",
+		name: "IDEC — Instituto Brasileiro de Defesa do Consumidor",
+		channelType: "ngo" as const,
+		scope: "federal" as const,
+		url: "https://idec.org.br/",
+		description:
+			"ONG sem fins lucrativos com orientação ao consumidor, denúncias e ações coletivas contra abusos bancários.",
+		displayOrder: 7,
+	},
+	{
+		slug: "proteste",
+		name: "PROTESTE",
+		channelType: "ngo" as const,
+		scope: "federal" as const,
+		url: "https://www.proteste.org.br/",
+		description:
+			"Maior associação de consumidores do Brasil. Orientação, testes de produtos e ações coletivas.",
+		displayOrder: 8,
+	},
+	{
+		slug: "anatel_1331",
+		name: "Anatel (1331)",
+		channelType: "federal_gov" as const,
+		scope: "federal" as const,
+		phone: "1331",
+		url: "https://www.gov.br/anatel/pt-br",
+		description:
+			"Reclamações sobre telefonia, internet e TV por assinatura (cortes indevidos, cobranças, qualidade).",
+		displayOrder: 9,
+	},
+	{
 		slug: "serasa_limpa_nome",
 		name: "Serasa Limpa Nome",
 		channelType: "serasa" as const,
 		scope: "federal" as const,
 		url: "https://www.serasa.com.br/limpa-nome-online/",
 		description: "Renegociação com descontos para dívidas registradas na Serasa.",
-		displayOrder: 4,
+		displayOrder: 10,
 	},
 ];
 

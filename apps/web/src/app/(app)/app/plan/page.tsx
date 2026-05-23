@@ -7,6 +7,7 @@ import { Money } from "@/components/Money";
 import { MotorActionsList } from "@/components/MotorActionsList";
 import { MotorStateBadge, getStateLabel } from "@/components/MotorStateBadge";
 import { PageHeader } from "@/components/PageHeader";
+import { SkeletonCard, SkeletonList } from "@/components/Skeleton";
 import { useMotorPlan, useRecalculateMotor } from "@/hooks/useMotorPlan";
 import { Banknote, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
 
@@ -17,8 +18,11 @@ export default function PlanPage() {
 	if (isLoading) {
 		return (
 			<>
-				<PageHeader title="Meu plano" subtitle="Carregando seu plano atual..." />
-				<Card className="p-10 text-center text-[var(--color-ink-3)]">Calculando…</Card>
+				<PageHeader title="Meu plano" subtitle="Buscando seu plano atual..." />
+				<div className="space-y-4">
+					<SkeletonCard lines={3} />
+					<SkeletonList count={4} />
+				</div>
 			</>
 		);
 	}

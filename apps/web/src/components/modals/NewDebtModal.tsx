@@ -10,6 +10,7 @@ import { cn } from "@/lib/cn";
 import { unmaskBRL } from "@/lib/masks";
 import { DebtNature, DebtStatus } from "@quita/shared";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function NewDebtModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 	const { data: categories } = useDebtCategories();
@@ -55,6 +56,7 @@ export function NewDebtModal({ open, onClose }: { open: boolean; onClose: () => 
 				hasInterest: hasInterest === "yes" ? true : hasInterest === "no" ? false : null,
 				...(unmaskBRL(monthly) > 0 ? { monthlyAmount: unmaskBRL(monthly) } : {}),
 			});
+			toast.success("Dívida adicionada");
 			reset();
 			onClose();
 		} catch (err) {

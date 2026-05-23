@@ -8,6 +8,7 @@ import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/PageHeader";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Select } from "@/components/Select";
+import { SkeletonList } from "@/components/Skeleton";
 import {
 	type CreateGoalPayload,
 	type GoalType,
@@ -123,7 +124,7 @@ export default function ObjetivosPage() {
 				</Card>
 			)}
 
-			{isLoading && <Card className="p-10 text-center text-[var(--color-ink-3)]">Carregando…</Card>}
+			{isLoading && <SkeletonList count={3} />}
 
 			{!isLoading && (!data || data.length === 0) && !adding && (
 				<Empty

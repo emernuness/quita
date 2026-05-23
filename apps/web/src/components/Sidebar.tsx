@@ -9,6 +9,7 @@ import {
 	ChevronRight,
 	CreditCard,
 	FileCheck,
+	FileImage,
 	LayoutDashboard,
 	LifeBuoy,
 	LogOut,
@@ -54,6 +55,12 @@ const items: NavItem[] = [
 		label: "Avaliar acordo",
 		icon: FileCheck,
 		match: /^\/app\/avaliar-acordo/,
+	},
+	{
+		href: "/app/ocr/quota",
+		label: "Ler proposta",
+		icon: FileImage,
+		match: /^\/app\/ocr/,
 	},
 	{
 		href: "/app/modo-protecao",
