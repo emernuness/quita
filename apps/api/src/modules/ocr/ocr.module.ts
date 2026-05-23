@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { OcrQuotaGuard } from "./ocr-quota.guard";
 import { OcrService } from "./ocr.service";
 
 /**
@@ -13,7 +15,8 @@ import { OcrService } from "./ocr.service";
  * - Quota/budget por usuario (anti-abuse)
  */
 @Module({
-	providers: [OcrService],
-	exports: [OcrService],
+	imports: [PrismaModule],
+	providers: [OcrService, OcrQuotaGuard],
+	exports: [OcrService, OcrQuotaGuard],
 })
 export class OcrModule {}

@@ -7,7 +7,9 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	CreditCard,
+	FileCheck,
 	LayoutDashboard,
+	LifeBuoy,
 	LogOut,
 	type LucideIcon,
 	Map as MapIcon,
@@ -38,6 +40,13 @@ const items: NavItem[] = [
 	},
 	{ href: "/app/debts", label: "Dívidas", icon: CreditCard, match: /^\/app\/(debts|finances)/ },
 	{ href: "/app/plan", label: "Plano", icon: MapIcon, match: /^\/app\/plan/ },
+	{
+		href: "/app/avaliar-acordo",
+		label: "Avaliar acordo",
+		icon: FileCheck,
+		match: /^\/app\/avaliar-acordo/,
+	},
+	{ href: "/app/apoio", label: "Apoio", icon: LifeBuoy, match: /^\/app\/apoio/ },
 	{ href: "/app/profile", label: "Perfil", icon: UserCircle, match: /^\/app\/profile/ },
 ];
 

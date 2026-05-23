@@ -5,6 +5,8 @@ import { OcrModule } from "../ocr/ocr.module";
 import { SettlementsController } from "./settlements.controller";
 import { SettlementsService } from "./settlements.service";
 
+// OcrModule exporta OcrQuotaGuard usado no controller.
+
 @Module({
 	imports: [PrismaModule, AuthModule, OcrModule],
 	controllers: [SettlementsController],

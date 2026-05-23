@@ -3,6 +3,7 @@ import { Throttle } from "@nestjs/throttler";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { OcrQuotaGuard } from "../ocr/ocr-quota.guard";
 import { SettlementsService } from "./settlements.service";
 
 const evaluateSchema = z.object({
@@ -15,7 +16,7 @@ const evaluateSchema = z.object({
 
 const evaluateFromImageSchema = z.object({
 	debtId: z.string().uuid(),
-	imageBase64: z.string().min(100), // ~100 chars min para imagem valida
+	imageBase64: z.string().min(100),
 });
 
 @Controller("settlements")
@@ -32,12 +33,8 @@ export class SettlementsController {
 		return this.service.evaluate(userId, body);
 	}
 
-	/**
-	 * Bridge OCR Premium — extrai dados de imagem de proposta de acordo
-	 * via OpenAI Vision e roda settlement-validator.
-	 * Quota: 5 chamadas/min/usuario (OCR custoso).
-	 */
 	@Post("validate-from-image")
+	@UseGuards(OcrQuotaGuard)
 	@Throttle({ default: { limit: 5, ttl: 60_000 } })
 	async evaluateFromImage(
 		@CurrentUser("id") userId: string,
