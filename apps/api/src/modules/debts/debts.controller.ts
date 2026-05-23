@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
 	type CreateDebtInput,
 	type CreatePaymentInput,
@@ -11,6 +12,7 @@ import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { DebtsService } from "./debts.service";
 
+@ApiTags("debts")
 @Controller("debts")
 @UseGuards(JwtAuthGuard)
 export class DebtsController {

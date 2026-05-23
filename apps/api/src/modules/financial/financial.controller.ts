@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
 	type CreateExpenseInput,
 	type CreateIncomeInput,
@@ -13,6 +14,7 @@ import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { FinancialService } from "./financial.service";
 
+@ApiTags("financial")
 @Controller("financial")
 @UseGuards(JwtAuthGuard)
 export class FinancialController {

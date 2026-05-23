@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
@@ -28,6 +29,7 @@ const updateSchema = createSchema.partial().extend({
 	achievedAt: z.string().date().nullable().optional(),
 });
 
+@ApiTags("goals")
 @Controller("goals")
 @UseGuards(JwtAuthGuard)
 export class GoalsController {

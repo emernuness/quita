@@ -9,6 +9,7 @@ import {
 	UnauthorizedException,
 	UseGuards,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import type { Request } from "express";
 import { z } from "zod";
@@ -24,6 +25,7 @@ const checkoutSessionSchema = z.object({
 
 type CheckoutSessionBody = z.infer<typeof checkoutSessionSchema>;
 
+@ApiTags("subscription")
 @Controller("subscription")
 export class SubscriptionController {
 	constructor(private readonly stripe: StripeService) {}

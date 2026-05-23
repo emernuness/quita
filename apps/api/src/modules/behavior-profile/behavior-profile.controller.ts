@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Put, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
@@ -13,6 +14,7 @@ const upsertSchema = z.object({
 	disciplineLevel: z.number().int().min(1).max(5).optional(),
 });
 
+@ApiTags("behavior-profile")
 @Controller("behavior-profile")
 @UseGuards(JwtAuthGuard)
 export class BehaviorProfileController {

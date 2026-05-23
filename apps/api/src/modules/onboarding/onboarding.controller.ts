@@ -1,4 +1,5 @@
 import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
 	type OnboardingDebtCategoriesInput,
 	type OnboardingDebtInput,
@@ -16,6 +17,7 @@ import { OnboardingService } from "./onboarding.service";
 
 const onboardingDebtsBodySchema = z.array(onboardingDebtSchema).min(1);
 
+@ApiTags("onboarding")
 @Controller("onboarding")
 @UseGuards(JwtAuthGuard)
 export class OnboardingController {

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, Ip, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { type LoginInput, type RegisterInput, loginSchema, registerSchema } from "@quita/shared";
 import type { Request, Response } from "express";
@@ -41,6 +42,7 @@ function clearAuthCookies(res: Response) {
 	res.clearCookie(REFRESH_TOKEN_COOKIE, { path: REFRESH_TOKEN_PATH });
 }
 
+@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}

@@ -9,6 +9,7 @@ import {
 	Res,
 	UseGuards,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
 	type ChangePasswordInput,
 	type UpdateDiscreteModeInput,
@@ -28,6 +29,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { UserDeletionService } from "../user/user-deletion.service";
 import { ProfileService } from "./profile.service";
 
+@ApiTags("profile")
 @Controller("profile")
 @UseGuards(JwtAuthGuard)
 export class ProfileController {

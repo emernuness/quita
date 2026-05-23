@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Put, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
@@ -11,6 +12,7 @@ const upsertSchema = z.object({
 	isActive: z.boolean().optional(),
 });
 
+@ApiTags("emergency-reserve")
 @Controller("emergency-reserve")
 @UseGuards(JwtAuthGuard)
 export class EmergencyReserveController {

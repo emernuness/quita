@@ -1,4 +1,5 @@
 import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
@@ -19,6 +20,7 @@ const evaluateFromImageSchema = z.object({
 	imageBase64: z.string().min(100),
 });
 
+@ApiTags("settlements")
 @Controller("settlements")
 @UseGuards(JwtAuthGuard)
 export class SettlementsController {

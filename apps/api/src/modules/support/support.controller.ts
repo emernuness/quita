@@ -1,7 +1,9 @@
 import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { PrismaService } from "../../prisma/prisma.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
+@ApiTags("support")
 @Controller("support")
 @UseGuards(JwtAuthGuard)
 export class SupportController {
