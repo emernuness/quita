@@ -13,7 +13,7 @@ import {
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import type { ProfileService } from "./profile.service";
+import { ProfileService } from "./profile.service";
 
 @Controller("profile")
 @UseGuards(JwtAuthGuard)

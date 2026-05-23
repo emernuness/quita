@@ -11,7 +11,7 @@ import type {
 	OnboardingExpensesInput,
 	OnboardingIncomeInput,
 } from "@quita/shared";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class OnboardingService {

@@ -1,11 +1,12 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
-import type { JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import type { LoginInput, RegisterInput } from "@quita/shared";
 import * as bcrypt from "bcryptjs";
-import type { PrismaService } from "../../prisma/prisma.service";
-import type { AuthAuditService } from "./auth-audit.service";
+import { PrismaService } from "../../prisma/prisma.service";
+import { AuthAuditService } from "./auth-audit.service";
 import { ACCESS_TOKEN_TTL_SECONDS, BCRYPT_ROUNDS } from "./constants";
-import type { IssuedRefreshToken, RefreshTokenService } from "./refresh-token.service";
+import { RefreshTokenService } from "./refresh-token.service";
+import type { IssuedRefreshToken } from "./refresh-token.service";
 
 export interface RequestMeta {
 	ip?: string | null;

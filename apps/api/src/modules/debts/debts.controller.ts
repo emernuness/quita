@@ -9,7 +9,7 @@ import {
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import type { DebtsService } from "./debts.service";
+import { DebtsService } from "./debts.service";
 
 @Controller("debts")
 @UseGuards(JwtAuthGuard)

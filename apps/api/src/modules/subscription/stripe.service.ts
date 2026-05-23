@@ -1,6 +1,6 @@
 import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
 import StripeLib from "stripe";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 type StripeInstance = InstanceType<typeof StripeLib>;
 type StripeEventArg = Parameters<StripeInstance["webhooks"]["constructEvent"]>;

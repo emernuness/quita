@@ -1,5 +1,11 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
+import { MotorModule } from "../modules/motor/motor.module";
+import { UserModule } from "../modules/user/user.module";
+import { PrismaModule } from "../prisma/prisma.module";
+import { DataRetentionCleanupProcessor } from "./processors/data-retention-cleanup.processor";
+import { MonthlyRolloverProcessor } from "./processors/monthly-rollover.processor";
+import { RecalculateStateProcessor } from "./processors/recalculate-state.processor";
 import { MOTOR_RECALC_QUEUE, MOTOR_SCHEDULED_QUEUE } from "./queue.constants";
 
 function parseRedisUrl(url: string) {
@@ -15,13 +21,19 @@ function parseRedisUrl(url: string) {
 /**
  * Modulo central de filas BullMQ.
  *
- * Configura a conexao Redis a partir de REDIS_URL e registra as duas
- * filas previstas pela Fase 4 §7. Workers/processors sao registrados
- * por cada modulo de motor (ex.: PriorityEngineModule registra o seu
- * processor) — esta etapa cobre apenas o setup base.
+ * Configura conexao Redis a partir de REDIS_URL e registra:
+ * - 2 filas: motor-recalc (groupId={userId}) + motor-scheduled.
+ * - 3 processors criticos: RecalculateState, MonthlyRollover,
+ *   DataRetentionCleanup (Fase 4 §7.5).
+ *
+ * Workers vivem no mesmo processo da API. Separar em deployment proprio
+ * quando metricas exigirem.
  */
 @Module({
 	imports: [
+		PrismaModule,
+		MotorModule,
+		UserModule,
 		BullModule.forRootAsync({
 			useFactory: () => {
 				const redisUrl = process.env.REDIS_URL ?? "redis://localhost:6379";
@@ -32,6 +44,7 @@ function parseRedisUrl(url: string) {
 		}),
 		BullModule.registerQueue({ name: MOTOR_RECALC_QUEUE }, { name: MOTOR_SCHEDULED_QUEUE }),
 	],
+	providers: [RecalculateStateProcessor, MonthlyRolloverProcessor, DataRetentionCleanupProcessor],
 	exports: [BullModule],
 })
 export class QueueModule {}

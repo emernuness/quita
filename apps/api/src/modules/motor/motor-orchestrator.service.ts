@@ -20,7 +20,7 @@ import {
 	generateMonthlyPlan,
 	selectMode,
 } from "@quita/motor";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 /**
  * Spec: Fase 4 §3 + Fase 3 §14 — orquestrador NestJS.
@@ -60,18 +60,34 @@ export class MotorOrchestratorService {
 			now,
 		};
 
-		const [rawIncomes, rawExpenses, rawDebts, debtCategories, scoringWeightRows, regional] =
-			await Promise.all([
-				this.prisma.income.findMany({ where: { userId, isActive: true } }),
-				this.prisma.expense.findMany({ where: { userId, isActive: true } }),
-				this.prisma.debt.findMany({
-					where: { userId, status: { not: "paid" } },
-					include: { category: true },
-				}),
-				this.prisma.debtCategory.findMany(),
-				this.prisma.scoringWeight.findMany(),
-				this.findRegionalMinimumVital(user.stateCode),
-			]);
+		const [
+			rawIncomes,
+			rawExpenses,
+			rawDebts,
+			debtCategories,
+			scoringWeightRows,
+			regional,
+			interestRefs,
+		] = await Promise.all([
+			this.prisma.income.findMany({ where: { userId, isActive: true } }),
+			this.prisma.expense.findMany({ where: { userId, isActive: true } }),
+			this.prisma.debt.findMany({
+				where: { userId, status: { not: "paid" } },
+				include: { category: true },
+			}),
+			this.prisma.debtCategory.findMany(),
+			this.prisma.scoringWeight.findMany(),
+			this.findRegionalMinimumVital(user.stateCode),
+			this.prisma.interestRateReference.findMany({ orderBy: { effectiveDate: "desc" } }),
+		]);
+
+		// DT-04 + C-A6: ultima referencia por categoria.
+		const interestRefBySlug = new Map<string, number>();
+		for (const ref of interestRefs) {
+			if (!interestRefBySlug.has(ref.debtCategorySlug)) {
+				interestRefBySlug.set(ref.debtCategorySlug, Number(ref.monthlyRateMedian));
+			}
+		}
 
 		const minimumVitalRegional = computeMinimumVital(regional, user.dependentsCount ?? 0);
 
@@ -139,6 +155,7 @@ export class MotorOrchestratorService {
 				affectsIncomeDefault: false,
 				hasLegalRiskDefault: false,
 			};
+			const refRate = interestRefBySlug.get(d.category.slug) ?? null;
 			const meta = classifyDebt(
 				{
 					categorySlug: d.category.slug,
@@ -149,6 +166,7 @@ export class MotorOrchestratorService {
 					dataConfidence: d.dataConfidence,
 				},
 				cat,
+				refRate ? { monthlyRateMedian: refRate, source: "seed" } : null,
 			);
 			return {
 				id: d.id,

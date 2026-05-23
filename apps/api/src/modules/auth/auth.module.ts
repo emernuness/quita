@@ -30,6 +30,6 @@ import { RefreshTokenService } from "./refresh-token.service";
 	],
 	controllers: [AuthController],
 	providers: [AuthService, JwtStrategy, JwtAuthGuard, RefreshTokenService, AuthAuditService],
-	exports: [AuthService, JwtAuthGuard],
+	exports: [AuthService, JwtAuthGuard, RefreshTokenService],
 })
 export class AuthModule {}

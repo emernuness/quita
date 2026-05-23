@@ -78,7 +78,7 @@ describe("cenario canonico — Joao (orcamento apertado)", () => {
 			context: ctx(),
 			capacity: {
 				incomeNetMonthly: 3500,
-				essentials: [{ amount: 2900 }],
+				essentials: [{ amount: 3150 }],
 				seasonalExpenses: [],
 				incomeProtective: [],
 				legals: [],

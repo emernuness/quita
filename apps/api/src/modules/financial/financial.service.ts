@@ -10,7 +10,7 @@ import type {
 	UpdateExpenseInput,
 	UpdateIncomeInput,
 } from "@quita/shared";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class FinancialService {

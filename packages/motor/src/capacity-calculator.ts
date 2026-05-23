@@ -1,6 +1,8 @@
 import type { CapacityBreakdown, CapacityCalculatorInput, ExpenseLineLike } from "./types";
 
 const DEFAULT_OPERATIONAL_RESERVE_RATIO = 0.05;
+// Spec Fase 1 §4.2: reserva operacional mínima = max(5% da renda, R$ 100).
+const OPERATIONAL_RESERVE_FLOOR = 100;
 
 function sumProvisioned(items: ExpenseLineLike[]): number {
 	return items.reduce((acc, it) => acc + (it.monthlyProvision ?? 0), 0);
@@ -34,8 +36,10 @@ export function calculateCapacity(input: CapacityCalculatorInput): CapacityBreak
 	const seasonalProvisionTotal = sumProvisioned(input.seasonalExpenses);
 	const incomeProtectiveTotal = sumAmounts(input.incomeProtective);
 	const legalsTotal = sumAmounts(input.legals);
-	const operationalReserve =
-		input.incomeNetMonthly * (input.operationalReserveRatio ?? DEFAULT_OPERATIONAL_RESERVE_RATIO);
+	const operationalReserve = Math.max(
+		input.incomeNetMonthly * (input.operationalReserveRatio ?? DEFAULT_OPERATIONAL_RESERVE_RATIO),
+		input.incomeNetMonthly > 0 ? OPERATIONAL_RESERVE_FLOOR : 0,
+	);
 	const emergencyReserveContribution = input.emergencyReserveMonthlyTarget ?? 0;
 
 	const safeCapacity =

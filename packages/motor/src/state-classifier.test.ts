@@ -68,9 +68,9 @@ describe("classifyState", () => {
 	});
 
 	describe("tight_budget", () => {
-		it("classifica quando safeCapacity < 15% da renda", () => {
+		it("classifica quando safeCapacity < 10% da renda", () => {
 			const result = classifyState({
-				capacity: makeCapacity({ incomeNetMonthly: 5000, safeCapacity: 500 }), // 10%
+				capacity: makeCapacity({ incomeNetMonthly: 5000, safeCapacity: 400 }), // 8%
 				debtsTotalMonthlyAmount: 100,
 				hasCriticalRiskDebt: false,
 				diagnosisLevel: "basic",

@@ -76,10 +76,15 @@ export function applySmoothingRule(input: SmoothingInput): SmoothingResult {
 	if (lastRawState !== null && lastRawState !== undefined) {
 		const lastRawRank = STATE_RANK[lastRawState];
 		if (lastRawRank >= rawRank) {
+			// Spec Fase 3 §7.5 anti-whiplash extremo: saltos > 1 rank
+			// descem apenas 1 nivel por vez. "Saudavel -> Insolvencia" vira
+			// "Saudavel -> Apertado".
+			const targetRank = Math.min(rawRank, lastRank + 1);
+			const targetState = stateForRank(targetRank);
 			return {
-				smoothedState: rawState,
+				smoothedState: targetState,
 				transitionType: "downgrade_applied",
-				pendingDowngradeFor: null,
+				pendingDowngradeFor: targetState === rawState ? null : rawState,
 			};
 		}
 	}
@@ -90,6 +95,14 @@ export function applySmoothingRule(input: SmoothingInput): SmoothingResult {
 		transitionType: "downgrade_pending",
 		pendingDowngradeFor: rawState,
 	};
+}
+
+function stateForRank(rank: number): FinancialState {
+	const entry = (Object.entries(STATE_RANK) as [FinancialState, number][]).find(
+		([, r]) => r === rank,
+	);
+	if (!entry) throw new Error(`Rank invalido: ${rank}`);
+	return entry[0];
 }
 
 export function stateRank(state: FinancialState): number {

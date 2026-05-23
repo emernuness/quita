@@ -40,7 +40,8 @@ export function classifyState(input: StateClassifierInput): StateClassifierOutpu
 	return { state, mode, confidence };
 }
 
-const TIGHT_BUDGET_RATIO = 0.15;
+// Spec Fase 1 §4.2: folga ≤ 10% da renda líquida classifica tight_budget.
+const TIGHT_BUDGET_RATIO = 0.1;
 const OVERINDEBTEDNESS_RATIO = 0.7;
 
 function decideState(input: StateClassifierInput): FinancialState {

@@ -1,9 +1,9 @@
 import { Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
 import { CurrentUser } from "../../common";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import type { MotorOrchestratorService } from "./motor-orchestrator.service";
+import { MotorOrchestratorService } from "./motor-orchestrator.service";
 
 @Controller("motor")
 @UseGuards(JwtAuthGuard)

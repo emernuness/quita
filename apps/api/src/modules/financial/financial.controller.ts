@@ -11,7 +11,7 @@ import {
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import type { FinancialService } from "./financial.service";
+import { FinancialService } from "./financial.service";
 
 @Controller("financial")
 @UseGuards(JwtAuthGuard)

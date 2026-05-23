@@ -14,7 +14,7 @@ import type {
 } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 import type { CreateDebtInput, CreatePaymentInput, UpdateDebtInput } from "@quita/shared";
-import type { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 type DebtWithRelations = PrismaDebt & {
 	category?: PrismaDebtCategory | null;

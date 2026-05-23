@@ -31,5 +31,17 @@
 			"apps/mobile",
 			"docs"
 		]
-	}
+	},
+	"overrides": [
+		{
+			"include": ["apps/api/src/**/*.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	]
 }

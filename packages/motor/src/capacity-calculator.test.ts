@@ -77,8 +77,9 @@ describe("calculateCapacity", () => {
 			legals: [],
 			minimumVitalRegional: 800,
 		});
-		// 1000 - 50 (5%) = 950
-		expect(result.safeCapacity).toBe(950);
+		// Spec Fase 1 §4.2: reserva operacional = max(5% renda, R$ 100).
+		// 5% de 1000 = 50, mas floor R$ 100. Logo: 1000 - 100 = 900.
+		expect(result.safeCapacity).toBe(900);
 	});
 
 	it("eh deterministico — mesmos inputs => mesmo resultado", () => {

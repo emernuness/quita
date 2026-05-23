@@ -3,7 +3,7 @@ import { Throttle } from "@nestjs/throttler";
 import { type LoginInput, type RegisterInput, loginSchema, registerSchema } from "@quita/shared";
 import type { Request, Response } from "express";
 import { CurrentUser, ZodValidationPipe } from "../../common";
-import type { AuthService } from "./auth.service";
+import { AuthService } from "./auth.service";
 import {
 	ACCESS_TOKEN_COOKIE,
 	ACCESS_TOKEN_TTL_SECONDS,
