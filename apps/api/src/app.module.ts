@@ -5,10 +5,13 @@ import { LoggerModule } from "nestjs-pino";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AuthModule } from "./modules/auth/auth.module";
+import { BehaviorProfileModule } from "./modules/behavior-profile/behavior-profile.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DebtsModule } from "./modules/debts/debts.module";
 import { EmailModule } from "./modules/email/email.module";
+import { EmergencyReserveModule } from "./modules/emergency-reserve/emergency-reserve.module";
 import { FinancialModule } from "./modules/financial/financial.module";
+import { GoalsModule } from "./modules/goals/goals.module";
 import { HealthModule } from "./modules/health/health.module";
 import { MotorModule } from "./modules/motor/motor.module";
 import { OcrModule } from "./modules/ocr/ocr.module";
@@ -16,6 +19,7 @@ import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
 import { SubscriptionModule } from "./modules/subscription/subscription.module";
+import { SupportModule } from "./modules/support/support.module";
 import { UserModule } from "./modules/user/user.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queues/queue.module";
@@ -45,8 +49,8 @@ const IS_PROD = process.env.NODE_ENV === "production";
 			},
 		}),
 		ThrottlerModule.forRoot([
-			{ name: "short", ttl: 60_000, limit: 60 }, // 60 req/min global por IP
-			{ name: "auth", ttl: 60_000, limit: 10 }, // 10 tentativas /login por min
+			{ name: "short", ttl: 60_000, limit: 60 },
+			{ name: "auth", ttl: 60_000, limit: 10 },
 		]),
 		PrismaModule,
 		QueueModule,
@@ -63,6 +67,10 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		EmailModule,
 		UserModule,
 		SettlementsModule,
+		SupportModule,
+		GoalsModule,
+		EmergencyReserveModule,
+		BehaviorProfileModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },
