@@ -14,6 +14,7 @@ import { MotorModule } from "./modules/motor/motor.module";
 import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
+import { SettlementsModule } from "./modules/settlements/settlements.module";
 import { SubscriptionModule } from "./modules/subscription/subscription.module";
 import { UserModule } from "./modules/user/user.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -61,6 +62,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		OcrModule,
 		EmailModule,
 		UserModule,
+		SettlementsModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

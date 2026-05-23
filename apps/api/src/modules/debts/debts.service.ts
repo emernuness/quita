@@ -52,7 +52,7 @@ export class DebtsService {
 		const debts = await this.prisma.debt.findMany({
 			where: { userId },
 			include: { category: true },
-			orderBy: { priorityOrder: "asc" },
+			orderBy: [{ priorityScore: { sort: "desc", nulls: "last" } }, { createdAt: "asc" }],
 		});
 
 		return debts.map(serializeDebt);
@@ -77,11 +77,6 @@ export class DebtsService {
 	}
 
 	async createDebt(userId: string, data: CreateDebtInput) {
-		const maxOrder = await this.prisma.debt.aggregate({
-			where: { userId },
-			_max: { priorityOrder: true },
-		});
-
 		const debt = await this.prisma.debt.create({
 			data: {
 				userId,
@@ -90,13 +85,21 @@ export class DebtsService {
 				nature: (data.nature as PrismaDebtNature) ?? "one_time",
 				totalAmount: data.totalAmount,
 				monthlyAmount: data.monthlyAmount ?? undefined,
-				overdueMonths: data.overdueMonths ?? undefined,
+				daysOverdue: data.daysOverdue ?? 0,
 				totalInstallments: data.totalInstallments ?? undefined,
 				currentInstallment: data.currentInstallment ?? undefined,
+				installmentsPaid: data.installmentsPaid ?? undefined,
+				installmentsOverdue: data.installmentsOverdue ?? undefined,
 				hasInterest: data.hasInterest,
 				dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
 				status: (data.status as PrismaDebtStatus) ?? "on_time",
-				priorityOrder: (maxOrder._max.priorityOrder ?? 0) + 1,
+				affectsSurvival: data.affectsSurvival,
+				affectsIncome: data.affectsIncome,
+				hasLegalRisk: data.hasLegalRisk,
+				hasCollateral: data.hasCollateral,
+				collateralType: data.collateralType ?? undefined,
+				interestRateMonthly: data.interestRateMonthly ?? undefined,
+				dataConfidence: data.dataConfidence ?? undefined,
 			},
 			include: { category: true },
 		});
@@ -124,8 +127,8 @@ export class DebtsService {
 				...(data.monthlyAmount !== undefined && {
 					monthlyAmount: data.monthlyAmount,
 				}),
-				...(data.overdueMonths !== undefined && {
-					overdueMonths: data.overdueMonths,
+				...(data.daysOverdue !== undefined && {
+					daysOverdue: data.daysOverdue,
 				}),
 				...(data.totalInstallments !== undefined && {
 					totalInstallments: data.totalInstallments,

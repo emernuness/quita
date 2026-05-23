@@ -86,3 +86,9 @@ export {
 	applySmoothingRule,
 	stateRank,
 } from "./smoothing-rule";
+export {
+	type LongTermPlanInput,
+	type LongTermPlanResult,
+	type QuarterlyCheckpoint,
+	projectLongTermPlan,
+} from "./long-term-plan";

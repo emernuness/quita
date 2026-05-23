@@ -6,6 +6,7 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { DataRetentionCleanupProcessor } from "./processors/data-retention-cleanup.processor";
 import { MonthlyRolloverProcessor } from "./processors/monthly-rollover.processor";
 import { RecalculateStateProcessor } from "./processors/recalculate-state.processor";
+import { QueueSchedulerService } from "./queue-scheduler.service";
 import { MOTOR_RECALC_QUEUE, MOTOR_SCHEDULED_QUEUE } from "./queue.constants";
 
 function parseRedisUrl(url: string) {
@@ -44,7 +45,12 @@ function parseRedisUrl(url: string) {
 		}),
 		BullModule.registerQueue({ name: MOTOR_RECALC_QUEUE }, { name: MOTOR_SCHEDULED_QUEUE }),
 	],
-	providers: [RecalculateStateProcessor, MonthlyRolloverProcessor, DataRetentionCleanupProcessor],
+	providers: [
+		RecalculateStateProcessor,
+		MonthlyRolloverProcessor,
+		DataRetentionCleanupProcessor,
+		QueueSchedulerService,
+	],
 	exports: [BullModule],
 })
 export class QueueModule {}

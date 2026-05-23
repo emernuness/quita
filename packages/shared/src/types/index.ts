@@ -101,10 +101,11 @@ export interface Debt {
 	hasInterest: boolean | null;
 	dueDate: string | null;
 	status: DebtStatus;
-	overdueMonths: number | null;
+	daysOverdue: number;
 	totalInstallments: number | null;
 	currentInstallment: number | null;
-	priorityOrder: number | null;
+	priorityScore: number | null;
+	priorityReason: string | null;
 	paidAt: string | null;
 	interestSaved: number | null;
 	createdAt: string;

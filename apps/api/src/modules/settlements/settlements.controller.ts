@@ -1,0 +1,49 @@
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
+import { z } from "zod";
+import { CurrentUser, ZodValidationPipe } from "../../common";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { SettlementsService } from "./settlements.service";
+
+const evaluateSchema = z.object({
+	debtId: z.string().uuid(),
+	proposalCashAmount: z.number().nonnegative().optional(),
+	proposalInstallments: z.number().int().min(1).max(60).optional(),
+	proposalInstallmentAmount: z.number().nonnegative().optional(),
+	proposalDeadline: z.string().date().optional(),
+});
+
+const evaluateFromImageSchema = z.object({
+	debtId: z.string().uuid(),
+	imageBase64: z.string().min(100), // ~100 chars min para imagem valida
+});
+
+@Controller("settlements")
+@UseGuards(JwtAuthGuard)
+export class SettlementsController {
+	constructor(private readonly service: SettlementsService) {}
+
+	@Post("evaluate")
+	@Throttle({ default: { limit: 20, ttl: 60_000 } })
+	async evaluate(
+		@CurrentUser("id") userId: string,
+		@Body(new ZodValidationPipe(evaluateSchema)) body: z.infer<typeof evaluateSchema>,
+	) {
+		return this.service.evaluate(userId, body);
+	}
+
+	/**
+	 * Bridge OCR Premium — extrai dados de imagem de proposta de acordo
+	 * via OpenAI Vision e roda settlement-validator.
+	 * Quota: 5 chamadas/min/usuario (OCR custoso).
+	 */
+	@Post("validate-from-image")
+	@Throttle({ default: { limit: 5, ttl: 60_000 } })
+	async evaluateFromImage(
+		@CurrentUser("id") userId: string,
+		@Body(new ZodValidationPipe(evaluateFromImageSchema))
+		body: z.infer<typeof evaluateFromImageSchema>,
+	) {
+		return this.service.evaluateFromImage(userId, body);
+	}
+}

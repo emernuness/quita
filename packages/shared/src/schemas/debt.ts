@@ -19,8 +19,6 @@ export const createDebtSchema = z.object({
 		.default(DebtNature.ONE_TIME),
 	totalAmount: z.number().nonnegative(),
 	monthlyAmount: z.number().nonnegative().optional(),
-	// Legacy compat — substituido por daysOverdue.
-	overdueMonths: z.number().int().min(0).max(120).optional(),
 	totalInstallments: z.number().int().min(1).max(600).optional(),
 	currentInstallment: z.number().int().min(0).max(600).optional(),
 	installmentsPaid: z.number().int().min(0).max(600).optional(),

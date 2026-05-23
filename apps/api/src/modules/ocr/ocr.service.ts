@@ -2,39 +2,58 @@ import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common"
 import OpenAI from "openai";
 import { z } from "zod";
 
+export type OcrInputType = "boleto" | "settlement_proposal" | "contract";
+
 export interface OcrExtractInput {
-	imageBase64: string; // dataURL ou base64 puro
-	type: "boleto" | "settlement_proposal" | "contract";
+	imageBase64: string;
+	type: OcrInputType;
 }
 
-export interface OcrExtractedBoleto {
-	type: "boleto";
-	creditor: string | null;
-	amount: number | null;
-	dueDate: string | null;
-	confidence: "high" | "medium" | "low";
-}
+const confidence = z.enum(["high", "medium", "low"]);
 
-const boletoResponseSchema = z.object({
+const boletoSchema = z.object({
 	creditor: z.string().nullable(),
 	amount: z.number().nullable(),
 	dueDate: z.string().nullable(),
-	confidence: z.enum(["high", "medium", "low"]),
+	confidence,
+});
+const settlementSchema = z.object({
+	creditor: z.string().nullable(),
+	cashAmount: z.number().nullable(),
+	installments: z.number().int().nullable(),
+	installmentAmount: z.number().nullable(),
+	deadline: z.string().nullable(),
+	confidence,
+});
+const contractSchema = z.object({
+	creditor: z.string().nullable(),
+	totalAmount: z.number().nullable(),
+	interestRateMonthly: z.number().nullable(),
+	totalInstallments: z.number().int().nullable(),
+	confidence,
 });
 
-const PROMPTS: Record<OcrExtractInput["type"], string> = {
+export type OcrExtractedBoleto = { type: "boleto" } & z.infer<typeof boletoSchema>;
+export type OcrExtractedSettlement = { type: "settlement_proposal" } & z.infer<
+	typeof settlementSchema
+>;
+export type OcrExtractedContract = { type: "contract" } & z.infer<typeof contractSchema>;
+export type OcrExtracted = OcrExtractedBoleto | OcrExtractedSettlement | OcrExtractedContract;
+
+const PROMPTS: Record<OcrInputType, string> = {
 	boleto:
-		"Extraia do boleto: credor (nome da empresa), valor total em reais (numero), data de vencimento (YYYY-MM-DD). Retorne JSON estrito: {creditor, amount, dueDate, confidence}. confidence='high' se todos os campos legiveis e nao ambiguos; 'medium' se faltar 1 campo; 'low' caso contrario.",
+		"Extraia do boleto: credor (nome da empresa), valor total em reais (numero), data de vencimento (YYYY-MM-DD). Retorne JSON estrito: {creditor, amount, dueDate, confidence}.",
 	settlement_proposal:
-		"Extraia da proposta de acordo: credor, valor a vista, parcelas (se houver), valor da parcela, prazo. Retorne JSON.",
+		"Extraia da proposta de acordo: credor, valor a vista (cashAmount), parcelas (installments), valor da parcela (installmentAmount), prazo limite (deadline YYYY-MM-DD). Retorne JSON: {creditor, cashAmount, installments, installmentAmount, deadline, confidence}.",
 	contract:
-		"Extraia do contrato: credor, valor total, taxa de juros mensal, prazo total em meses. Retorne JSON.",
+		"Extraia do contrato: credor, valor total (totalAmount), taxa de juros mensal em fracao (interestRateMonthly), prazo total em meses (totalInstallments). Retorne JSON: {creditor, totalAmount, interestRateMonthly, totalInstallments, confidence}.",
 };
 
 const VISION_MODEL = "gpt-4o-mini";
 
 /**
  * OCR via OpenAI Vision (gpt-4o-mini). No-op se OPENAI_API_KEY ausente.
+ * NUNCA logar input.imageBase64 (PII/dado financeiro).
  */
 @Injectable()
 export class OcrService {
@@ -46,7 +65,7 @@ export class OcrService {
 		this.client = key ? new OpenAI({ apiKey: key }) : null;
 	}
 
-	async extract(input: OcrExtractInput): Promise<OcrExtractedBoleto> {
+	async extract(input: OcrExtractInput): Promise<OcrExtracted> {
 		if (!this.client) {
 			this.logger.warn("OPENAI_API_KEY ausente — OCR indisponivel.");
 			throw new ServiceUnavailableException("OCR não está configurado nesta instalação.");
@@ -73,16 +92,49 @@ export class OcrService {
 
 		const raw = completion.choices[0]?.message?.content;
 		if (!raw) {
-			this.logger.warn("OCR retornou resposta vazia.");
-			return { type: "boleto", creditor: null, amount: null, dueDate: null, confidence: "low" };
+			this.logger.warn({ msg: "OCR resposta vazia", inputType: input.type });
+			return this.emptyResult(input.type);
 		}
 
 		try {
-			const parsed = boletoResponseSchema.parse(JSON.parse(raw));
-			return { type: "boleto", ...parsed };
+			const parsed = JSON.parse(raw);
+			switch (input.type) {
+				case "boleto":
+					return { type: "boleto", ...boletoSchema.parse(parsed) };
+				case "settlement_proposal":
+					return { type: "settlement_proposal", ...settlementSchema.parse(parsed) };
+				case "contract":
+					return { type: "contract", ...contractSchema.parse(parsed) };
+			}
 		} catch (err) {
-			this.logger.warn({ msg: "OCR parse failure", raw, err });
-			return { type: "boleto", creditor: null, amount: null, dueDate: null, confidence: "low" };
+			this.logger.warn({ msg: "OCR parse failure", inputType: input.type, raw, err });
+			return this.emptyResult(input.type);
+		}
+	}
+
+	private emptyResult(type: OcrInputType): OcrExtracted {
+		switch (type) {
+			case "boleto":
+				return { type: "boleto", creditor: null, amount: null, dueDate: null, confidence: "low" };
+			case "settlement_proposal":
+				return {
+					type: "settlement_proposal",
+					creditor: null,
+					cashAmount: null,
+					installments: null,
+					installmentAmount: null,
+					deadline: null,
+					confidence: "low",
+				};
+			case "contract":
+				return {
+					type: "contract",
+					creditor: null,
+					totalAmount: null,
+					interestRateMonthly: null,
+					totalInstallments: null,
+					confidence: "low",
+				};
 		}
 	}
 }

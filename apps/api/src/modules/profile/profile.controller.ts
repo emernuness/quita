@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, UseGuards } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Patch,
+	Post,
+	Res,
+	UseGuards,
+} from "@nestjs/common";
 import {
 	type ChangePasswordInput,
 	type UpdateDiscreteModeInput,
@@ -11,14 +21,20 @@ import {
 	updateProfileSchema,
 	updateSecuritySchema,
 } from "@quita/shared";
+import type { Response } from "express";
 import { CurrentUser, ZodValidationPipe } from "../../common";
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE, REFRESH_TOKEN_PATH } from "../auth/constants";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UserDeletionService } from "../user/user-deletion.service";
 import { ProfileService } from "./profile.service";
 
 @Controller("profile")
 @UseGuards(JwtAuthGuard)
 export class ProfileController {
-	constructor(private readonly profileService: ProfileService) {}
+	constructor(
+		private readonly profileService: ProfileService,
+		private readonly userDeletion: UserDeletionService,
+	) {}
 
 	@Get()
 	getProfile(@CurrentUser("id") userId: string) {
@@ -68,5 +84,34 @@ export class ProfileController {
 		@Body(new ZodValidationPipe(updateNotificationPrefsSchema)) body: UpdateNotificationPrefsInput,
 	) {
 		return this.profileService.updateNotificationPrefs(userId, body);
+	}
+
+	/**
+	 * LGPD art. 18, IV — Solicitar exclusao da conta.
+	 * Soft delete: User.deletedAt = now() + revoga refresh tokens.
+	 * Hard delete acontece em 30 dias via DataRetentionCleanupProcessor.
+	 * Usuario pode logar nesse periodo e cancelar via POST /profile/me/cancel-deletion.
+	 */
+	@Delete("me")
+	@HttpCode(200)
+	async requestDeletion(
+		@CurrentUser("id") userId: string,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		await this.userDeletion.requestDeletion(userId);
+		res.clearCookie(ACCESS_TOKEN_COOKIE, { path: "/" });
+		res.clearCookie(REFRESH_TOKEN_COOKIE, { path: REFRESH_TOKEN_PATH });
+		return {
+			ok: true,
+			retentionDays: 30,
+			message: "Conta marcada para exclusão. Faça login em até 30 dias para cancelar.",
+		};
+	}
+
+	@Post("me/cancel-deletion")
+	@HttpCode(200)
+	async cancelDeletion(@CurrentUser("id") userId: string) {
+		await this.userDeletion.cancelDeletion(userId);
+		return { ok: true, message: "Exclusão cancelada. Sua conta foi reativada." };
 	}
 }

@@ -76,7 +76,7 @@ export class OnboardingService {
 	async saveDebts(userId: string, debts: OnboardingDebtInput[]) {
 		await this.prisma.$transaction([
 			this.prisma.debt.deleteMany({ where: { userId } }),
-			...debts.map((debt, index) =>
+			...debts.map((debt) =>
 				this.prisma.debt.create({
 					data: {
 						userId,
@@ -85,13 +85,12 @@ export class OnboardingService {
 						nature: debt.nature as PrismaDebtNature,
 						totalAmount: debt.totalAmount,
 						monthlyAmount: debt.monthlyAmount ?? undefined,
-						overdueMonths: debt.overdueMonths ?? undefined,
+						daysOverdue: (debt as { daysOverdue?: number }).daysOverdue ?? 0,
 						totalInstallments: debt.totalInstallments ?? undefined,
 						currentInstallment: debt.currentInstallment ?? undefined,
 						hasInterest: debt.hasInterest,
 						dueDate: debt.dueDate ? new Date(debt.dueDate) : undefined,
 						status: debt.status as PrismaDebtStatus,
-						priorityOrder: index + 1,
 					},
 				}),
 			),

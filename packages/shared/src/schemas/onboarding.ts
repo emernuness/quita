@@ -19,7 +19,7 @@ export const onboardingDebtSchema = z.object({
 	nature: z.enum([DebtNature.INSTALLMENT, DebtNature.RECURRING, DebtNature.ONE_TIME]),
 	totalAmount: z.number().positive(),
 	monthlyAmount: z.number().nonnegative().optional(),
-	overdueMonths: z.number().int().min(1).max(120).optional(),
+	daysOverdue: z.number().int().min(0).max(3650).optional(),
 	totalInstallments: z.number().int().min(1).max(600).optional(),
 	currentInstallment: z.number().int().min(1).max(600).optional(),
 	hasInterest: z.boolean().nullable().optional(),

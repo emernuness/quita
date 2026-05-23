@@ -456,13 +456,11 @@ model Debt {
   hasInterest                 Boolean?        @default(false) @map("has_interest")
   dueDate                     DateTime?       @map("due_date") @db.Date
   status                      DebtStatus      @default(on_time)
-  overdueMonths               Int?            @map("overdue_months") @db.SmallInt
   daysOverdue                 Int             @default(0) @map("days_overdue")
   totalInstallments           Int?            @map("total_installments") @db.SmallInt
   currentInstallment          Int?            @map("current_installment") @db.SmallInt
   installmentsPaid            Int?            @map("installments_paid") @db.SmallInt
   installmentsOverdue         Int?            @default(0) @map("installments_overdue") @db.SmallInt
-  priorityOrder               Int?            @map("priority_order") @db.SmallInt
   paidAt                      DateTime?       @map("paid_at")
   interestSaved               Decimal?        @map("interest_saved") @db.Decimal(12, 2)
   // --- Novos campos Fase 2 v2 ---
@@ -523,7 +521,7 @@ model Payment {
 model PaymentPlan {
   id                       String          @id @default(uuid())
   userId                   String          @map("user_id")
-  strategy                 PlanStrategy    @default(smallest_first)
+  strategy                 PlanStrategy    @default(hybrid)
   monthlyAvailable         Decimal         @map("monthly_available") @db.Decimal(12, 2)
   totalDebtsCount          Int             @map("total_debts_count") @db.SmallInt
   paidDebtsCount           Int             @default(0) @map("paid_debts_count") @db.SmallInt

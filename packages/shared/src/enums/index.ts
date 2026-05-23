@@ -51,9 +51,10 @@ export const PaymentType = {
 export type PaymentType = (typeof PaymentType)[keyof typeof PaymentType];
 
 export const PlanStrategy = {
-	SMALLEST_FIRST: "smallest_first",
-	HIGHEST_INTEREST: "highest_interest",
-	CUSTOM: "custom",
+	SNOWBALL: "snowball",
+	AVALANCHE: "avalanche",
+	HYBRID: "hybrid",
+	CRISIS: "crisis",
 } as const;
 export type PlanStrategy = (typeof PlanStrategy)[keyof typeof PlanStrategy];
 

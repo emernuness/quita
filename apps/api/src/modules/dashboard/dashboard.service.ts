@@ -16,7 +16,7 @@ export class DashboardService {
 			this.prisma.debt.findMany({
 				where: { userId },
 				include: { category: true },
-				orderBy: { priorityOrder: "asc" },
+				orderBy: [{ priorityScore: { sort: "desc", nulls: "last" } }, { createdAt: "asc" }],
 			}),
 		]);
 
