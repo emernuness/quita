@@ -194,6 +194,27 @@ export class AuthService {
 		return userPublic;
 	}
 
+	async auditLog(userId: string, opts: { limit?: number } = {}) {
+		// Exclui eventos sensiveis que sao apenas pra equipe (Sentry/admin)
+		const rows = await this.prisma.authAuditLog.findMany({
+			where: {
+				userId,
+				eventType: { notIn: ["refresh_reuse_detected"] },
+			},
+			orderBy: { createdAt: "desc" },
+			take: opts.limit ?? 50,
+			select: {
+				id: true,
+				eventType: true,
+				ipAddress: true,
+				userAgent: true,
+				createdAt: true,
+				metadata: true,
+			},
+		});
+		return rows;
+	}
+
 	private signAccessToken(userId: string, email: string): string {
 		return this.jwt.sign({ sub: userId, email }, { expiresIn: `${ACCESS_TOKEN_TTL_SECONDS}s` });
 	}

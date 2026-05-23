@@ -76,11 +76,55 @@ export class R2StorageService {
 		}
 	}
 
-	async getSignedDownloadUrl(key: string): Promise<string | null> {
+	async getSignedDownloadUrl(key: string, ttlSeconds?: number): Promise<string | null> {
 		if (!this.client) return null;
 		return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
-			expiresIn: SIGNED_URL_TTL_SECONDS,
+			expiresIn: ttlSeconds ?? SIGNED_URL_TTL_SECONDS,
 		});
+	}
+
+	/**
+	 * Gera URL pre-assinada para upload direto do browser (PUT).
+	 * Resolve fluxo OCR sem trafegar base64 entre passos.
+	 * TTL default 15min — tempo do user escolher arquivo + concluir upload.
+	 */
+	async getSignedUploadUrl(input: {
+		keyPrefix: string;
+		contentType: string;
+		ttlSeconds?: number;
+	}): Promise<{ uploadUrl: string; key: string } | null> {
+		if (!this.client) {
+			this.logger.warn({ msg: "r2.signed-upload.skipped (R2 nao configurado)" });
+			return null;
+		}
+		const key = `${input.keyPrefix}/${Date.now()}-${randomBytes(8).toString("hex")}`;
+		const uploadUrl = await getSignedUrl(
+			this.client,
+			new PutObjectCommand({
+				Bucket: this.bucket,
+				Key: key,
+				ContentType: input.contentType,
+			}),
+			{ expiresIn: input.ttlSeconds ?? 15 * 60 },
+		);
+		return { uploadUrl, key };
+	}
+
+	/**
+	 * Le objeto do R2 e retorna como Buffer. Usado por OCR para processar
+	 * imagem ja uploaded sem trafegar base64 do client.
+	 */
+	async getObjectBuffer(key: string): Promise<Buffer | null> {
+		if (!this.client) return null;
+		const response = await this.client.send(
+			new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+		);
+		if (!response.Body) return null;
+		const chunks: Uint8Array[] = [];
+		for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+			chunks.push(chunk);
+		}
+		return Buffer.concat(chunks);
 	}
 
 	async delete(key: string): Promise<void> {

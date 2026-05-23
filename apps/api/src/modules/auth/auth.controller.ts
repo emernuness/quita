@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Headers, Ip, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	Headers,
+	Ip,
+	Post,
+	Query,
+	Req,
+	Res,
+	UseGuards,
+} from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { type LoginInput, type RegisterInput, loginSchema, registerSchema } from "@quita/shared";
@@ -122,5 +133,18 @@ export class AuthController {
 	@UseGuards(JwtAuthGuard)
 	me(@CurrentUser("id") userId: string) {
 		return this.authService.me(userId);
+	}
+
+	/**
+	 * Spec Fase 5 §6.13 G3 — listagem AuthAuditLog para tela de Segurança.
+	 * Retorna ultimos 50 eventos do user ordenados por createdAt desc.
+	 * Excluido: refresh_reuse_detected (sensivel; apenas Sentry/admin).
+	 */
+	@Get("audit-log")
+	@UseGuards(JwtAuthGuard)
+	async auditLog(@CurrentUser("id") userId: string, @Query("limit") limit?: string) {
+		return this.authService.auditLog(userId, {
+			limit: limit ? Math.min(Math.max(Number(limit), 1), 100) : 50,
+		});
 	}
 }
