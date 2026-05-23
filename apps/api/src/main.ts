@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { Logger } from "nestjs-pino";
 import { AppModule } from "./app.module";
+import { validateEnv } from "./config/env";
 import { ACCESS_TOKEN_COOKIE } from "./modules/auth/constants";
 import { initPostHog, shutdownPostHog } from "./observability/posthog";
 import { initSentry } from "./observability/sentry";
@@ -21,6 +22,7 @@ function parseCorsOrigins(): string[] | true {
 }
 
 async function bootstrap() {
+	validateEnv();
 	initSentry();
 	initPostHog();
 

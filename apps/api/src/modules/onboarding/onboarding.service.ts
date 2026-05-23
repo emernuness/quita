@@ -144,9 +144,15 @@ export class OnboardingService {
 	}
 
 	async complete(userId: string) {
+		// Fase 1 §7.1 — onboarding fracionado: completar minimo seta
+		// diagnosisLevel='minimal'. Refinamento posterior em /refinar
+		// promove para 'basic' ou 'detailed' conforme dados extras.
 		await this.prisma.user.update({
 			where: { id: userId },
-			data: { onboardingCompleted: true },
+			data: {
+				onboardingCompleted: true,
+				diagnosisLevel: "minimal",
+			} as never,
 		});
 
 		return { completed: true };

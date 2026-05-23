@@ -46,6 +46,8 @@ jobs:
         run: pnpm db:generate
       - name: Apply Prisma migrations
         run: pnpm --filter @quita/api exec prisma migrate deploy
+      - name: Seed reference tables
+        run: pnpm --filter @quita/api db:seed
       - name: Typecheck
         run: pnpm typecheck
       - name: Lint

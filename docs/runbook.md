@@ -51,4 +51,23 @@ aparecem.
 - JWT_SECRET / REFRESH_TOKEN_HMAC_SECRET: a cada 90 dias.
 - Stripe webhook secret: imediatamente em caso de vazamento.
 - Sentry DSN, PostHog key: a cada 180 dias.
+- R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY: a cada 90 dias. Gerar nova credencial no Cloudflare Dashboard > R2 > Manage API tokens, atualizar Railway, restart, **revogar a anterior** após 24h.
+- OpenAI API key: a cada 180 dias ou em caso de vazamento.
 - Procedimento: gerar novo → atualizar Railway → restart → verificar logs por 10 min.
+
+## Storage R2 (Cloudflare)
+- Bucket default: `quita-ocr-uploads`
+- Retenção: 30 dias (OcrCleanupProcessor diário 05:00 UTC apaga e nula `SettlementEvaluation.ocrImageUrl`)
+- Limite custo: 10GB free tier; depois $0.015/GB/mês storage + zero egress
+- Verificar uso: Cloudflare Dashboard > R2 > Metrics
+- Em caso de bucket cheio: revisar OcrCleanupProcessor logs; aumentar TTL ou comprar storage adicional
+- Backup: R2 não tem snapshot nativo. Para audit forense, replicar para bucket secundário via Cloudflare Worker
+
+## Schedulers BullMQ (6 crons)
+- `monthly-rollover` 0 3 1 * * — todo dia 1 às 03:00 UTC
+- `data-retention-cleanup` 0 4 * * * — diário 04:00 UTC
+- `ocr-cleanup` 0 5 * * * — diário 05:00 UTC
+- `data-freshness-review` 0 6 * * 1 — segunda 06:00 UTC
+- `interest-rate-update` 0 2 5 * * — dia 5 do mês 02:00 UTC (BCB SGS)
+- `settlement-revalidation` 0 7 * * 2 — terça 07:00 UTC
+- Verificar via BullBoard (futuro) ou `redis-cli LRANGE bull:motor-scheduled:wait 0 -1`

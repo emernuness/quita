@@ -17,8 +17,8 @@ export class BehaviorProfileService {
 		return this.prisma.behaviorProfile.findUnique({ where: { userId } });
 	}
 
-	upsert(userId: string, data: UpsertBehaviorInput) {
-		return this.prisma.behaviorProfile.upsert({
+	async upsert(userId: string, data: UpsertBehaviorInput) {
+		const result = await this.prisma.behaviorProfile.upsert({
 			where: { userId },
 			create: {
 				userId,
@@ -34,5 +34,18 @@ export class BehaviorProfileService {
 				...(data.disciplineLevel !== undefined && { disciplineLevel: data.disciplineLevel }),
 			},
 		});
+
+		// Promove diagnosisLevel para 'basic' quando user preenche perfil
+		// comportamental (Fase 1 §7.1 — refinamento progressivo).
+		if (data.preferredStrategy && data.preferredStrategy !== "undecided") {
+			await this.prisma.user
+				.updateMany({
+					where: { id: userId, diagnosisLevel: "minimal" },
+					data: { diagnosisLevel: "basic" },
+				})
+				.catch(() => undefined);
+		}
+
+		return result;
 	}
 }

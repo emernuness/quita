@@ -3,6 +3,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { SentryInterceptor } from "./common/interceptors/sentry.interceptor";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AuthModule } from "./modules/auth/auth.module";
 import { BehaviorProfileModule } from "./modules/behavior-profile/behavior-profile.module";
@@ -76,6 +77,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },
+		{ provide: APP_INTERCEPTOR, useClass: SentryInterceptor },
 		{ provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
 		{ provide: APP_FILTER, useClass: HttpExceptionFilter },
 	],
