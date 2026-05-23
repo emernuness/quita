@@ -13,7 +13,7 @@ import {
 	useEvaluateFromImage,
 	useEvaluateSettlement,
 } from "@/hooks/useSettlements";
-import { Check, FileImage, X } from "lucide-react";
+import { Check, FileImage, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +36,7 @@ export default function AvaliarAcordoPage() {
 	const [installments, setInstallments] = useState("");
 	const [installmentAmount, setInstallmentAmount] = useState("");
 	const [result, setResult] = useState<SettlementEvaluation | null>(null);
+	const [ocrConsent, setOcrConsent] = useState(false);
 
 	const evaluate = useEvaluateSettlement();
 	const evaluateFromImage = useEvaluateFromImage();
@@ -128,21 +129,51 @@ export default function AvaliarAcordoPage() {
 								<Button onClick={handleManual} disabled={evaluate.isPending}>
 									{evaluate.isPending ? "Avaliando…" : "Avaliar manualmente"}
 								</Button>
-								<label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--color-border)] cursor-pointer hover:bg-[var(--color-background)]">
+								<label
+									className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--color-border)] ${
+										ocrConsent
+											? "cursor-pointer hover:bg-[var(--color-background)]"
+											: "cursor-not-allowed opacity-50"
+									}`}
+								>
 									<FileImage className="w-4 h-4" />
-									<span className="text-[14px]">Enviar imagem da proposta</span>
+									<span className="text-[14px]">Enviar imagem da proposta (Premium)</span>
 									<input
 										type="file"
 										accept="image/*"
 										className="hidden"
 										onChange={handleImage}
-										disabled={evaluateFromImage.isPending}
+										disabled={evaluateFromImage.isPending || !ocrConsent}
 									/>
 								</label>
 							</div>
 							{evaluateFromImage.isPending && (
 								<p className="text-[13px] text-[var(--color-ink-3)]">Lendo imagem via OCR…</p>
 							)}
+
+							<div className="mt-2 rounded-[10px] border border-[var(--color-info-bg)] bg-[var(--color-info-bg)] p-4">
+								<div className="flex items-start gap-3 text-[var(--color-info-fg)]">
+									<ShieldCheck className="w-4 h-4 mt-0.5" />
+									<div className="text-[13px]">
+										<div className="font-semibold mb-1">Antes de enviar imagem (OCR Premium)</div>
+										<ul className="space-y-0.5 list-disc pl-4">
+											<li>Imagem fica armazenada 30 dias e e apagada automaticamente</li>
+											<li>
+												OpenAI processa o conteudo para extrair valores — sem treino com sua imagem
+											</li>
+											<li>Voce sempre pode revisar manualmente os campos extraidos</li>
+										</ul>
+										<label className="mt-2 flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={ocrConsent}
+												onChange={(e) => setOcrConsent(e.target.checked)}
+											/>
+											<span className="text-[12px] font-semibold">Concordo e quero usar OCR</span>
+										</label>
+									</div>
+								</div>
+							</div>
 						</div>
 					</Card>
 

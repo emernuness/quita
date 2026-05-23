@@ -7,6 +7,7 @@ import { SentryInterceptor } from "./common/interceptors/sentry.interceptor";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AuthModule } from "./modules/auth/auth.module";
 import { BehaviorProfileModule } from "./modules/behavior-profile/behavior-profile.module";
+import { ConsentModule } from "./modules/consent/consent.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { DebtsModule } from "./modules/debts/debts.module";
 import { EmailModule } from "./modules/email/email.module";
@@ -76,6 +77,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		BehaviorProfileModule,
 		StorageModule,
 		NotificationsModule,
+		ConsentModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

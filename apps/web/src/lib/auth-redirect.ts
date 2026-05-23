@@ -2,8 +2,8 @@ import type { AuthUser } from "@/stores/auth";
 
 /**
  * Decide para onde mandar o usuário com base em auth + onboarding.
- * Fluxo atual: register → /onboarding/income (step 0) → /onboarding/categories (step 1) → /app
- * Dívidas e despesas são cadastradas dentro do app, fora do wizard.
+ * Fluxo: register → /onboarding/bem-vindo (welcome+consent) → /income (step 0)
+ *        → /location → /concern → /categories (step 1+) → /app
  */
 export function resolveAuthRedirect(args: {
 	isAuthenticated: boolean;
@@ -20,7 +20,7 @@ export function resolveAuthRedirect(args: {
 		if (currentArea === "onboarding") return null;
 		const step = user.onboardingStep ?? 0;
 		if (step >= 1) return "/onboarding/categories";
-		return "/onboarding/income";
+		return "/onboarding/bem-vindo";
 	}
 
 	if (currentArea === "app") return null;
