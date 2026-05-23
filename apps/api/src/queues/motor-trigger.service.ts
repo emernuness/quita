@@ -1,7 +1,7 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import type { TriggerEvent } from "@quita/motor";
-import { Queue } from "bullmq";
+import type { Queue } from "bullmq";
 import { MOTOR_RECALC_QUEUE } from "./queue.constants";
 
 /**

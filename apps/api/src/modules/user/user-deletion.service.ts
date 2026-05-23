@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
-import { RefreshTokenService } from "../auth/refresh-token.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { RefreshTokenService } from "../auth/refresh-token.service";
 
 const RETENTION_DAYS = 30;
 

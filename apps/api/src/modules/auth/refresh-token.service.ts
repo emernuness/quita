@@ -1,6 +1,6 @@
 import { createHmac, randomBytes } from "node:crypto";
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { REFRESH_TOKEN_BYTES, REFRESH_TOKEN_TTL_SECONDS } from "./constants";
 
 export interface IssuedRefreshToken {

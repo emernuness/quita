@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import type { ConfidenceLevel, FinancialState } from "@prisma/client";
 import { type SettlementProposalInput, evaluateSettlement } from "@quita/motor";
-import { PrismaService } from "../../prisma/prisma.service";
-import { MotorTriggerService } from "../../queues/motor-trigger.service";
-import { type OcrExtractedSettlement, OcrService } from "../ocr/ocr.service";
-import { R2StorageService } from "../storage/r2-storage.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
+import type { OcrExtractedSettlement, OcrService } from "../ocr/ocr.service";
+import type { R2StorageService } from "../storage/r2-storage.service";
 
 export interface EvaluateSettlementInput {
 	debtId: string;

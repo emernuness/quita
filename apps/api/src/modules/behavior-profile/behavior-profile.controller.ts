@@ -3,7 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { BehaviorProfileService } from "./behavior-profile.service";
+import type { BehaviorProfileService } from "./behavior-profile.service";
 
 const upsertSchema = z.object({
 	preferredStrategy: z.enum(["snowball", "avalanche", "hybrid", "undecided"]).optional(),

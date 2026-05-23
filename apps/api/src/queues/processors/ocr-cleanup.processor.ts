@@ -1,8 +1,8 @@
 import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
 import type { Job } from "bullmq";
-import { R2StorageService } from "../../modules/storage/r2-storage.service";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { R2StorageService } from "../../modules/storage/r2-storage.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { MOTOR_SCHEDULED_QUEUE } from "../queue.constants";
 
 const OCR_RETENTION_DAYS = 30;

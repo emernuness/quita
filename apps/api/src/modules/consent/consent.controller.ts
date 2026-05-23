@@ -5,7 +5,7 @@ import type { Request } from "express";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { ConsentService } from "./consent.service";
+import type { ConsentService } from "./consent.service";
 
 const ConsentTypeEnum = z.enum([
 	"terms_of_use",

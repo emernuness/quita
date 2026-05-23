@@ -5,7 +5,7 @@ import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { OcrQuotaGuard } from "../ocr/ocr-quota.guard";
-import { SettlementsService } from "./settlements.service";
+import type { SettlementsService } from "./settlements.service";
 
 const evaluateSchema = z.object({
 	debtId: z.string().uuid(),

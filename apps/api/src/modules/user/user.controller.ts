@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { DataFreshnessService } from "./data-freshness.service";
+import type { DataFreshnessService } from "./data-freshness.service";
 
 @ApiTags("user")
 @Controller("user")

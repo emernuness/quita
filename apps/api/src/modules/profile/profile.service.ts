@@ -7,7 +7,7 @@ import type {
 	UpdateSecurityInput,
 } from "@quita/shared";
 import * as bcrypt from "bcryptjs";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { BCRYPT_ROUNDS } from "../auth/constants";
 
 @Injectable()

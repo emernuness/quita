@@ -14,8 +14,8 @@ import type {
 } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 import type { CreateDebtInput, CreatePaymentInput, UpdateDebtInput } from "@quita/shared";
-import { PrismaService } from "../../prisma/prisma.service";
-import { MotorTriggerService } from "../../queues/motor-trigger.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 type DebtWithRelations = PrismaDebt & {
 	category?: PrismaDebtCategory | null;

@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
 import { evaluateSettlement } from "@quita/motor";
 import type { Job } from "bullmq";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { MOTOR_SCHEDULED_QUEUE } from "../queue.constants";
 
 /**

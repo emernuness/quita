@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import type { GoalType } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
-import { MotorTriggerService } from "../../queues/motor-trigger.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface CreateGoalInput {
 	goalType: GoalType;

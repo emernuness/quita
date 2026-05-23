@@ -26,8 +26,8 @@ import type { Response } from "express";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE, REFRESH_TOKEN_PATH } from "../auth/constants";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { UserDeletionService } from "../user/user-deletion.service";
-import { ProfileService } from "./profile.service";
+import type { UserDeletionService } from "../user/user-deletion.service";
+import type { ProfileService } from "./profile.service";
 
 @ApiTags("profile")
 @Controller("profile")

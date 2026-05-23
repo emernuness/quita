@@ -3,7 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { GoalsService } from "./goals.service";
+import type { GoalsService } from "./goals.service";
 
 const GOAL_TYPES = [
 	"debt_freedom",

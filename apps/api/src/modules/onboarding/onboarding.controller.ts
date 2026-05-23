@@ -17,7 +17,7 @@ import {
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { OnboardingService } from "./onboarding.service";
+import type { OnboardingService } from "./onboarding.service";
 
 const onboardingDebtsBodySchema = z.array(onboardingDebtSchema).min(1);
 

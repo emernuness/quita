@@ -2,11 +2,11 @@ import { Body, Controller, ForbiddenException, Get, Post, UseGuards } from "@nes
 import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { R2StorageService } from "../storage/r2-storage.service";
+import type { R2StorageService } from "../storage/r2-storage.service";
 import { OcrConsentGuard } from "./ocr-consent.guard";
-import { OcrService } from "./ocr.service";
+import type { OcrService } from "./ocr.service";
 
 const MONTHLY_QUOTA = 50;
 

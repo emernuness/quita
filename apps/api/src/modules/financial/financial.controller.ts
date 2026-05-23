@@ -12,7 +12,7 @@ import {
 } from "@quita/shared";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { FinancialService } from "./financial.service";
+import type { FinancialService } from "./financial.service";
 
 @ApiTags("financial")
 @Controller("financial")

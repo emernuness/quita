@@ -15,7 +15,7 @@ import type { Request } from "express";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { StripeService } from "./stripe.service";
+import type { StripeService } from "./stripe.service";
 
 const checkoutSessionSchema = z.object({
 	priceId: z.string().min(1),

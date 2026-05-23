@@ -1,8 +1,8 @@
 import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
 import type { Job } from "bullmq";
-import { MotorOrchestratorService } from "../../modules/motor/motor-orchestrator.service";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { MotorOrchestratorService } from "../../modules/motor/motor-orchestrator.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { MOTOR_SCHEDULED_QUEUE } from "../queue.constants";
 
 const FRESHNESS_THRESHOLD_DAYS = 90;

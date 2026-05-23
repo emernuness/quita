@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
-import { MotorTriggerService } from "../../queues/motor-trigger.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface UpsertReserveInput {
 	currentAmount?: number;

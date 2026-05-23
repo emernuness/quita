@@ -2,7 +2,7 @@ import { Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { NotificationsService } from "./notifications.service";
+import type { NotificationsService } from "./notifications.service";
 
 @ApiTags("notifications")
 @Controller("notifications")

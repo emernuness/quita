@@ -1,6 +1,11 @@
-import { CanActivate, type ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
+import {
+	type CanActivate,
+	type ExecutionContext,
+	ForbiddenException,
+	Injectable,
+} from "@nestjs/common";
 import type { Request } from "express";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 const MONTHLY_QUOTA = 50;
 

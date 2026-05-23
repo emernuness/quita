@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { ConsentType } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 /**
  * Spec Fase 1 §13 + LGPD Art. 7-8 — registro de consentimento.

@@ -20,7 +20,7 @@ import {
 	generateMonthlyPlan,
 	selectMode,
 } from "@quita/motor";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 
 /**
  * Spec: Fase 4 §3 + Fase 3 §14 — orquestrador NestJS.

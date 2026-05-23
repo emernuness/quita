@@ -3,7 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { EmergencyReserveService } from "./emergency-reserve.service";
+import type { EmergencyReserveService } from "./emergency-reserve.service";
 
 const upsertSchema = z.object({
 	currentAmount: z.number().nonnegative().optional(),

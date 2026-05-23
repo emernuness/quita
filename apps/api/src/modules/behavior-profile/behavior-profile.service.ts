@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { MainConcern, PreferredStrategy } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
-import { MotorTriggerService } from "../../queues/motor-trigger.service";
+import type { PrismaService } from "../../prisma/prisma.service";
+import type { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface UpsertBehaviorInput {
 	preferredStrategy?: PreferredStrategy;

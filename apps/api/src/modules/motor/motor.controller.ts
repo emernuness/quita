@@ -2,9 +2,9 @@ import { Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { CurrentUser } from "../../common";
-import { PrismaService } from "../../prisma/prisma.service";
+import type { PrismaService } from "../../prisma/prisma.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { MotorOrchestratorService } from "./motor-orchestrator.service";
+import type { MotorOrchestratorService } from "./motor-orchestrator.service";
 
 @ApiTags("motor")
 @Controller("motor")
