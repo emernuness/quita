@@ -5,6 +5,7 @@ import { LoggerModule } from "nestjs-pino";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { SentryInterceptor } from "./common/interceptors/sentry.interceptor";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
+import { AdminModule } from "./modules/admin/admin.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { BehaviorProfileModule } from "./modules/behavior-profile/behavior-profile.module";
 import { ConsentModule } from "./modules/consent/consent.module";
@@ -78,6 +79,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		StorageModule,
 		NotificationsModule,
 		ConsentModule,
+		AdminModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

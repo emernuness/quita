@@ -50,12 +50,60 @@ describe("NotificationsService", () => {
 	});
 
 	it("create defaulta severity=info e linkUrl=null", async () => {
+		vi.setSystemTime(new Date("2026-05-23T17:00:00Z")); // 14h SP janela OK
 		const prisma = mockPrisma();
 		const svc = new NotificationsService(prisma as never);
 		await svc.create({ userId: "u1", category: "motor_recalc", title: "T", body: "B" });
 		const args = prisma.notification.create.mock.calls[0][0];
 		expect(args.data.severity).toBe("info");
 		expect(args.data.linkUrl).toBeNull();
+		vi.useRealTimers();
+	});
+
+	it("create com force=true bypassa rate-limit", async () => {
+		const prisma = mockPrisma();
+		prisma.notification.count.mockResolvedValueOnce(999);
+		const svc = new NotificationsService(prisma as never);
+		const r = await svc.create({
+			userId: "u1",
+			category: "motor_recalc",
+			title: "T",
+			body: "B",
+			force: true,
+		});
+		expect(r).not.toBeNull();
+		expect(prisma.notification.create).toHaveBeenCalled();
+	});
+
+	it("create sem force retorna null se frequência excedida", async () => {
+		vi.setSystemTime(new Date("2026-05-23T17:00:00Z")); // 14h SP
+		const prisma = mockPrisma();
+		prisma.notification.count.mockResolvedValueOnce(99);
+		const svc = new NotificationsService(prisma as never);
+		const r = await svc.create({
+			userId: "u1",
+			category: "weekly_progress",
+			title: "T",
+			body: "B",
+		});
+		expect(r).toBeNull();
+		expect(prisma.notification.create).not.toHaveBeenCalled();
+		vi.useRealTimers();
+	});
+
+	it("create retorna null fora janela 9-21h SP", async () => {
+		vi.setSystemTime(new Date("2026-05-23T02:00:00Z")); // 23h SP
+		const prisma = mockPrisma();
+		const svc = new NotificationsService(prisma as never);
+		const r = await svc.create({
+			userId: "u1",
+			category: "motor_recalc",
+			title: "T",
+			body: "B",
+		});
+		expect(r).toBeNull();
+		expect(prisma.notification.create).not.toHaveBeenCalled();
+		vi.useRealTimers();
 	});
 
 	it("markRead so atualiza nao lidos do user", async () => {

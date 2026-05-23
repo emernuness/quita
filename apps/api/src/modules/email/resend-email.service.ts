@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Resend } from "resend";
+import { passwordResetEmail, weeklyProgressEmail, welcomeEmail } from "./templates";
 
 export interface SendEmailInput {
 	to: string;
@@ -52,5 +53,30 @@ export class ResendEmailService {
 			this.logger.error("Falha ao enviar email via Resend", err as Error);
 			throw err;
 		}
+	}
+
+	// ---- Templates wrappers ----
+
+	private appUrl(): string {
+		return process.env.NEXT_PUBLIC_SITE_URL ?? "https://quita.com.br";
+	}
+
+	sendWelcome(to: string, name: string) {
+		const { subject, html, text } = welcomeEmail({ name, appUrl: this.appUrl() });
+		return this.send({ to, subject, html, text });
+	}
+
+	sendPasswordReset(to: string, name: string, resetToken: string, ttlMinutes = 30) {
+		const resetUrl = `${this.appUrl()}/reset-password?token=${encodeURIComponent(resetToken)}`;
+		const { subject, html, text } = passwordResetEmail({ name, resetUrl, ttlMinutes });
+		return this.send({ to, subject, html, text });
+	}
+
+	sendWeeklyProgress(
+		to: string,
+		input: { name: string; progressPercent: number; paidThisWeek: number; nextDebtName: string },
+	) {
+		const { subject, html, text } = weeklyProgressEmail({ ...input, appUrl: this.appUrl() });
+		return this.send({ to, subject, html, text });
 	}
 }
