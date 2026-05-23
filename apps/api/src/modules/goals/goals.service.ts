@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import type { GoalType } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface CreateGoalInput {
 	goalType: GoalType;
@@ -16,7 +17,10 @@ export interface UpdateGoalInput extends Partial<CreateGoalInput> {
 
 @Injectable()
 export class GoalsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	list(userId: string) {
 		return this.prisma.userGoal.findMany({
@@ -26,7 +30,7 @@ export class GoalsService {
 	}
 
 	async create(userId: string, data: CreateGoalInput) {
-		return this.prisma.userGoal.create({
+		const goal = await this.prisma.userGoal.create({
 			data: {
 				userId,
 				goalType: data.goalType,
@@ -36,13 +40,15 @@ export class GoalsService {
 				priorityOrder: data.priorityOrder ?? 100,
 			},
 		});
+		await this.motorTrigger.enqueue(userId, "goal_added");
+		return goal;
 	}
 
 	async update(userId: string, id: string, data: UpdateGoalInput) {
 		const goal = await this.prisma.userGoal.findUnique({ where: { id } });
 		if (!goal) throw new NotFoundException("Goal not found");
 		if (goal.userId !== userId) throw new ForbiddenException("Not your resource");
-		return this.prisma.userGoal.update({
+		const updated = await this.prisma.userGoal.update({
 			where: { id },
 			data: {
 				...(data.goalType && { goalType: data.goalType }),
@@ -57,6 +63,8 @@ export class GoalsService {
 				}),
 			},
 		});
+		await this.motorTrigger.enqueue(userId, "goal_updated");
+		return updated;
 	}
 
 	async remove(userId: string, id: string) {
@@ -64,6 +72,7 @@ export class GoalsService {
 		if (!goal) throw new NotFoundException("Goal not found");
 		if (goal.userId !== userId) throw new ForbiddenException("Not your resource");
 		await this.prisma.userGoal.update({ where: { id }, data: { isActive: false } });
+		await this.motorTrigger.enqueue(userId, "goal_updated");
 		return { deleted: true };
 	}
 }

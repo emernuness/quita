@@ -17,7 +17,7 @@ function mockPrisma(overrides: Record<string, unknown> = {}) {
 describe("GoalsService", () => {
 	it("list filtra por userId+isActive ordenado", async () => {
 		const prisma = mockPrisma();
-		const svc = new GoalsService(prisma as never);
+		const svc = new GoalsService(prisma as never, { enqueue: vi.fn() } as never);
 		await svc.list("u1");
 		expect(prisma.userGoal.findMany).toHaveBeenCalledWith({
 			where: { userId: "u1", isActive: true },
@@ -27,7 +27,7 @@ describe("GoalsService", () => {
 
 	it("create persiste com defaults", async () => {
 		const prisma = mockPrisma();
-		const svc = new GoalsService(prisma as never);
+		const svc = new GoalsService(prisma as never, { enqueue: vi.fn() } as never);
 		await svc.create("u1", { goalType: "house", description: "Casa" });
 		expect(prisma.userGoal.create).toHaveBeenCalledWith({
 			data: {
@@ -43,13 +43,13 @@ describe("GoalsService", () => {
 
 	it("update rejeita resource de outro user", async () => {
 		const prisma = mockPrisma({ userId: "outro" });
-		const svc = new GoalsService(prisma as never);
+		const svc = new GoalsService(prisma as never, { enqueue: vi.fn() } as never);
 		await expect(svc.update("u1", "g1", { description: "x" })).rejects.toThrow();
 	});
 
 	it("remove faz soft-delete (isActive=false)", async () => {
 		const prisma = mockPrisma();
-		const svc = new GoalsService(prisma as never);
+		const svc = new GoalsService(prisma as never, { enqueue: vi.fn() } as never);
 		await svc.remove("u1", "g1");
 		expect(prisma.userGoal.update).toHaveBeenCalledWith({
 			where: { id: "g1" },

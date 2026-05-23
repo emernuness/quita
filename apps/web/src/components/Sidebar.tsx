@@ -16,6 +16,7 @@ import {
 	Map as MapIcon,
 	PiggyBank,
 	Plus,
+	Shield,
 	Sparkles,
 	Target,
 	UserCircle,
@@ -53,6 +54,18 @@ const items: NavItem[] = [
 		label: "Avaliar acordo",
 		icon: FileCheck,
 		match: /^\/app\/avaliar-acordo/,
+	},
+	{
+		href: "/app/modo-protecao",
+		label: "Modo proteção",
+		icon: Shield,
+		match: /^\/app\/modo-protecao/,
+	},
+	{
+		href: "/app/modo-sobrevivencia",
+		label: "Modo sobrevivência",
+		icon: LifeBuoy,
+		match: /^\/app\/modo-sobrevivencia/,
 	},
 	{
 		href: "/app/modo-crise",

@@ -1,14 +1,18 @@
 import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import {
+	type OnboardingConcernInput,
 	type OnboardingDebtCategoriesInput,
 	type OnboardingDebtInput,
 	type OnboardingExpensesInput,
 	type OnboardingIncomeInput,
+	type OnboardingLocationInput,
+	onboardingConcernSchema,
 	onboardingDebtCategoriesSchema,
 	onboardingDebtSchema,
 	onboardingExpensesSchema,
 	onboardingIncomeSchema,
+	onboardingLocationSchema,
 } from "@quita/shared";
 import { z } from "zod";
 import { CurrentUser, ZodValidationPipe } from "../../common";
@@ -54,6 +58,22 @@ export class OnboardingController {
 		@Body(new ZodValidationPipe(onboardingExpensesSchema)) body: OnboardingExpensesInput,
 	) {
 		return this.onboardingService.saveExpenses(userId, body);
+	}
+
+	@Post("location")
+	saveLocation(
+		@CurrentUser("id") userId: string,
+		@Body(new ZodValidationPipe(onboardingLocationSchema)) body: OnboardingLocationInput,
+	) {
+		return this.onboardingService.saveLocation(userId, body);
+	}
+
+	@Post("concern")
+	saveConcern(
+		@CurrentUser("id") userId: string,
+		@Body(new ZodValidationPipe(onboardingConcernSchema)) body: OnboardingConcernInput,
+	) {
+		return this.onboardingService.saveConcern(userId, body);
 	}
 
 	@Post("complete")

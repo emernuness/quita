@@ -53,8 +53,8 @@ export default function CategoriesStep() {
 	return (
 		<>
 			<OnboardingHeader
-				step={2}
-				total={2}
+				step={4}
+				total={4}
 				eyebrow="Mapeamento de dívidas"
 				title="Pra quem você deve hoje?"
 				description="Selecione os tipos que representam suas dívidas atuais. Você cadastra cada dívida detalhada já dentro do app."

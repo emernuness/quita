@@ -15,6 +15,7 @@ import { FinancialModule } from "./modules/financial/financial.module";
 import { GoalsModule } from "./modules/goals/goals.module";
 import { HealthModule } from "./modules/health/health.module";
 import { MotorModule } from "./modules/motor/motor.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 import { OcrModule } from "./modules/ocr/ocr.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ProfileModule } from "./modules/profile/profile.module";
@@ -74,6 +75,7 @@ const IS_PROD = process.env.NODE_ENV === "production";
 		EmergencyReserveModule,
 		BehaviorProfileModule,
 		StorageModule,
+		NotificationsModule,
 	],
 	providers: [
 		{ provide: APP_GUARD, useClass: ThrottlerGuard },

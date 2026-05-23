@@ -11,10 +11,14 @@ import type {
 	UpdateIncomeInput,
 } from "@quita/shared";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 @Injectable()
 export class FinancialService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	async getSummary(userId: string) {
 		const [incomes, expenses] = await Promise.all([
@@ -62,6 +66,7 @@ export class FinancialService {
 			},
 		});
 
+		await this.motorTrigger.enqueue(userId, "income_added");
 		return {
 			...income,
 			amount: income.amount.toNumber(),
@@ -96,6 +101,7 @@ export class FinancialService {
 			},
 		});
 
+		await this.motorTrigger.enqueue(userId, "income_updated");
 		return {
 			...updated,
 			amount: updated.amount.toNumber(),
@@ -111,6 +117,7 @@ export class FinancialService {
 
 		await this.prisma.income.delete({ where: { id } });
 
+		await this.motorTrigger.enqueue(userId, "income_removed");
 		return { deleted: true };
 	}
 
@@ -143,6 +150,7 @@ export class FinancialService {
 			},
 		});
 
+		await this.motorTrigger.enqueue(userId, "expense_added");
 		return {
 			...expense,
 			amount: expense.amount.toNumber(),
@@ -177,6 +185,7 @@ export class FinancialService {
 			},
 		});
 
+		await this.motorTrigger.enqueue(userId, "expense_updated");
 		return {
 			...updated,
 			amount: updated.amount.toNumber(),
@@ -192,6 +201,7 @@ export class FinancialService {
 
 		await this.prisma.expense.delete({ where: { id } });
 
+		await this.motorTrigger.enqueue(userId, "expense_removed");
 		return { deleted: true };
 	}
 }

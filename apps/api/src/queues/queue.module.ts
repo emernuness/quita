@@ -1,9 +1,11 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { MotorModule } from "../modules/motor/motor.module";
+import { NotificationsModule } from "../modules/notifications/notifications.module";
 import { StorageModule } from "../modules/storage/storage.module";
 import { UserModule } from "../modules/user/user.module";
 import { PrismaModule } from "../prisma/prisma.module";
+import { MotorTriggerService } from "./motor-trigger.service";
 import { DataFreshnessReviewProcessor } from "./processors/data-freshness-review.processor";
 import { DataRetentionCleanupProcessor } from "./processors/data-retention-cleanup.processor";
 import { InterestRateUpdateProcessor } from "./processors/interest-rate-update.processor";
@@ -35,6 +37,7 @@ function parseRedisUrl(url: string) {
 		MotorModule,
 		UserModule,
 		StorageModule,
+		NotificationsModule,
 		BullModule.forRootAsync({
 			useFactory: () => {
 				const redisUrl = process.env.REDIS_URL ?? "redis://localhost:6379";
@@ -55,7 +58,8 @@ function parseRedisUrl(url: string) {
 		SettlementRevalidationProcessor,
 		RecalculateAllScoresProcessor,
 		QueueSchedulerService,
+		MotorTriggerService,
 	],
-	exports: [BullModule],
+	exports: [BullModule, MotorTriggerService],
 })
 export class QueueModule {}

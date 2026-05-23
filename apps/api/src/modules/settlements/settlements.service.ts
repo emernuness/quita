@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nest
 import type { ConfidenceLevel, FinancialState } from "@prisma/client";
 import { type SettlementProposalInput, evaluateSettlement } from "@quita/motor";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 import { type OcrExtractedSettlement, OcrService } from "../ocr/ocr.service";
 import { R2StorageService } from "../storage/r2-storage.service";
 
@@ -26,6 +27,7 @@ export class SettlementsService {
 		private readonly prisma: PrismaService,
 		private readonly ocr: OcrService,
 		private readonly storage: R2StorageService,
+		private readonly motorTrigger: MotorTriggerService,
 	) {}
 
 	async evaluate(userId: string, input: EvaluateSettlementInput) {
@@ -154,6 +156,7 @@ export class SettlementsService {
 			id: stored.id,
 		});
 
+		await this.motorTrigger.enqueue(userId, "settlement_evaluated");
 		return {
 			id: stored.id,
 			recommendation: result.recommendation,

@@ -5,12 +5,14 @@ import { RecalculateStateProcessor } from "./recalculate-state.processor";
 describe("RecalculateStateProcessor", () => {
 	it("invoca motor.recalculateForUser com userId+triggerEvent do job", async () => {
 		const motor = { recalculateForUser: vi.fn().mockResolvedValue({ data: {} }) };
-		const proc = new RecalculateStateProcessor(motor as never);
+		const notifications = { create: vi.fn().mockResolvedValue({}) };
+		const proc = new RecalculateStateProcessor(motor as never, notifications as never);
 		const job = {
 			data: { userId: "u1", triggerEvent: "income_added" },
 		} as unknown as Job;
 		const r = await proc.process(job);
 		expect(motor.recalculateForUser).toHaveBeenCalledWith("u1", "income_added");
+		expect(notifications.create).toHaveBeenCalled();
 		expect(r).toEqual({ ok: true });
 	});
 });

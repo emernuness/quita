@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { MainConcern, PreferredStrategy } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface UpsertBehaviorInput {
 	preferredStrategy?: PreferredStrategy;
@@ -11,7 +12,10 @@ export interface UpsertBehaviorInput {
 
 @Injectable()
 export class BehaviorProfileService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	get(userId: string) {
 		return this.prisma.behaviorProfile.findUnique({ where: { userId } });
@@ -46,6 +50,7 @@ export class BehaviorProfileService {
 				.catch(() => undefined);
 		}
 
+		await this.motorTrigger.enqueue(userId, "behavior_profile_updated");
 		return result;
 	}
 }

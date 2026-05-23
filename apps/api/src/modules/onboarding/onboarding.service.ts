@@ -4,27 +4,47 @@ import type {
 	DebtStatus as PrismaDebtStatus,
 	ExpenseCategory as PrismaExpenseCategory,
 	IncomeSource as PrismaIncomeSource,
+	MainConcern as PrismaMainConcern,
 } from "@prisma/client";
 import type {
+	OnboardingConcernInput,
 	OnboardingDebtCategoriesInput,
 	OnboardingDebtInput,
 	OnboardingExpensesInput,
 	OnboardingIncomeInput,
+	OnboardingLocationInput,
 } from "@quita/shared";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 @Injectable()
 export class OnboardingService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	async saveIncome(userId: string, data: OnboardingIncomeInput) {
-		const incomes: { name: string; amount: number; sourceCategory: string }[] = [];
+		// Spec Fase 1 §6.1.1 passo 2: renda + paymentDay + stabilityType + guaranteedAmount.
+		// stabilityType/paymentDay aplicam apenas ao salario (principal). Extra/help
+		// herdam stabilityType=stable por default Prisma.
+		const incomes: {
+			name: string;
+			amount: number;
+			sourceCategory: string;
+			paymentDay?: number;
+			stabilityType?: "stable" | "variable" | "seasonal";
+			guaranteedAmount?: number;
+		}[] = [];
 
 		if (data.salary > 0) {
 			incomes.push({
 				name: "Salário",
 				amount: data.salary,
 				sourceCategory: "salary",
+				paymentDay: data.paymentDay,
+				stabilityType: data.stabilityType,
+				guaranteedAmount: data.guaranteedAmount,
 			});
 		}
 		if (data.extra && data.extra > 0) {
@@ -52,6 +72,11 @@ export class OnboardingService {
 						amount: income.amount,
 						type: "fixed",
 						sourceCategory: income.sourceCategory as PrismaIncomeSource,
+						...(income.paymentDay !== undefined && { paymentDay: income.paymentDay }),
+						...(income.stabilityType !== undefined && { stabilityType: income.stabilityType }),
+						...(income.guaranteedAmount !== undefined && {
+							guaranteedAmount: income.guaranteedAmount,
+						}),
 					},
 				}),
 			),
@@ -143,6 +168,32 @@ export class OnboardingService {
 		return { step: 4 };
 	}
 
+	async saveLocation(userId: string, data: OnboardingLocationInput) {
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: {
+				stateCode: data.stateCode,
+				dependentsCount: data.dependentsCount ?? 0,
+			},
+		});
+		return { saved: true };
+	}
+
+	async saveConcern(userId: string, data: OnboardingConcernInput) {
+		// Cria/atualiza BehaviorProfile com mainConcern. Refinamento posterior
+		// preenche preferredStrategy e promove diagnosisLevel para 'basic'.
+		await this.prisma.behaviorProfile.upsert({
+			where: { userId },
+			create: {
+				userId,
+				mainConcern: data.mainConcern as PrismaMainConcern,
+				preferredStrategy: "undecided",
+			},
+			update: { mainConcern: data.mainConcern as PrismaMainConcern },
+		});
+		return { saved: true };
+	}
+
 	async complete(userId: string) {
 		// Fase 1 §7.1 — onboarding fracionado: completar minimo seta
 		// diagnosisLevel='minimal'. Refinamento posterior em /refinar
@@ -154,6 +205,10 @@ export class OnboardingService {
 				diagnosisLevel: "minimal",
 			} as never,
 		});
+
+		// Dispara primeiro recalculo do motor — Espelho pos-onboarding
+		// precisa de plano gerado (spec Fase 1 §6.2).
+		await this.motorTrigger.enqueue(userId, "manual_recalc");
 
 		return { completed: true };
 	}

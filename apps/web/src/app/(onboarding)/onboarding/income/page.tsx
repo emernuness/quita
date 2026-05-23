@@ -18,12 +18,18 @@ const FIELDS = [
 
 type Key = (typeof FIELDS)[number]["key"];
 
+type Stability = "stable" | "variable" | "seasonal";
+
 export default function IncomeStep() {
 	const router = useRouter();
 	const save = useSaveIncome();
 	const [values, setValues] = useState<Record<Key, string>>({ salary: "", extra: "", help: "" });
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [paymentDay, setPaymentDay] = useState("");
+	const [stabilityType, setStabilityType] = useState<Stability>("stable");
+	const [guaranteedAmount, setGuaranteedAmount] = useState("");
+	const [showAdvanced, setShowAdvanced] = useState(false);
 
 	function handleChange(key: Key, masked: string) {
 		setValues((prev) => ({ ...prev, [key]: masked }));
@@ -40,10 +46,15 @@ export default function IncomeStep() {
 		const salary = unmaskBRL(values.salary);
 		const extra = unmaskBRL(values.extra);
 		const help = unmaskBRL(values.help);
+		const guar = unmaskBRL(guaranteedAmount);
+		const day = paymentDay ? Number(paymentDay) : undefined;
 		const r = validateWithZod(onboardingIncomeSchema, {
 			salary,
 			extra: extra > 0 ? extra : undefined,
 			help: help > 0 ? help : undefined,
+			...(day ? { paymentDay: day } : {}),
+			...(stabilityType !== "stable" ? { stabilityType } : {}),
+			...(guar > 0 ? { guaranteedAmount: guar } : {}),
 		});
 		if (!r.success) {
 			setErrors(r.errors);
@@ -51,7 +62,7 @@ export default function IncomeStep() {
 		}
 		try {
 			await save.mutateAsync(r.data);
-			router.push("/onboarding/categories");
+			router.push("/onboarding/location");
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Erro ao salvar.");
 		}
@@ -61,7 +72,7 @@ export default function IncomeStep() {
 		<>
 			<OnboardingHeader
 				step={1}
-				total={2}
+				total={4}
 				eyebrow="Renda mensal"
 				title="Quanto entra por mês?"
 				description="Some salário, renda extra e ajuda. Uma estimativa já basta para montar um plano realista."
@@ -83,6 +94,70 @@ export default function IncomeStep() {
 			<p className="mt-6 text-[13px] text-[var(--color-ink-2)]">
 				Se algum valor variar, use a média dos últimos 3 meses.
 			</p>
+
+			<div className="mt-6">
+				<button
+					type="button"
+					onClick={() => setShowAdvanced((v) => !v)}
+					className="text-[13px] font-semibold text-[var(--color-teal)] hover:underline"
+				>
+					{showAdvanced ? "− Esconder detalhes" : "+ Adicionar detalhes (refinam o plano)"}
+				</button>
+			</div>
+
+			{showAdvanced ? (
+				<div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+					<div>
+						<label
+							htmlFor="payday"
+							className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--color-ink-2)]"
+						>
+							DIA DO RECEBIMENTO
+						</label>
+						<input
+							id="payday"
+							type="number"
+							min="1"
+							max="31"
+							placeholder="5"
+							value={paymentDay}
+							onChange={(e) => setPaymentDay(e.target.value)}
+							className="h-11 w-full rounded-[8px] border border-[var(--color-border)] bg-white px-3 text-[15px]"
+						/>
+					</div>
+					<div>
+						<label
+							htmlFor="stability"
+							className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--color-ink-2)]"
+						>
+							ESTABILIDADE
+						</label>
+						<select
+							id="stability"
+							value={stabilityType}
+							onChange={(e) => setStabilityType(e.target.value as Stability)}
+							className="h-11 w-full rounded-[8px] border border-[var(--color-border)] bg-white px-3 text-[15px]"
+						>
+							<option value="stable">Estável (salário fixo)</option>
+							<option value="variable">Variável (comissão, bicos)</option>
+							<option value="seasonal">Sazonal (entra por temporada)</option>
+						</select>
+					</div>
+					{stabilityType !== "stable" ? (
+						<div className="md:col-span-2">
+							<CurrencyInput
+								name="guaranteed"
+								label="QUANTO VOCÊ TEM CERTEZA DE RECEBER?"
+								value={guaranteedAmount}
+								onChange={setGuaranteedAmount}
+							/>
+							<p className="mt-1 text-[12px] text-[var(--color-ink-2)]">
+								Mínimo garantido em meses ruins. Plano usa esse valor como base segura.
+							</p>
+						</div>
+					) : null}
+				</div>
+			) : null}
 
 			{submitError ? (
 				<div className="mt-6 rounded-[8px] border border-[var(--color-danger-bg)] bg-[var(--color-danger-bg)] px-4 py-3 text-[13px] text-[var(--color-danger-fg)]">

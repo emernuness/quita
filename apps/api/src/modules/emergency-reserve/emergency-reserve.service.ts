@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 export interface UpsertReserveInput {
 	currentAmount?: number;
@@ -10,14 +11,17 @@ export interface UpsertReserveInput {
 
 @Injectable()
 export class EmergencyReserveService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	get(userId: string) {
 		return this.prisma.emergencyReserve.findUnique({ where: { userId } });
 	}
 
 	async upsert(userId: string, data: UpsertReserveInput) {
-		return this.prisma.emergencyReserve.upsert({
+		const result = await this.prisma.emergencyReserve.upsert({
 			where: { userId },
 			create: {
 				userId,
@@ -37,5 +41,7 @@ export class EmergencyReserveService {
 				}),
 			},
 		});
+		await this.motorTrigger.enqueue(userId, "emergency_reserve_updated");
+		return result;
 	}
 }

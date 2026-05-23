@@ -4,6 +4,7 @@ import { resolveAuthRedirect } from "@/lib/auth-redirect";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { NotificationBell } from "./NotificationBell";
 import { Sidebar } from "./Sidebar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -31,7 +32,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 		<div className="flex min-h-screen">
 			<Sidebar />
 			<main className="min-w-0 flex-1">
-				<div className="mx-auto w-full max-w-[1180px] px-10 py-10">{children}</div>
+				<div className="mx-auto w-full max-w-[1180px] px-10 py-10">
+					<div className="mb-4 flex justify-end">
+						<NotificationBell />
+					</div>
+					{children}
+				</div>
 			</main>
 		</div>
 	);

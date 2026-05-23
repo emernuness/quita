@@ -15,6 +15,7 @@ import type {
 import type { Decimal } from "@prisma/client/runtime/library";
 import type { CreateDebtInput, CreatePaymentInput, UpdateDebtInput } from "@quita/shared";
 import { PrismaService } from "../../prisma/prisma.service";
+import { MotorTriggerService } from "../../queues/motor-trigger.service";
 
 type DebtWithRelations = PrismaDebt & {
 	category?: PrismaDebtCategory | null;
@@ -46,7 +47,10 @@ function serializeDebt(debt: DebtWithRelations) {
 
 @Injectable()
 export class DebtsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly motorTrigger: MotorTriggerService,
+	) {}
 
 	async listDebts(userId: string) {
 		const debts = await this.prisma.debt.findMany({
@@ -104,6 +108,7 @@ export class DebtsService {
 			include: { category: true },
 		});
 
+		await this.motorTrigger.enqueue(userId, "debt_added");
 		return serializeDebt(debt);
 	}
 
@@ -147,6 +152,7 @@ export class DebtsService {
 			include: { category: true },
 		});
 
+		await this.motorTrigger.enqueue(userId, "debt_updated");
 		return serializeDebt(updated);
 	}
 
@@ -158,6 +164,7 @@ export class DebtsService {
 
 		await this.prisma.debt.delete({ where: { id } });
 
+		await this.motorTrigger.enqueue(userId, "debt_removed");
 		return { deleted: true };
 	}
 
@@ -200,6 +207,7 @@ export class DebtsService {
 			}),
 		]);
 
+		await this.motorTrigger.enqueue(userId, "payment_recorded");
 		return {
 			...payment,
 			amount: payment.amount.toNumber(),
@@ -244,6 +252,7 @@ export class DebtsService {
 			}),
 		]);
 
+		await this.motorTrigger.enqueue(userId, "payment_reverted");
 		return { undone: true };
 	}
 
